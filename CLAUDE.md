@@ -8,15 +8,32 @@ PWA (instalable en iOS, Android y escritorio) para reportar incidencias en un ca
 - **Mapa:** Leaflet + OpenStreetMap (sin API keys de pago)
 - **Backend:** Django REST Framework + PostgreSQL, autenticación JWT
 - **Almacenamiento de fotos:** local en desarrollo; abstraído para cambiar a un servicio externo después
-- **Despliegue:** frontend en Vercel o Netlify, backend en Render o Railway (HTTPS obligatorio: cámara, GPS y service worker lo exigen)
+- **Contenedores:** Docker + Docker Compose para desarrollo y producción (mismo `docker-compose.yml` base)
+- **Despliegue:** AWS, una instancia EC2 con Docker Compose (más adelante, no en las primeras fases; HTTPS obligatorio: cámara, GPS y service worker lo exigen)
 
 ## Estructura
 ```
-/frontend   → app React (PWA)
-/backend    → API Django REST
-/docs       → decisiones, historias de usuario, capturas
+/frontend              → app React (PWA) + Dockerfile (build y nginx)
+/backend               → API Django REST + Dockerfile (gunicorn)
+/docs                  → decisiones, historias de usuario, capturas
+docker-compose.yml     → servicios base (db, backend, frontend/nginx), igual en local y AWS
+docker-compose.override.yml → solo desarrollo (hot reload, puertos, volúmenes)
+.env.example           → todas las variables, sin valores secretos
 CLAUDE.md
 ```
+
+## Docker y despliegue
+- Servicios: `db` (PostgreSQL 16 con volumen persistente), `backend` (Django + gunicorn) y `frontend` (build de Vite servido por nginx, que además hace proxy de `/api` al backend, así todo sale del mismo origen y con un solo HTTPS)
+- Todo lo configurable va por **variables de entorno** (`.env` local, nunca versionado; `.env.example` versionado con todas las claves): `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`, `CORS_ALLOWED_ORIGINS`, `DATABASE_URL`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`
+- Las variables `VITE_*` se incrustan en tiempo de build, no de ejecución: no poner secretos ahí
+- `docker-compose.yml` igual para local y AWS; las diferencias de desarrollo van solo en `docker-compose.override.yml`
+- Healthchecks en `db` y `backend` (usando `/api/health/`) y `depends_on` con `condition: service_healthy`
+- Las migraciones se ejecutan en el arranque del backend (entrypoint), sin pasos manuales
+- Imágenes ligeras (multi-stage en el frontend), contenedores sin usuario root y `.dockerignore` en cada servicio
+- Detrás del proxy: configurar `SECURE_PROXY_SSL_HEADER` y `CSRF_TRUSTED_ORIGINS` para que Django funcione bien con HTTPS
+- nginx: `Cache-Control: no-cache` para `index.html`, `sw.js` y `manifest.webmanifest`; caché larga solo para archivos con hash
+- Fotos: volumen persistente en el inicio; dejar el almacenamiento abstraído para migrar a S3
+- Nada de secretos en imágenes, en el compose ni en el repo
 
 ## Alcance del MVP
 1. Registro e inicio de sesión (roles: ciudadano, administrador)
@@ -54,6 +71,8 @@ CLAUDE.md
 - Al terminar una fase: correr linter y pruebas, verificar en Playwright y resumir qué se hizo y qué sigue
 
 ## Comandos
-- Frontend: `cd frontend && npm install && npm run dev`
-- Backend: `cd backend && pip install -r requirements.txt && python manage.py runserver`
-- Pruebas: `npm test` (frontend) y `python manage.py test` (backend)
+- Levantar todo: `docker compose up --build`
+- Detener: `docker compose down` (añadir `-v` borra la base de datos local)
+- Pruebas backend: `docker compose exec backend python manage.py test`
+- Pruebas frontend: `cd frontend && npm test`
+- Probar en celular real: túnel HTTPS (cloudflared) apuntando al puerto de nginx del compose
