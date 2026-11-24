@@ -1,0 +1,19 @@
+# Solo desarrollo: Docker Compose lo aplica automáticamente con `docker compose up`.
+# En el servidor se usa únicamente el base: `docker compose -f docker-compose.yml up -d`.
+services:
+  db:
+    # Accesible solo desde esta máquina (para psql o un cliente gráfico).
+    # 5433 por defecto para no chocar con otros Postgres locales.
+    ports:
+      - "127.0.0.1:${DB_HOST_PORT:-5433}:5432"
+
+  backend:
+    # Recarga automática al editar el código montado.
+    command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+    environment:
+      DEBUG: "True"
+    volumes:
+      - ./backend:/app
+    # Accesible solo desde esta máquina; lo usa el proxy de `npm run dev`.
+    ports:
+      - "127.0.0.1:${BACKEND_HOST_PORT:-8000}:8000"
