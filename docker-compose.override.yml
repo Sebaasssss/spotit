@@ -12,6 +12,8 @@ services:
     command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]
     environment:
       DEBUG: "True"
+      # http://localhost:8080 no es HTTPS: sin esto Safari descarta las cookies Secure.
+      AUTH_COOKIE_SECURE: "False"
     volumes:
       - ./backend:/app
     # Accesible solo desde esta máquina; lo usa el proxy de `npm run dev`.

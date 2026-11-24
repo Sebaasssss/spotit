@@ -5,7 +5,11 @@ import { VitePWA } from 'vite-plugin-pwa'
 
 // Solo para `npm run dev` / `npm run preview` en el host. En Docker el proxy lo hace nginx.
 const apiTarget = process.env.API_PROXY_TARGET ?? 'http://127.0.0.1:8000'
-const proxy = { '/api': { target: apiTarget } }
+const proxy = {
+  '/api': { target: apiTarget },
+  '/admin': { target: apiTarget },
+  '/django-static': { target: apiTarget },
+}
 
 const brand = '#0E5A4F'
 const paper = '#F6F3EC'
@@ -49,7 +53,8 @@ export default defineConfig({
         // Precache solo del shell. Las estrategias para API y tiles llegan en su fase.
         globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2}'],
         navigateFallback: '/index.html',
-        navigateFallbackDenylist: [/^\/api\//],
+        // Estas rutas las atiende Django, no la SPA.
+        navigateFallbackDenylist: [/^\/api\//, /^\/admin(\/|$)/, /^\/django-static\//],
         cleanupOutdatedCaches: true,
       },
     }),
