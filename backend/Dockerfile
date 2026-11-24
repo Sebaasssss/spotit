@@ -14,6 +14,10 @@ RUN pip install -r requirements.txt
 
 COPY --chown=app:app . .
 
+# Estáticos del admin de Django (los sirve whitenoise). La clave es solo para este paso.
+RUN SECRET_KEY=collectstatic-solo-build python manage.py collectstatic --noinput \
+    && chown -R app:app staticfiles
+
 USER app
 
 EXPOSE 8000
