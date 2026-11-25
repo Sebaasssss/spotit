@@ -187,6 +187,111 @@ components:
     height: "76px"
   action-home-primary-hover:
     backgroundColor: "{colors.field-deep}"
+  vote-button:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.field}"
+    rounded: "{rounded.sm}"
+    padding: "0 20px 0 16px"
+    height: "52px"
+  vote-button-hover:
+    backgroundColor: "{colors.info-tint}"
+    textColor: "{colors.field-deep}"
+  vote-button-on:
+    backgroundColor: "{colors.field}"
+    textColor: "{colors.field-ink}"
+    rounded: "{rounded.sm}"
+    padding: "0 20px 0 16px"
+    height: "52px"
+  vote-button-on-hover:
+    backgroundColor: "{colors.field-deep}"
+    textColor: "{colors.field-ink}"
+  vote-readonly:
+    textColor: "{colors.ink-soft}"
+  map-chip-recibido:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.full}"
+    size: "44px"
+  map-chip-en-proceso:
+    backgroundColor: "{colors.field}"
+    textColor: "{colors.field-ink}"
+    rounded: "{rounded.full}"
+    size: "44px"
+  map-chip-resuelto:
+    backgroundColor: "{colors.ok-tint}"
+    textColor: "{colors.ok}"
+    rounded: "{rounded.full}"
+    size: "44px"
+  map-chip-votes:
+    backgroundColor: "{colors.ink}"
+    textColor: "{colors.surface}"
+    padding: "0 5px"
+    height: "20px"
+  map-cluster:
+    backgroundColor: "{colors.field-deep}"
+    textColor: "{colors.field-ink}"
+    rounded: "{rounded.full}"
+    size: "44px"
+  map-cluster-md:
+    size: "48px"
+  map-cluster-lg:
+    size: "54px"
+  map-sheet:
+    backgroundColor: "{colors.paper}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.md}"
+    padding: "12px 20px 18px"
+  map-sheet-desktop:
+    width: "380px"
+    padding: "4px 4px 4px 0"
+  map-notice:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.sm}"
+    padding: "10px 16px"
+  map-zoom:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.sm}"
+    size: "44px"
+  filter-button:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.sm}"
+    padding: "0 14px 0 12px"
+    height: "44px"
+  filter-button-active:
+    backgroundColor: "{colors.info-tint}"
+    textColor: "{colors.field-deep}"
+  filter-chip:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.sm}"
+    padding: "0 12px 0 10px"
+    height: "44px"
+  filter-chip-on:
+    backgroundColor: "{colors.info-tint}"
+    textColor: "{colors.ink}"
+  view-toggle:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink-soft}"
+    rounded: "{rounded.sm}"
+    padding: "2px"
+  view-toggle-on:
+    backgroundColor: "{colors.field}"
+    textColor: "{colors.field-ink}"
+    padding: "0 12px"
+    height: "44px"
+  legend-button:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.sm}"
+    padding: "0 12px 0 10px"
+    height: "44px"
+  map-list-row:
+    textColor: "{colors.ink}"
+    padding: "10px 0"
+    height: "64px"
 ---
 
 # Design System: SpotIt
@@ -203,6 +308,7 @@ Está hecho para la calle: modo claro siempre (se usa con sol), texto base de 17
 - Un campo verde que ocupa una banda (móvil) o una columna entera (escritorio) en la entrada y la portada, y una franja a todo lo ancho en las pantallas internas; nunca un adorno pequeño.
 - Cuando hay un mapa real, ese mapa es el plano: se mueve el mapa bajo un pin ámbar fijo al centro, no el pin.
 - Un solo pin ámbar por pantalla; el ámbar es el punto, no un color de interfaz.
+- En el mapa general cada reporte es una chapa redonda con el icono de su estado (no un pin) y los cercanos se juntan en una mancha verde con su número.
 - Formulario directo sobre papel, sin tarjeta, con etiquetas encima del campo.
 - Bordes de 2 px para todo lo que se toca o avisa; el color nunca es la única señal.
 - Movimiento mínimo: el pin se asienta una vez y la interfaz responde en 120 ms.
@@ -238,7 +344,7 @@ Dos materias, verde de plano y papel cálido, con un único acento ámbar y un r
 El círculo de precisión del GPS sobre el mapa usa verde plano: trazo de 2 px y relleno al 12 %.
 
 ### Named Rules
-**The Un Solo Pin Rule.** El ámbar aparece como el pin del plano (dibujado o real) y en detalles de respuesta (hover de enlace, selección, foco sobre oscuro). No se usa para botones, fondos, estados ni texto.
+**The Un Solo Pin Rule.** El ámbar aparece como el pin del plano (dibujado o real) y en detalles de respuesta (hover de enlace, selección, foco sobre oscuro). No se usa para botones, fondos, estados ni texto. En el mapa general el anillo ámbar de 3 px alrededor de la chapa elegida es un detalle de respuesta (selección): marca cuál se abrió, nunca rellena una chapa ni distingue un estado.
 
 **The Siempre Claro Rule.** `color-scheme: light` fijo: no hay modo oscuro. La app vive al sol.
 
@@ -280,15 +386,17 @@ Plano por defecto. La profundidad viene de las dos materias (verde contra papel)
 - **Sombra del pin** (`filter: drop-shadow(0 6px 8px rgb(5 30 26 / 0.35))` más una elipse en el suelo; `0 4px 6px` en el pin de 40 × 50 del mapa real): el pin está clavado en el plano. Es la única sombra con presencia.
 - **Apoyo del botón principal** (`box-shadow: 0 1px 3px rgb(5 30 26 / 0.25)`): un apoyo mínimo, no una elevación.
 - **Aviso flotante** (`box-shadow: 0 12px 32px rgb(27 36 33 / 0.25)`): solo el aviso de actualización, que sí flota sobre el contenido.
+- **Apoyo de chapa y mancha** (`0 3px 6px rgb(5 30 26 / 0.35)` en la chapa, `0 3px 8px` en la mancha y en la chapa elegida, siempre tras un anillo de superficie de 2–3 px): las chapas están clavadas sobre las teselas, como el pin.
+- **Borde de la hoja móvil** (`box-shadow: 0 -12px 32px rgb(27 36 33 / 0.22)`): solo la hoja del mapa en móvil, que sube sobre el mapa; en escritorio la hoja es una columna sin sombra.
 
 ### Named Rules
 **The Papel Sin Tarjeta Rule.** El contenido se escribe sobre el papel; no se envuelve en tarjetas blancas con sombra. Los grupos se separan con espacio o con una línea de 1 px.
 
 ## Shapes
 
-Esquinas suaves en dos pasos: **10 px** para campos, avisos, botones secundarios, opciones, mapa, fotos y miniaturas, y **14 px** para el botón principal y las acciones grandes de la portada. La única forma de cápsula (999 px) es la pastilla de estado; los círculos se reservan para el fondo de los iconos de opción (36 px) y de acción (44 px). El icono de la app usa la misma familia (112/512 de radio). Bordes de **2 px** en todo lo que se toca o avisa (campos, avisos, pastilla sin conexión); **1 px** solo para divisores. Los botones sobre el plano usan un trazo interior de 1.5 px en lugar de borde.
+Esquinas suaves en dos pasos: **10 px** para campos, avisos, botones secundarios, opciones, mapa, fotos y miniaturas, y **14 px** para el botón principal y las acciones grandes de la portada. La única forma de cápsula (999 px) es la pastilla de estado; los círculos se reservan para el fondo de los iconos de opción (36 px), de acción y de fila del mapa (44 px), y para las chapas y manchas del mapa general. Las piezas anidadas restan el borde: segmento del conmutador a 8 px, contadores (filtros activos, votos de la chapa) a 6 px. La hoja del mapa en móvil lleva 14 px solo en las esquinas de arriba. El icono de la app usa la misma familia (112/512 de radio). Bordes de **2 px** en todo lo que se toca o avisa (campos, avisos, pastilla sin conexión); **1 px** solo para divisores. Los botones sobre el plano usan un trazo interior de 1.5 px en lugar de borde.
 
-Iconos: una sola familia dibujada a mano, caja de 24, trazo de 2 px, puntas y uniones redondeadas, `currentColor`, siempre `aria-hidden`. El pin del plano es la misma silueta que el logo. La familia incluye un icono por categoría de reporte (bache, alumbrado, agua, basura, áreas verdes, banqueta, señal, edificio, otro) y uno por estado (bandeja para recibido, llave para en proceso, check para resuelto); una categoría desconocida usa el de "otro".
+Iconos: una sola familia dibujada a mano, caja de 24, trazo de 2 px, puntas y uniones redondeadas, `currentColor`, siempre `aria-hidden`. El pin del plano es la misma silueta que el logo. La familia incluye un icono por categoría de reporte (bache, alumbrado, agua, basura, áreas verdes, banqueta, señal, edificio, otro) y uno por estado (bandeja para recibido, llave para en proceso, check para resuelto); una categoría desconocida usa el de "otro". Para el mapa general y el voto suma voto (flecha hacia arriba sobre una base), filtros (tres líneas decrecientes), mapa (plano plegado), información (círculo con "i") y cerrar (equis). Las chapas de Leaflet repiten en HTML los mismos trazos de estado.
 
 ## Components
 
@@ -338,7 +446,7 @@ Aviso fijo arriba del formulario: no se cierra ni se colapsa. Borde de 2 px en *
 Franja verde plano a todo lo ancho, 64 px más el área segura, padding lateral de 12 px (32 px en escritorio). A la izquierda "volver": flecha de 20 px más el destino ("Inicio"), 44 px, mismo tratamiento que el botón sobre el plano (papel al 14 %, trazo interior de 1.5 px al 50 %, 650). A la derecha la marca (logo de 28 px y "SpotIt" en 700), decorativa. La franja no lleva manzanas ni pin: es la misma materia, no otra ilustración.
 
 ### Acciones de la portada
-Enlaces grandes apilados a 12 px: 76 px de alto, borde de 2 px, esquinas de 14 px, padding de 14 × 16 px; icono en círculo de 44 px, título (700, 1.125rem) con una línea de apoyo (small, tinta suave) y chevron a la derecha. La principal ("Nuevo reporte") es verde plano con tinta de plano, círculo de papel al 16 % y apoyo en tinta de plano suave; hover verde hondo. La secundaria es superficie con borde línea fuerte (tinta suave en hover) y círculo verde aviso. Al presionar, `scale(0.99)`.
+Enlaces grandes apilados a 12 px: 76 px de alto, borde de 2 px, esquinas de 14 px, padding de 14 × 16 px; icono en círculo de 44 px, título (700, 1.125rem) con una línea de apoyo (small, tinta suave) y chevron a la derecha. La principal ("Nuevo reporte") es verde plano con tinta de plano, círculo de papel al 16 % y apoyo en tinta de plano suave; hover verde hondo. Las secundarias ("Mapa de reportes" con el icono de mapa, "Mis reportes") son superficie con borde línea fuerte (tinta suave en hover) y círculo verde aviso. Al presionar, `scale(0.99)`.
 
 ### Pastilla de estado
 Cápsula con icono de 16 px y texto (650, 0.875rem), borde de 2 px, padding 3 × 10 px, texto oculto "Estado:" para lectores. **Recibido:** borde línea fuerte, superficie, tinta (bandeja). **En proceso:** borde verde plano, verde aviso, texto verde hondo (llave). **Resuelto:** borde verde hecho, verde hecho claro, texto verde hecho (check). Nunca color solo; nunca ámbar.
@@ -354,7 +462,7 @@ Cápsula con icono de 16 px y texto (650, 0.875rem), borde de 2 px, padding 3 ×
 
 ### Mapa (el plano real)
 Cuando hay ubicación real, el mapa de OpenStreetMap ocupa el lugar del plano dibujado. Marco de 2 px línea fuerte, esquinas de 10 px, fondo verde aviso mientras cargan las teselas, 300 px de alto (360 px en escritorio); en solo lectura (detalle) 220 px (260 px en escritorio) sin arrastre ni zoom.
-- **Pin:** 40 × 50 px, fijo en el centro del marco y sin eventos; se arrastra el mapa debajo, y el zoom es siempre alrededor del centro. Es el único pin: no hay marcadores de Leaflet. Dos estados:
+- **Pin:** 40 × 50 px, fijo en el centro del marco y sin eventos; se arrastra el mapa debajo, y el zoom es siempre alrededor del centro. En el mapa de ubicación del reporte (formulario y detalle) es el único pin: no hay marcadores de Leaflet. El mapa general no usa pines sino chapas (ver "Mapa general"). Dos estados:
   - **Fantasma** (aún no hay punto elegido): papel al 75 %, contorno discontinuo de 3 px en tinta suave, punto central solo en contorno y sin sombra. Sin ámbar: no promete una ubicación registrada.
   - **Clavado** (hay punto, por GPS, por mover el mapa o por aceptarlo): pin ámbar con contorno de 2 px en ámbar hondo, punto de papel y sombra.
 - **Aceptar el centro:** sin punto, un botón-enlace "El problema está aquí: usar este punto" bajo el mapa fija el centro actual; desaparece en cuanto hay punto.
@@ -364,13 +472,61 @@ Cuando hay ubicación real, el mapa de OpenStreetMap ocupa el lugar del plano di
 - Si el permiso se niega, aviso info y el mapa sigue funcionando a mano.
 
 ### Detalle de reporte
-Columna de bloques a 20 px: fila de estado (pastilla más "Tu reporte" en 0.875rem 650 tinta suave), foto en marco de 2 px línea fuerte (`contain`, hasta 60dvh), descripción a 48ch respetando saltos de línea, lista de datos y mapa de solo lectura.
+Columna de bloques a 20 px: fila de estado (pastilla más "Tu reporte" en 0.875rem 650 tinta suave), el voto justo debajo (ver "Botón de voto"), foto en marco de 2 px línea fuerte (`contain`, hasta 60dvh), descripción a 48ch respetando saltos de línea, lista de datos y mapa de solo lectura.
 
 ### El plano (componente firma)
 Banda o columna verde que se dibuja con un patrón de manzanas y calles de 400 × 300 px repetido a escala fija (conserva densidad a cualquier tamaño), una avenida curva que se estira sin engordar el trazo, dos puntos tenues y un pin ámbar con punto de papel. Es decorativo (`aria-hidden`). Al cargar, el pin baja 14 px y se asienta (700 ms, `cubic-bezier(0.16, 1, 0.3, 1)`) mientras su sombra crece; sin movimiento con `prefers-reduced-motion`. Tamaño del pin: 56 × 70 en la banda de entrada, 84 × 105 en la columna de escritorio, 44 × 55 (64 × 80 en escritorio) en la versión compacta de la portada. La marca (logo de 36 px con anillo de papel al 35 % y "SpotIt") va arriba a la izquierda sobre el plano.
 
 ### Lista de datos
 Filas separadas por líneas de 1 px, 14 px de padding vertical; término en 0.875rem 650 tinta suave, valor en cuerpo con `overflow-wrap: anywhere`.
+
+### Mapa general
+El plano real ocupando una región entera: bajo la franja, el título display y la fila de controles, el mapa llena todo el alto que queda (`100dvh` en columna). En móvil va a sangre, solo con borde superior de 2 px línea fuerte y sin esquinas; desde 900 px se enmarca (2 px, 10 px de esquinas) con 32 px de margen.
+- **Chapa de un reporte:** botón real de 44 × 44 con un disco de 36 px (borde de 2.5 px, anillo de superficie de 2 px y apoyo de sombra) y el icono de su estado a 20 px. **Recibido:** superficie con borde y bandeja en tinta. **En proceso:** verde plano con borde verde hondo y llave en tinta de plano. **Resuelto:** verde hecho claro con borde y check en verde hecho. El estado se lee por relleno, borde e icono; la etiqueta accesible dice categoría, estado y votos ("Alumbrado, recibido, 1 voto").
+- **Votos en la chapa:** con al menos un voto, un contador de tinta con número en superficie (800, 0.75rem, cifras tabulares), 20 px de alto, esquinas de 6 px y anillo de superficie, arriba a la derecha del disco. Es `aria-hidden`: el número ya va en la etiqueta.
+- **Mancha:** varios reportes cercanos según el zoom; círculo verde hondo con anillo de superficie de 3 px, número en tinta de plano 800. Tres tamaños por cantidad: 44 px (menos de 10), 48 px (menos de 100) y 54 px. Tocarla acerca hasta separarla (vuelo de 0.35 s, salto directo con movimiento reducido); si ni al zoom máximo se separa, abre la hoja "N reportes en este lugar".
+- **Hover y selección:** hover escala el disco a 1.08 (la mancha a 1.06) en 120 ms. La chapa elegida escala a 1.14 y suma el anillo ámbar de 3 px por fuera del anillo de superficie, con `aria-current` y encima de las demás; elegir un punto acerca o desplaza el mapa hasta que su chapa se ve sola. Si comparte el lugar exacto con otros y ningún zoom la separa, la mancha que la contiene lleva el mismo anillo ámbar (por fuera de su anillo de superficie) y su etiqueta dice "incluido el que tienes abierto".
+- **Sin chapas cortadas:** una chapa o mancha a menos de 22 px del borde, o bajo un control flotante (zoom, "Leyenda", avisos), no se dibuja; reaparece al mover el mapa. Se recalcula al mover y al cambiar el tamaño del mapa. La elegida es la excepción: nunca se omite, y si al abrir la hoja queda cerca del borde o bajo un control, el mapa se centra en ella.
+- **Controles de zoom:** los de todo mapa interactivo: 44 × 44, superficie con iconos dibujados en tinta, borde de 2 px línea fuerte, esquinas de 10 px, divisor de 1 px entre ambos y verde aviso en hover.
+- **Avisos sobre el mapa:** caja de superficie con borde de 2 px en tinta, esquinas de 10 px, 10 × 16 px, centrada arriba en escritorio y abajo (sobre la atribución) en móvil. Vacío: "Aún no hay reportes en el mapa." con "Haz el primer reporte"; vacío por filtros: "No hay reportes con estos filtros." con "Quitar filtros". La variante quieta (borde línea fuerte, 0.9375rem 600) lleva el spinner de "Cargando reportes…" o avisa que solo se ven los más recientes. Mientras llegan otros filtros se siguen viendo los puntos anteriores.
+- **Error:** aviso de error de formulario encima del mapa, con nube tachada sin red y el botón-enlace "Reintentar".
+
+### Filtros del mapa
+Se despliegan en línea bajo la barra de controles, nunca en un modal, y dejan al mapa al menos la mitad del alto (máximo 50dvh en móvil, 40dvh en escritorio, con scroll propio).
+- **Botón "Filtros":** superficie con trazo interior de 2 px línea fuerte, icono de filtros de 20 px y texto en 650, 44 px de alto, `aria-expanded`. Con filtros activos pasa a verde aviso con trazo verde plano y texto verde hondo, y suma un contador verde plano (800, 0.875rem, 24 px, esquinas de 6 px) con texto oculto "activos".
+- **Grupos:** "Estado" y "Tipo de problema" en estilo de etiqueta, opciones en fila que se envuelven a 8 px, grupos a 20 px.
+- **Chip de filtro:** botón con `aria-pressed`, 44 px de alto, borde de 2 px línea fuerte, esquinas de 10 px, superficie, texto 1rem en tinta. Los de estado llevan la chapa de su estado a 28 px; los de categoría, su icono a 20 px en verde plano. Marcado: borde verde plano, fondo verde aviso, texto 650 y check de 18 px al final; la señal es triple, como en las opciones.
+- **Pie fijo:** pegado al fondo del panel sobre papel con línea de 1 px arriba: resumen de lo marcado ("Marcaste: …" o "Sin filtros ves todos los reportes.") en small tinta suave, "Quitar filtros" como botón-enlace y un botón secundario que cierra el panel con el total ("Ver 12 reportes") y devuelve el foco a "Filtros".
+
+### Conmutador Mapa | Lista
+Grupo de dos botones con `aria-pressed` (`role="group"`, "Ver como") dentro de una caja de superficie con trazo interior de 2 px línea fuerte, 2 px de padding y esquinas de 10 px. Cada segmento: 44 px, icono de 20 px más texto en 650, tinta suave (tinta en hover), esquinas de 8 px; el elegido es verde plano con tinta de plano. En móvil va a la derecha de "Filtros"; en escritorio, junto a él a 16 px. La vista, los filtros y el reporte elegido viven en la URL sin apilar historial.
+
+### Hoja del reporte
+Lo esencial de un reporte y el voto, sin salir del mapa.
+- **Móvil:** la hoja no flota sobre el mapa: comparte el alto con él (el mapa se encoge arriba, mínimo 140 px) y así ningún punto queda tapado. Papel con borde superior de 2 px línea fuerte, esquinas de 14 px arriba, sombra de la hoja, hasta 62 % del alto con scroll propio, padding de 12 × 20 px más el área segura; entra subiendo 24 px en 180 ms (sin animación con movimiento reducido).
+- **Escritorio:** columna de 380 px a la derecha del mapa, a 28 px, sin borde, fondo ni sombra: es papel. Sin reporte elegido, la columna muestra la leyenda.
+- **Contenido** a 14 px: cabecera con la categoría en headline (foco al abrir) y cerrar de 44 × 44 (equis de 22 px, verde aviso en hover); resumen con miniatura de 72 × 72 (esquinas de 10 px) junto a la pastilla de estado, el tiempo relativo y la descripción cortada a tres líneas; el voto; y el botón secundario a lo ancho "Ver el reporte completo" con chevron, que vuelve al mapa con filtros y selección.
+- **Estados:** carga con esqueleto de miniatura y dos líneas; error con aviso y "Reintentar" ("Este reporte ya no existe." sin reintento). Escape cierra y el foco vuelve a la chapa.
+
+### Hoja "N reportes en este lugar"
+Misma hoja, con el título "4 reportes en este lugar" y la lista del mapa ordenada por más votados; cerrar con "Cerrar la lista" y Escape. Solo aparece cuando el zoom ya no puede separar los reportes.
+
+### Leyenda
+"Cómo leer el mapa" (headline): una fila por estado con su chapa a tamaño real, la mancha a 32 px con "Varios reportes juntos: tócalo para acercarte" y una línea en tinta suave ("Toca un punto para ver el reporte y votarlo."). En escritorio ocupa la columna de la hoja mientras no hay reporte elegido. En móvil se abre como hoja desde el botón "Leyenda" sobre el mapa, arriba a la derecha: superficie, borde de 2 px línea fuerte, esquinas de 10 px, icono de información de 20 px y texto 650, 44 px, `aria-expanded`.
+
+### Lista del mapa
+La alternativa al mapa, con los mismos filtros. Encabezado "Más votados primero" (650, tinta suave). Filas de 64 px como mínimo separadas por líneas de 1 px: icono de categoría de 22 px en círculo verde aviso de 44 px, título (categoría) en 650, metadatos con la pastilla de estado y "Aún sin votos / 1 voto / N votos" en 0.875rem tinta suave, y chevron. Hover: título en verde hondo con subrayado ámbar. Muestra 30 y suma de 30 en 30 con el botón secundario "Mostrar más (N restantes)". Carga con cuatro filas esqueleto; vacío con headline y "Quitar filtros" si hay filtros. Tocar una fila abre la hoja del reporte. En escritorio la lista mide hasta 640 px.
+
+### Botón de voto
+Un toque para priorizar; el conteo cambia al instante.
+- **Botón:** nombre fijo "Votar" y `aria-pressed`: el lector anuncia el estado sin que cambie la etiqueta. 52 px de alto, padding de 16 × 20 px, esquinas de 10 px, texto 700 a 1.0625rem e icono de 20 px.
+- **Sin votar:** superficie con trazo interior de 2 px verde plano, texto verde plano e icono de voto; hover verde aviso con texto verde hondo.
+- **Votado:** relleno verde plano con tinta de plano y check en lugar del icono de voto (hover verde hondo); la señal es relleno, icono y texto del conteo, no solo color. Al presionar, `scale(0.98)`.
+- **Conteo:** a la derecha (debajo si no cabe), 650 con cifras tabulares y `aria-live="polite"`: "Aún sin votos", "1 voto", "7 votos, incluido el tuyo". El botón lo enlaza con `aria-describedby` junto con la ayuda.
+- **Ayuda:** small tinta suave debajo: "Vota si también te afecta: ayuda a decidir qué se atiende primero." / "Vuelve a tocar para quitar tu voto."
+- **Pendiente y error:** mientras se guarda, `aria-disabled` y cursor `progress` (un toque a la vez). Si el servidor no lo guarda, el voto vuelve a su estado anterior y aparece debajo un error en rojo 600 con icono de alerta y `role="alert"`.
+- **Solo lectura:** sin botón, icono de voto y conteo en una línea, en tinta suave con el conteo en tinta: el propio reporte ("Tu reporte · 3 votos") y el resuelto ("2 votos · ya está resuelto, la votación se cerró").
+- Va en el detalle, bajo la fila de estado, y en la hoja del mapa; el conteo confirmado se refleja en la chapa y en la lista.
 
 ## Do's and Don'ts
 
@@ -386,6 +542,11 @@ Filas separadas por líneas de 1 px, 14 px de padding vertical; término en 0.87
 - **Do** usar el anillo de foco global (3 px en tinta, 3 px de separación) y cambiarlo a tinta de plano o ámbar solo sobre fondos oscuros.
 - **Do** mostrar el estado pendiente dentro del propio botón: spinner más la acción en gerundio.
 - **Do** desactivar el asentamiento del pin y el pulso de estado con `prefers-reduced-motion`.
+- **Do** mostrar cada reporte del mapa general como chapa de 44 px con relleno, borde e icono de su estado, y juntar los cercanos en una mancha verde hondo con su número.
+- **Do** marcar la chapa elegida solo con el anillo ámbar y no dibujar chapas cortadas por el borde o tapadas por un control.
+- **Do** desplegar los filtros en línea con el resultado en un pie fijo ("Ver N reportes") y dejar visible el mapa.
+- **Do** hacer que la hoja del mapa en móvil comparta el alto con el mapa en lugar de taparlo.
+- **Do** dar al voto `aria-pressed` con nombre fijo, conteo con `aria-live` y reversión con mensaje si falla.
 
 ### Don't:
 - **Don't** poner el formulario en una tarjeta blanca centrada sobre fondo gris con el logo encima.
@@ -396,3 +557,7 @@ Filas separadas por líneas de 1 px, 14 px de padding vertical; término en 0.87
 - **Don't** usar iconos de otra familia o glifos tipográficos en lugar de los iconos dibujados.
 - **Don't** usar marcadores arrastrables de mapa ni un asistente de varios pasos con barra de progreso para reportar.
 - **Don't** hacer que el aviso 911 se pueda cerrar u ocultar.
+- **Don't** rellenar chapas de ámbar ni usarlo para distinguir un estado en el mapa.
+- **Don't** distinguir estados solo por color: chapas, chips de filtro y pastillas llevan siempre el icono del estado.
+- **Don't** usar los marcadores azules de Leaflet ni pines por reporte en el mapa general.
+- **Don't** poner los filtros del mapa en un modal ni cambiar la etiqueta del voto según su estado.
