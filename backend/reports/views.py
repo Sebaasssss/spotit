@@ -9,10 +9,10 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.throttling import ScopedRateThrottle
 
 from accounts.permissions import IsAdministrador, IsCiudadano
 
+from .idempotencia import LimiteDeReportes, leer_clave, reporte_existente
 from .models import Categoria, Estado, Reporte, Voto
 from .permissions import PuedeEditarReporte
 from .serializers import (
@@ -90,7 +90,7 @@ class ReporteViewSet(
     def get_throttles(self):
         if self.action == "create":
             self.throttle_scope = "reportes"
-            return [ScopedRateThrottle()]
+            return [LimiteDeReportes()]
         return []
 
     def get_serializer_class(self):
@@ -146,11 +146,31 @@ class ReporteViewSet(
         return queryset
 
     def create(self, request, *args, **kwargs):
+        clave = leer_clave(request, estricta=True)
+        # Reintento de un envío que ya llegó: el mismo reporte, sin procesar otra foto.
+        existente = reporte_existente(request.user, clave)
+        if existente:
+            return self._respuesta_creado(existente, repetido=True)
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        reporte = serializer.save()
+        try:
+            reporte = serializer.save(clave_idempotencia=clave)
+        except IntegrityError:
+            # Dos envíos con la misma clave a la vez: ganó el otro; se devuelve ese.
+            existente = reporte_existente(request.user, clave)
+            if existente is None:
+                raise
+            return self._respuesta_creado(existente, repetido=True)
+        return self._respuesta_creado(reporte, repetido=False)
+
+    def _respuesta_creado(self, reporte, *, repetido: bool):
         data = ReporteSerializer(reporte, context=self.get_serializer_context()).data
-        return Response(data, status=status.HTTP_201_CREATED)
+        codigo = status.HTTP_200_OK if repetido else status.HTTP_201_CREATED
+        response = Response(data, status=codigo)
+        if repetido:
+            response["Idempotent-Replayed"] = "true"
+        return response
 
     def partial_update(self, request, *args, **kwargs):
         reporte = self.get_object()

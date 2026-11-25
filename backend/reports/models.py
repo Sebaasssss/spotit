@@ -117,6 +117,13 @@ class Reporte(models.Model):
     )
     creado = models.DateTimeField("creado", auto_now_add=True)
     actualizado = models.DateTimeField("actualizado", auto_now=True)
+    clave_idempotencia = models.UUIDField(
+        "clave de idempotencia",
+        null=True,
+        blank=True,
+        editable=False,
+        help_text="La genera el teléfono al guardar el reporte; repetir el envío no lo duplica.",
+    )
 
     class Meta:
         verbose_name = "reporte"
@@ -126,6 +133,13 @@ class Reporte(models.Model):
             models.Index(fields=["estado"]),
             models.Index(fields=["categoria", "estado"]),
             models.Index(fields=["-creado"]),
+        ]
+        constraints = [
+            # Única por autor: un reintento tras un corte de red devuelve el reporte ya creado.
+            # (En PostgreSQL los NULL no chocan entre sí: los reportes sin clave no se afectan.)
+            models.UniqueConstraint(
+                fields=["autor", "clave_idempotencia"], name="reporte_clave_unica_por_autor"
+            ),
         ]
 
     def __str__(self):
