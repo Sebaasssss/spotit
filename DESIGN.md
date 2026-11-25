@@ -292,6 +292,70 @@ components:
     textColor: "{colors.ink}"
     padding: "10px 0"
     height: "64px"
+  conn-strip:
+    backgroundColor: "{colors.info-tint}"
+    textColor: "{colors.ink}"
+    typography: "{typography.small}"
+    padding: "2px 20px"
+    height: "48px"
+  conn-strip-error:
+    backgroundColor: "{colors.error-tint}"
+    textColor: "{colors.ink}"
+  conn-strip-action:
+    textColor: "{colors.field}"
+    padding: "0"
+    height: "44px"
+  status-pill-por-enviar:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.field-deep}"
+    rounded: "{rounded.full}"
+    padding: "3px 10px 3px 8px"
+  status-pill-enviando:
+    backgroundColor: "{colors.info-tint}"
+    textColor: "{colors.field-deep}"
+    rounded: "{rounded.full}"
+    padding: "3px 10px 3px 8px"
+  status-pill-no-enviado:
+    backgroundColor: "{colors.error-tint}"
+    textColor: "{colors.error}"
+    rounded: "{rounded.full}"
+    padding: "3px 10px 3px 8px"
+  pending-row:
+    textColor: "{colors.ink}"
+    padding: "14px 10px"
+  pending-confirm:
+    backgroundColor: "{colors.error-tint}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.sm}"
+    padding: "12px 14px"
+  link-button-quiet:
+    textColor: "{colors.ink-soft}"
+    height: "44px"
+    padding: "0"
+  button-danger:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.error}"
+    rounded: "{rounded.sm}"
+    padding: "0 16px"
+    height: "52px"
+  button-danger-hover:
+    backgroundColor: "{colors.error-tint}"
+  button-danger-disabled:
+    textColor: "{colors.ink-soft}"
+  saved-note:
+    textColor: "{colors.ink-soft}"
+    typography: "{typography.small}"
+  saved-success:
+    backgroundColor: "{colors.info-tint}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.sm}"
+    padding: "12px 14px"
+  dialog:
+    backgroundColor: "{colors.paper}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.md}"
+    padding: "24px 20px 16px"
+    width: "420px"
 ---
 
 # Design System: SpotIt
@@ -338,8 +402,8 @@ Dos materias, verde de plano y papel cálido, con un único acento ámbar y un r
 ### Estado
 - **Verde Hecho** (ok): requisitos cumplidos, backend sano, borde y texto del estado "resuelto" y borde de la nota de éxito.
 - **Verde Hecho Claro** (ok-tint): fondo de la pastilla "resuelto" y de la nota de éxito.
-- **Rojo Error** (error) sobre **Rosa Error** (error-tint): borde y relleno del campo inválido, texto e icono del error, borde y fondo del aviso de error.
-- **Verde Aviso** (info-tint): fondo de avisos informativos (sin conexión), de la opción elegida, de la pastilla "en proceso", de la fila recién creada, del hover del botón secundario, del círculo de icono de las acciones de la portada y fondo del mapa mientras cargan las teselas.
+- **Rojo Error** (error) sobre **Rosa Error** (error-tint): borde y relleno del campo inválido, texto e icono del error, borde y fondo del aviso de error, de la franja de estado con envíos fallidos, de la pastilla "No se envió" y de la confirmación de descartar. El rojo solo como trazo y texto marca además la acción destructiva (botón destructivo), nunca como relleno.
+- **Verde Aviso** (info-tint): fondo de avisos informativos (sin conexión), de la franja de estado, de la pastilla "Enviando", de la nota "Tu reporte quedó guardado", de la opción elegida, de la pastilla "en proceso", de la fila recién creada, del hover del botón secundario, del círculo de icono de las acciones de la portada y fondo del mapa mientras cargan las teselas.
 
 El círculo de precisión del GPS sobre el mapa usa verde plano: trazo de 2 px y relleno al 12 %.
 
@@ -385,7 +449,7 @@ Plano por defecto. La profundidad viene de las dos materias (verde contra papel)
 ### Shadow Vocabulary
 - **Sombra del pin** (`filter: drop-shadow(0 6px 8px rgb(5 30 26 / 0.35))` más una elipse en el suelo; `0 4px 6px` en el pin de 40 × 50 del mapa real): el pin está clavado en el plano. Es la única sombra con presencia.
 - **Apoyo del botón principal** (`box-shadow: 0 1px 3px rgb(5 30 26 / 0.25)`): un apoyo mínimo, no una elevación.
-- **Aviso flotante** (`box-shadow: 0 12px 32px rgb(27 36 33 / 0.25)`): solo el aviso de actualización, que sí flota sobre el contenido.
+- **Aviso flotante** (`box-shadow: 0 12px 32px rgb(27 36 33 / 0.25)`): solo el aviso de actualización y el diálogo de salida, que sí flotan sobre el contenido. El fondo del diálogo (`::backdrop`) es tinta al 55 %.
 - **Apoyo de chapa y mancha** (`0 3px 6px rgb(5 30 26 / 0.35)` en la chapa, `0 3px 8px` en la mancha y en la chapa elegida, siempre tras un anillo de superficie de 2–3 px): las chapas están clavadas sobre las teselas, como el pin.
 - **Borde de la hoja móvil** (`box-shadow: 0 -12px 32px rgb(27 36 33 / 0.22)`): solo la hoja del mapa en móvil, que sube sobre el mapa; en escritorio la hoja es una columna sin sombra.
 
@@ -394,7 +458,7 @@ Plano por defecto. La profundidad viene de las dos materias (verde contra papel)
 
 ## Shapes
 
-Esquinas suaves en dos pasos: **10 px** para campos, avisos, botones secundarios, opciones, mapa, fotos y miniaturas, y **14 px** para el botón principal y las acciones grandes de la portada. La única forma de cápsula (999 px) es la pastilla de estado; los círculos se reservan para el fondo de los iconos de opción (36 px), de acción y de fila del mapa (44 px), y para las chapas y manchas del mapa general. Las piezas anidadas restan el borde: segmento del conmutador a 8 px, contadores (filtros activos, votos de la chapa) a 6 px. La hoja del mapa en móvil lleva 14 px solo en las esquinas de arriba. El icono de la app usa la misma familia (112/512 de radio). Bordes de **2 px** en todo lo que se toca o avisa (campos, avisos, pastilla sin conexión); **1 px** solo para divisores. Los botones sobre el plano usan un trazo interior de 1.5 px en lugar de borde.
+Esquinas suaves en dos pasos: **10 px** para campos, avisos, botones secundarios, opciones, mapa, fotos y miniaturas, y **14 px** para el botón principal y las acciones grandes de la portada. La única forma de cápsula (999 px) es la pastilla de estado; los círculos se reservan para el fondo de los iconos de opción (36 px), de acción y de fila del mapa (44 px), y para las chapas y manchas del mapa general. Las piezas anidadas restan el borde: segmento del conmutador a 8 px, contadores (filtros activos, votos de la chapa) a 6 px. La hoja del mapa en móvil lleva 14 px solo en las esquinas de arriba. El icono de la app usa la misma familia (112/512 de radio). El diálogo de salida usa los 14 px del botón principal. Bordes de **2 px** en todo lo que se toca o avisa (campos, avisos, la línea inferior de la franja de estado); **1 px** solo para divisores. La pastilla "Por enviar" es la única con borde discontinuo: algo que todavía no está en el servidor. Los botones sobre el plano usan un trazo interior de 1.5 px en lugar de borde.
 
 Iconos: una sola familia dibujada a mano, caja de 24, trazo de 2 px, puntas y uniones redondeadas, `currentColor`, siempre `aria-hidden`. El pin del plano es la misma silueta que el logo. La familia incluye un icono por categoría de reporte (bache, alumbrado, agua, basura, áreas verdes, banqueta, señal, edificio, otro) y uno por estado (bandeja para recibido, llave para en proceso, check para resuelto); una categoría desconocida usa el de "otro". Para el mapa general y el voto suma voto (flecha hacia arriba sobre una base), filtros (tres líneas decrecientes), mapa (plano plegado), información (círculo con "i") y cerrar (equis). Las chapas de Leaflet repiten en HTML los mismos trazos de estado.
 
@@ -410,6 +474,8 @@ Firmes y a lo ancho; responden sin teatro.
 - **Secundario:** superficie con trazo interior de 2 px en verde plano y texto verde plano en 700, 52 px de alto, icono de 20 px más texto. Hover: fondo verde aviso y texto verde hondo. Deshabilitado (buscando, preparando): texto tinta suave, trazo línea fuerte, cursor `progress` y spinner en lugar del icono. Ancho natural en rejilla o junto a un contador; a lo ancho cuando es la única acción de la sección ("Usar mi ubicación", "Cargar más").
 - **Botón-enlace** ("Reintentar", "El problema está aquí: usar este punto"): sin caja, texto verde plano 650 con subrayado de 2 px a 3 px de separación, icono opcional de 18 px, 44 px de alto táctil. Para acciones secundarias en línea: recuperar dentro de un aviso de error, o aceptar el valor que ya se ve.
 - **Envío con progreso:** el botón principal en estado pendiente muestra el porcentaje real ("Enviando… 45 %"), con un `<progress>` oculto para lectores de pantalla.
+- **Botón-enlace quieto** ("Descartar"): el mismo botón-enlace en tinta suave, para la acción que no se quiere invitar junto a otra principal ("Reintentar"). Deshabilitado (trabajando): tinta suave y cursor `progress`.
+- **Destructivo** ("Sí, descartar", "Borrarlos y salir"): superficie con trazo interior de 2 px en rojo error y texto rojo error, icono de bote (`TrashIcon`) de 18–20 px más texto, 52 px de alto (44 px dentro de la confirmación en línea), esquinas de 10 px. Hover: fondo rosa error. Deshabilitado: texto tinta suave y trazo línea fuerte; mientras trabaja, spinner en lugar del icono y gerundio ("Borrando…"). Nunca relleno rojo: no compite con el botón principal, que sigue siendo la opción segura.
 
 ### Inputs / Fields
 - **Style:** etiqueta encima (650, tinta), campo de 56 px con relleno superficie, borde de 2 px línea fuerte, esquinas de 10 px, 16 px de padding lateral.
@@ -438,12 +504,21 @@ Aviso fijo arriba del formulario: no se cierra ni se colapsa. Borde de 2 px en *
 ### Avisos de formulario
 - **Style:** borde completo de 2 px en el color del tono, fondo teñido, esquinas de 10 px, 14 × 16 px de padding, icono a la izquierda en el color del tono y texto en tinta.
 - **Error:** rojo sobre rosa error, `role="alert"`; título breve más una línea de ayuda en peso 450 que dice cómo seguir.
-- **Info:** verde plano sobre verde aviso, `role="status"` (sin conexión, con icono de nube tachada).
-- **Pastilla sin conexión** de la portada: mismo lenguaje que el aviso info (borde 2 px verde, fondo verde aviso, icono nube tachada).
+- **Info:** verde plano sobre verde aviso, `role="status"` (sin conexión, con icono de nube tachada). En la entrada, si el teléfono guarda reportes sin enviar, un aviso info con la nube con flecha ("Hay 1 reporte guardado en este teléfono sin enviar. Entra con la cuenta que lo creó y se enviará solo.").
+- **Sin conexión en la portada:** ya no es una pastilla; lo dice la franja de estado bajo el campo (ver "Franja de estado").
 - **Nota de éxito:** mismo lenguaje en verde hecho: borde de 2 px verde hecho, fondo verde hecho claro, check de 20 px, texto 600, 12 × 14 px, `role="status"` ("Recibimos tu reporte…").
+- **Nota "quedó guardado":** la misma forma que la nota de éxito pero en el tono info (borde de 2 px verde plano, fondo verde aviso, nube con flecha de 20 px en verde plano, texto 600, 12 × 14 px, `role="status"`): "Tu reporte quedó guardado en este teléfono y se enviará solo; aquí ves cómo va." No es verde hecho porque aún no llega al servidor. Solo aparece al llegar a Mis reportes desde un reporte guardado y mientras alguno siga esperando sin error.
 
 ### Navegación de pantallas internas (franja del plano)
 Franja verde plano a todo lo ancho, 64 px más el área segura, padding lateral de 12 px (32 px en escritorio). A la izquierda "volver": flecha de 20 px más el destino ("Inicio"), 44 px, mismo tratamiento que el botón sobre el plano (papel al 14 %, trazo interior de 1.5 px al 50 %, 650). A la derecha la marca (logo de 28 px y "SpotIt" en 700), decorativa. La franja no lleva manzanas ni pin: es la misma materia, no otra ilustración.
+
+### Franja de estado (conexión y cola)
+Una sola línea que dice cómo está la conexión y la cola, pegada justo debajo del verde: bajo la franja del plano en las pantallas internas y bajo el campo en la portada. Desaparece cuando no hay nada que decir.
+- **Forma:** a todo lo ancho, sin esquinas, con solo un borde inferior de 2 px en el color del tono. Contenido en la columna de 560 px (a todo lo ancho en el mapa general), 48 px de alto mínimo, 20 px laterales más el área segura; icono de 20 px, texto en small 600 tinta con cifras tabulares y, a la derecha, una acción.
+- **Tonos:** info (verde aviso, borde e icono verde plano) y error (rosa error, borde e icono rojo error; la acción pasa a tinta). Nunca otro color.
+- **Prioridad:** se dice una sola cosa, en este orden: **enviando** ("Enviando un reporte pendiente… 45 %", con spinner) > **sin conexión** (nube tachada: "Sin conexión · 2 reportes por enviar" con "Ver"; sin pendientes, "Sin conexión." y, en la portada, "Sin conexión. Tu sesión sigue guardada en este teléfono.") > **con error** (tono error, icono de alerta: "1 reporte no se pudo enviar." con "Revisar") > **por enviar** (nube con flecha: "1 reporte por enviar" con "Enviar ahora").
+- **Acción:** texto 700 a 0.9375rem, subrayado de 2 px a 3 px, sin caja, 44 px táctiles. "Ver" y "Revisar" llevan a Mis reportes y no se muestran ahí; "Enviar ahora" tampoco, porque la sección "Por enviar" ya tiene el suyo.
+- **No es región viva.** Los cambios de conexión y de la cola se anuncian una sola vez en una región viva global oculta (`role="status"`, `aria-live="polite"`, atómica; "Se envió 1 reporte pendiente"), que cambia de nodo para que un texto repetido se vuelva a leer.
 
 ### Acciones de la portada
 Enlaces grandes apilados a 12 px: 76 px de alto, borde de 2 px, esquinas de 14 px, padding de 14 × 16 px; icono en círculo de 44 px, título (700, 1.125rem) con una línea de apoyo (small, tinta suave) y chevron a la derecha. La principal ("Nuevo reporte") es verde plano con tinta de plano, círculo de papel al 16 % y apoyo en tinta de plano suave; hover verde hondo. Las secundarias ("Mapa de reportes" con el icono de mapa, "Mis reportes") son superficie con borde línea fuerte (tinta suave en hover) y círculo verde aviso. Al presionar, `scale(0.99)`.
@@ -451,14 +526,35 @@ Enlaces grandes apilados a 12 px: 76 px de alto, borde de 2 px, esquinas de 14 p
 ### Pastilla de estado
 Cápsula con icono de 16 px y texto (650, 0.875rem), borde de 2 px, padding 3 × 10 px, texto oculto "Estado:" para lectores. **Recibido:** borde línea fuerte, superficie, tinta (bandeja). **En proceso:** borde verde plano, verde aviso, texto verde hondo (llave). **Resuelto:** borde verde hecho, verde hecho claro, texto verde hecho (check). Nunca color solo; nunca ámbar.
 
+Los reportes guardados en el teléfono usan la misma cápsula, siempre con icono: **Por enviar** (borde discontinuo verde plano, superficie, texto verde hondo, nube con flecha), **Enviando** (borde verde plano, verde aviso, texto verde hondo, spinner y porcentaje con cifras tabulares: "Enviando… 45 %") y **No se envió** (borde rojo error, rosa error, texto rojo error, icono de alerta). No llevan el "Estado:" oculto: no son estados del reporte en el servidor.
+
 ### Lista de reportes
 - **Fila:** enlace a todo lo ancho, rejilla de miniatura 72 × 72 (esquinas 10 px, `cover`), cuerpo y chevron de 20 px; padding de 14 × 10 px y 14 px de separación; desde 480 px la lista sale 10 px a cada lado (margen negativo) para que la miniatura quede alineada con el título de la página; por debajo de 480 px no sale, para que el fondo de la fila nueva no toque el borde de la pantalla. Filas separadas por líneas de 1 px (línea arriba de la lista y bajo cada fila). Título (categoría) en 650, descripción en small tinta suave cortada a dos líneas, y metadatos con la pastilla de estado y el tiempo relativo. Hover: tinta al 4 %.
 - **Recién creada:** la fila que acaba de enviarse solo cambia su fondo a verde aviso (sin mover nada), acompañada de la nota de éxito arriba.
-- **Cabecera:** conteo ("3 reportes", 650 tinta suave) a la izquierda y botón secundario "Nuevo" a la derecha.
+- **Cabecera:** conteo ("3 reportes", 650 tinta suave) a la izquierda y botón secundario "Nuevo" a la derecha. Cuando hay reportes por enviar, el conteo se vuelve cabecera de sección "Enviados" (ver "Por enviar"), para que las dos listas se distingan.
 - **Carga:** tres filas esqueleto con la misma rejilla (miniatura y dos líneas de 14 px al 70 % y 45 %) en color línea, esquinas de 10 px, con pulso de 1.4 s; el anuncio real va en un `role="status"` oculto y la lista esqueleto es `aria-hidden`.
 - **Vacío:** headline ("Aún no tienes reportes"), una línea en tinta suave a 44ch con ejemplos concretos y el botón principal a lo ancho hacia el primer reporte.
-- **Error:** aviso de error con el motivo y el botón-enlace "Reintentar"; sin red, con icono de nube tachada.
+- **Sin conexión:** si no hay copia guardada que mostrar, no es un error: aviso info con nube tachada, "Sin conexión. Tus reportes enviados aparecerán al volver la señal.", sin "Reintentar"; la lista se vuelve a pedir sola al volver la señal. Si hay copia, se muestra con la nota de copia guardada encima.
+- **Error:** solo para fallos reales (el servidor respondió mal, o la red falló estando en línea): aviso de error con el motivo y el botón-enlace "Reintentar"; si fue la red, con icono de nube tachada.
 - **Más:** botón secundario a lo ancho "Cargar más", con spinner mientras carga.
+
+### Por enviar (cola de reportes en Mis reportes)
+Los reportes guardados en el teléfono que aún no llegan al servidor, arriba de los enviados y con el mismo lenguaje de lista.
+- **Cabecera de sección:** título en 750 a 1.25rem (1.2, -0.01em) con el conteo al lado en 650 a 1rem tinta suave y cifras tabulares ("Por enviar 2"); a la derecha, el botón secundario "Enviar ahora" (nube con flecha; spinner y "Enviando…" mientras envía), solo si alguno espera sin error y fuera del límite por hora, y deshabilitado sin conexión. Los enviados usan la misma cabecera ("Enviados 5") cuando hay pendientes.
+- **Lead:** una línea en small tinta suave a 48ch que dice qué pasa sin hacer nada: "Guardados en este teléfono. Se envían solos; si alguno falla, aquí te decimos por qué." (sin conexión: "… Se enviarán solos cuando vuelva la conexión.").
+- **Fila pendiente:** la misma rejilla que la fila enviada (miniatura de 72 × 72 con la foto local, título en 650, descripción cortada, metadatos con pastilla y "Guardado hace un momento"), padding de 14 × 10 px y divisores de 1 px, pero **sin enlace ni chevron**: aún no existe en el servidor.
+- **Motivo:** bajo la fila, alineado con el texto (86 px; sin sangría bajo 380 px), small: en espera, tinta suave ("Llegaste al límite de envíos por hora. Se enviará a las 10:40.", "Se cortó la señal al enviarlo. Lo volvemos a intentar."); en error, texto tinta 600 con icono de alerta de 18 px en rojo error ("La foto no se pudo leer. Elige otra."). Mientras se envía no hay motivo ni acciones.
+- **Acciones:** botones-enlace a 20 px entre sí con icono de 18 px. **Reintentar** (verde plano) solo en las que fallaron; **Descartar** (quieto, tinta suave) en todas. Ambos se ligan a su fila con `aria-describedby` (categoría y hora, oculta).
+- **Confirmar descartar:** en línea, nunca en modal: caja con borde de 2 px rojo error sobre rosa error, esquinas de 10 px, 12 × 14 px, texto 600 ("¿Descartar este reporte? Se borra de este teléfono y no se puede deshacer."), `role="group"` con esa pregunta como etiqueta, y debajo el botón destructivo "Sí, descartar" (44 px) y el botón-enlace "Cancelar". Al abrir, el foco va a Cancelar; al cancelar vuelve a "Descartar"; tras descartar pasa a la primera acción de la fila que ocupa su lugar (o la anterior, o el título de la sección, o el de la página).
+
+### Nota de copia guardada
+Cuando lo que se ve sin conexión es una copia guardada (Mis reportes, detalle, mapa general y hoja del mapa), una línea sin caja encima del contenido: nube tachada de 18 px en verde plano y texto small 600 tinta suave, "Sin conexión: datos guardados el 25 nov, 10:40." (sin fecha: "Sin conexión: datos guardados en este teléfono."). Sobre el mapa va dentro del aviso flotante. No es un aviso: el contenido sí está; solo dice de cuándo es.
+
+### Diálogo de salida
+Al pulsar "Salir" con reportes sin enviar. `<dialog>` modal nativo (foco atrapado, Escape cancela salvo mientras sale, el foco vuelve a "Salir").
+- **Forma:** papel, hasta 420 px de ancho (con 16 px de margen en móvil), esquinas de 14 px, 24 × 20 × 16 px de padding, sombra del aviso flotante y fondo de tinta al 55 %. Entra subiendo 12 px en 220 ms ease-out; sin animación con movimiento reducido.
+- **Texto:** título en 800 a 1.375rem con `text-wrap: balance` ("Tienes 1 reporte sin enviar") y una explicación en tinta suave que dice qué pasa con cada opción y cuándo conviene borrar (teléfono compartido).
+- **Acciones** apiladas a 10 px y a lo ancho: **"Guardarlos y salir"** (botón principal con nube con flecha; es la opción segura y recibe el foco al abrir), **"Borrarlos y salir"** (botón destructivo con trazo rojo) y el botón-enlace centrado "Cancelar, seguir aquí". Las etiquetas las fijó el usuario y no cambian con el número de reportes. Mientras sale, todo se deshabilita y la opción elegida muestra spinner y gerundio ("Saliendo…", "Borrando…").
 
 ### Mapa (el plano real)
 Cuando hay ubicación real, el mapa de OpenStreetMap ocupa el lugar del plano dibujado. Marco de 2 px línea fuerte, esquinas de 10 px, fondo verde aviso mientras cargan las teselas, 300 px de alto (360 px en escritorio); en solo lectura (detalle) 220 px (260 px en escritorio) sin arrastre ni zoom.
@@ -547,6 +643,10 @@ Un toque para priorizar; el conteo cambia al instante.
 - **Do** desplegar los filtros en línea con el resultado en un pie fijo ("Ver N reportes") y dejar visible el mapa.
 - **Do** hacer que la hoja del mapa en móvil comparta el alto con el mapa en lugar de taparlo.
 - **Do** dar al voto `aria-pressed` con nombre fijo, conteo con `aria-live` y reversión con mensaje si falla.
+- **Do** decir el estado de la conexión y de la cola en una sola franja bajo el verde, con una sola frase según la prioridad (enviando, sin conexión, con error, por enviar), y anunciar los cambios en una única región viva.
+- **Do** tratar "sin conexión" como un estado esperado: tono info, decir de cuándo es lo que se ve y volver a pedir los datos solos al volver la señal.
+- **Do** confirmar en línea lo que se borra del teléfono, con el foco en "Cancelar", y dejar la opción segura como principal en el diálogo de salida.
+- **Do** mostrar cada reporte por enviar con la misma rejilla de la lista, sin enlace, con su pastilla y el motivo en palabras.
 
 ### Don't:
 - **Don't** poner el formulario en una tarjeta blanca centrada sobre fondo gris con el logo encima.
@@ -561,3 +661,7 @@ Un toque para priorizar; el conteo cambia al instante.
 - **Don't** distinguir estados solo por color: chapas, chips de filtro y pastillas llevan siempre el icono del estado.
 - **Don't** usar los marcadores azules de Leaflet ni pines por reporte en el mapa general.
 - **Don't** poner los filtros del mapa en un modal ni cambiar la etiqueta del voto según su estado.
+- **Don't** pintar "sin conexión" como error ni ofrecer "Reintentar" en algo que solo espera la señal o su turno: "Reintentar" es solo para lo que falló.
+- **Don't** ofrecer forzar el envío ("Enviar ahora") mientras un reporte espera el límite por hora: solo traería otro rechazo.
+- **Don't** rellenar de rojo una acción destructiva: trazo rojo de 2 px sobre superficie, nunca un botón rojo sólido.
+- **Don't** convertir la franja de estado en región viva ni repetir su anuncio en cada pantalla.

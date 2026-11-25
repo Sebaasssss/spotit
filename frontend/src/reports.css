@@ -864,3 +864,332 @@ a.btn--primary:hover {
 .vote--readonly .vote__count {
   color: var(--ink);
 }
+
+/* --- Sin conexión y cola de envío (Fase 5) -------------------------------- */
+
+/* Franja de estado bajo la banda del plano: misma materia que el aviso informativo. */
+.conn {
+  background: var(--info-tint);
+  border-bottom: 2px solid var(--field);
+}
+
+.conn--error {
+  background: var(--error-tint);
+  border-bottom-color: var(--error);
+}
+
+.conn__inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 560px;
+  min-height: 48px;
+  margin: 0 auto;
+  padding: 2px calc(env(safe-area-inset-right) + 20px) 2px calc(env(safe-area-inset-left) + 20px);
+}
+
+.conn__icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--field);
+}
+
+.conn--error .conn__icon {
+  color: var(--error);
+}
+
+.conn__text {
+  flex: 1;
+  min-width: 0;
+  color: var(--ink);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.35;
+  font-variant-numeric: tabular-nums;
+}
+
+.conn__action {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--field);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  white-space: nowrap;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+.conn--error .conn__action {
+  color: var(--ink);
+}
+
+.mapa .conn__inner {
+  max-width: none;
+}
+
+/* Cabeceras de sección dentro de Mis reportes ("Por enviar", "Enviados"). */
+.list-head__title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 1.25rem;
+  font-weight: 750;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.list-head__num {
+  color: var(--ink-soft);
+  font-size: 1rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.pend {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.pend__lead {
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  max-width: 48ch;
+}
+
+/* Fila pendiente: misma rejilla que la enviada, sin enlace (aún no existe en el servidor). */
+.pend-row {
+  padding: 14px 10px;
+}
+
+.pend-row__main {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  align-items: center;
+  gap: 14px;
+}
+
+.pend-row .report-row__thumb {
+  display: block;
+}
+
+.pend-row__motivo {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin: 10px 0 0 86px;
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+}
+
+.pend-row__motivo--error {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.pend-row__motivo--error svg {
+  color: var(--error);
+}
+
+.pend-row__motivo svg {
+  flex: none;
+  margin-top: 1px;
+}
+
+.pend-row__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 20px;
+  margin: 4px 0 0 86px;
+}
+
+.pend-row__confirm {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0 86px;
+  padding: 12px 14px;
+  border: 2px solid var(--error);
+  border-radius: var(--radius-sm);
+  background: var(--error-tint);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.pend-row__confirm .pend-row__actions {
+  margin: 0;
+}
+
+@media (max-width: 379px) {
+  .pend-row__motivo,
+  .pend-row__actions,
+  .pend-row__confirm {
+    margin-left: 0;
+  }
+}
+
+.link-button--quiet {
+  color: var(--ink-soft);
+}
+
+.link-button:disabled {
+  cursor: progress;
+  color: var(--ink-soft);
+}
+
+/* Pastillas de la cola: mismo lenguaje que las de estado, siempre con icono. */
+.status-pill--por-enviar {
+  border-style: dashed;
+  border-color: var(--field);
+  background: var(--surface);
+  color: var(--field-deep);
+}
+
+.status-pill--enviando {
+  border-color: var(--field);
+  background: var(--info-tint);
+  color: var(--field-deep);
+  font-variant-numeric: tabular-nums;
+}
+
+.status-pill--no-enviado {
+  border-color: var(--error);
+  background: var(--error-tint);
+  color: var(--error);
+}
+
+/* Acción destructiva: trazo rojo, nunca relleno (no compite con el botón principal). */
+.btn--danger {
+  min-height: 52px;
+  padding: 0 16px;
+  background: var(--surface);
+  color: var(--error);
+  box-shadow: inset 0 0 0 2px var(--error);
+}
+
+.btn--danger:hover:not(:disabled) {
+  background: var(--error-tint);
+}
+
+.btn--danger:disabled {
+  color: var(--ink-soft);
+  box-shadow: inset 0 0 0 2px var(--line-strong);
+}
+
+.pend-row__confirm .btn--danger {
+  min-height: 44px;
+}
+
+/* Copia guardada mostrada sin conexión. */
+.saved-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 12px;
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.saved-note svg {
+  flex: none;
+  margin-top: 1px;
+  color: var(--field);
+}
+
+.rmap__notice .saved-note {
+  margin: 0;
+}
+
+.sheet .saved-note {
+  margin: 0;
+}
+
+/* "Quedó guardado": nota de éxito en el tono informativo (aún no llega al servidor). */
+.saved-success {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 16px;
+  padding: 12px 14px;
+  border: 2px solid var(--field);
+  border-radius: var(--radius-sm);
+  background: var(--info-tint);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.saved-success svg {
+  flex: none;
+  margin-top: 1px;
+  color: var(--field);
+}
+
+/* Diálogo de salida con pendientes: modal nativo sobre papel. */
+.dialogo {
+  width: min(420px, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 24px 20px 16px;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 12px 32px rgb(27 36 33 / 0.25);
+}
+
+.dialogo::backdrop {
+  background: rgb(27 36 33 / 0.55);
+}
+
+.dialogo__title {
+  font-size: 1.375rem;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.dialogo__text {
+  margin-top: 8px;
+  color: var(--ink-soft);
+  line-height: 1.45;
+}
+
+.dialogo__actions {
+  display: grid;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.dialogo__actions .btn--block {
+  margin-top: 0;
+}
+
+.dialogo__actions .link-button {
+  justify-self: center;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .dialogo[open] {
+    animation: dialogo-entra 220ms var(--ease-out);
+  }
+}
+
+@keyframes dialogo-entra {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}

@@ -32,6 +32,7 @@ REFRESH_CADUCADO = "refresh_caducado"
 REFRESH_REVOCADO = "refresh_revocado"
 GRACIA_YA_USADA = "gracia_ya_usada"
 GRACIA_SUCESOR_INVALIDADO = "gracia_sucesor_invalidado"
+REUTILIZACION_DETECTADA = "reutilizacion_detectada"
 USUARIO_INACTIVO = "usuario_inactivo"
 
 # Atributos que una vista puede poner en su respuesta para precisar el motivo.

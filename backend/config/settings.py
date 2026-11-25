@@ -174,15 +174,23 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
 }
 
-# Segundos durante los que se acepta UNA vez el refresh anterior a una rotación cuya respuesta
-# se perdió (ver accounts/rotation.py). 0 lo desactiva.
+# Ventana fija (desde la primera rotación) en la que se acepta otra vez el refresh anterior a
+# una rotación cuya respuesta se perdió, mientras su sucesor no se haya presentado
+# (ver accounts/rotation.py). 0 lo desactiva.
 AUTH_REFRESH_GRACE_SECONDS = env("AUTH_REFRESH_GRACE_SECONDS")
+# Reintentos con el token anterior dentro de esa ventana.
+AUTH_REFRESH_GRACE_RETRIES = 3
 
 # Caché compartida entre workers de gunicorn (throttling y periodo de gracia).
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.db.DatabaseCache",
         "LOCATION": "django_cache",
+        # Con el valor por defecto (300) Django borra un tercio de la caché al pasarse, en orden
+        # de clave: las de gracia del refresh ("auth:gracia:…") caían primero y la sesión se
+        # cerraba como `refresh_revocado`. Las entradas caducan solas (60 s la gracia, 1 h el
+        # límite de envíos), así que un tope alto no hace crecer la tabla sin control.
+        "OPTIONS": {"MAX_ENTRIES": 100_000},
     }
 }
 

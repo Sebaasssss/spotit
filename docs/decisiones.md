@@ -97,10 +97,71 @@ Motivos en recursos: `sin_token`, `cabecera_invalida`, `access_caducado`, `acces
 
 **Ningún punto medio tapado:** en móvil la hoja del reporte comparte el alto con el mapa (el mapa se encoge encima) en vez de flotar sobre él, y no se dibujan chapas cortadas por el borde ni escondidas bajo un control (zoom, "Leyenda", avisos): serían blancos de pocos píxeles que parecen rotos, y reaparecen al mover el mapa un poco. La chapa elegida es la excepción: nunca se omite y el mapa se centra en ella; si comparte lugar con otros, se marca la mancha que la contiene. Lo detectó axe (`target-size`) y lo cubre la suite e2e.
 
+## 2026-11-25 — Modo sin conexión y cola de reportes
+
+**Idempotencia en el servidor:** el teléfono genera un UUID al guardar cada reporte y lo envía en la cabecera `Idempotency-Key` en todos los intentos. Se guarda en `Reporte.clave_idempotencia`, única **por autor** (la de otra persona no choca ni revela nada). Si la clave ya existe, el servidor responde **200** con el reporte ya creado (cabecera `Idempotent-Replayed: true`) sin volver a procesar la foto. Si dos envíos con la misma clave llegan a la vez, la restricción única decide: el perdedor borra las fotos que ya había escrito y devuelve el reporte ganador. Va en cabecera y no en el formulario para poder leerla antes de procesar el cuerpo y antes del límite de envíos.
+
+**Límite de 20 por hora:** reintentar un reporte que ya se creó no gasta cupo ni recibe 429. Si la cola se topa con el límite, el reporte **sigue pendiente, no falla**: se respeta `Retry-After` y se muestra a qué hora se enviará. El tope de la cola es de 20 pendientes por persona, el mismo que el límite.
+
+**Qué errores reintentan y cuáles no:**
+
+| Respuesta | Qué pasa con el pendiente |
+|---|---|
+| Sin red, tiempo agotado, 408, 429, 5xx | Sigue pendiente; se reintenta solo (5 s, 30 s, 2 min y luego cada 10 min) o a la hora de `Retry-After` |
+| 401 por red al renovar | Espera sin contar el intento; al volver la señal se renueva la sesión y se envía |
+| 401 con sesión inválida | Se queda guardado hasta que esa persona vuelva a entrar |
+| 400 (foto inválida, categoría retirada…), 413, 403 | Queda en "No se envió" con el motivo del servidor; la persona decide: Reintentar o Descartar. Nunca se borra solo |
+
+Desde el formulario, un rechazo por los datos no deja nada en la cola: el reporte se quita y los errores se marcan en sus campos para corregirlos ahí.
+
+**Cola en IndexedDB (`idb`):** cada pendiente guarda su clave, la persona, los datos, la foto ya reducida (1600 px, como bytes más su tipo, más robusto que un `Blob` en Safari) y su estado (`pendiente`, `enviando`, `error`). El formulario siempre pasa por la cola: guarda y luego intenta enviar ese mismo reporte con su progreso; si la señal falla, se queda guardado. Un envío solo a la vez, también entre pestañas (Web Locks); un `enviando` que quedó de una app cerrada a mitad vuelve a `pendiente` al abrir.
+
+**Almacenamiento:** antes de guardar se comprueba el espacio (`navigator.storage.estimate()`) y un `QuotaExceededError` muestra un mensaje claro. Al guardar el primer pendiente (en contexto, no al abrir) se pide almacenamiento persistente; Chrome lo concede sin preguntar a la PWA instalada, Firefox pregunta, y en Safari la PWA de la pantalla de inicio no sufre el borrado de 7 días. Si se niega, la cola funciona igual. La caché de teselas se vacía primero si falta espacio (`purgeOnQuotaError`).
+
+**Cuándo se envía:** al abrir la app, al volver la conexión (`online`), al volver a primer plano, con un temporizador mientras la app está abierta y con "Enviar ahora". Sin red no se intenta nada.
+
+**Background Sync queda fuera (mejora futura):** el service worker no renueva la sesión ni envía reportes por su cuenta. Para enviar desde el service worker con la app cerrada tendría que renovar la sesión, y el refresh rota en cada uso: una renovación del service worker y otra de la página a la vez se pisarían y podrían cerrar la sesión, justo el caso que la gracia de 60 s solo cubre una vez. Además solo existe en Android con Chrome; en iOS no. Los otros disparadores cubren el caso real (la persona abre la app). Se podría retomar con un candado compartido entre página y service worker alrededor del refresh.
+
+**Al cerrar sesión con pendientes:** un diálogo ofrece "Guardarlos y salir" (por defecto: se envían cuando esa persona vuelva a entrar) o "Borrarlos y salir" (teléfono compartido). En /entrar se avisa si hay reportes guardados. Otra cuenta en el mismo teléfono no los ve ni los envía.
+
+**Caché de lectura (service worker):** se pasó a `injectManifest` (`src/sw.ts`) solo para poder usar plugins de Workbox en la caché; el service worker no hace nada más.
+- **API, stale-while-revalidate:** categorías, listas, mapa y detalle (solo GET, solo 200; nunca `/api/auth/` ni `/api/health/`). 150 respuestas, 7 días. La copia lleva la fecha en que se guardó y la pantalla la muestra sin conexión ("Sin conexión: datos guardados el 25 nov, 10:40"). Si la revalidación trae algo distinto, el service worker avisa y la pantalla abierta vuelve a pedirlo.
+- **Arranque sin conexión:** si no hay red ni para renovar la sesión, la app lee la copia guardada directamente desde Cache Storage, sin enviar ninguna petición sin token.
+- **Privacidad:** las respuestas dependen de quién pregunta (`es_mio`, `votado`), así que la caché se borra al cerrar sesión, al caducar la sesión y antes de usar la sesión de una persona distinta. Tras votar o enviar un reporte se borran las entradas afectadas.
+- **Teselas de OpenStreetMap:** solo las que la persona ya vio (nada por adelantado, como pide su política de uso), 500 teselas y 7 días como máximo; con conexión se respeta el `Cache-Control` del servidor de teselas y sin conexión se usa la guardada. Se piden con CORS (`crossOrigin` en Leaflet) para no guardar respuestas opacas, que Chrome cuenta como varios MB cada una. La atribución se mantiene. Las fotos de los reportes no se guardan (sus URL firmadas cambian cada 6 h).
+
+**Accesibilidad:** una sola región viva anuncia los cambios ("Sin conexión…", "Conexión recuperada.", "Se envió 1 reporte pendiente.", "Reporte descartado."); la franja de estado no es región viva para no repetirlos. Descartar pide confirmación en la propia fila y lleva el foco a "Cancelar"; el diálogo de salida es un `<dialog>` modal nativo con el foco en la opción segura. Estados con icono y texto, nunca solo color.
+
+**Dos fallos de sesión encontrados con las pruebas de esta fase:**
+- **Gracia borrada por la caché de Django:** la caché en base de datos tenía el tope por defecto (300 entradas) y, al pasarlo, Django borra un tercio en orden de clave; las de gracia del refresh (`auth:rotated:…`) caían primero y la sesión se cerraba como `refresh_revocado`. Se subió el tope a 100 000 (todas las entradas caducan solas) y hay una prueba que lo demuestra.
+- **Cerrar sesión con una renovación en curso:** la respuesta de la renovación llegaba después del cierre con una cookie nueva y reabría la sesión. Ahora el cierre espera la renovación en curso y toma el mismo candado.
+
+## 2026-11-25 — Gracia del refresh con reintentos
+
+**El problema:** la gracia aceptaba el token anterior una sola vez. Si se perdían dos respuestas seguidas (recargar justo cuando vuelve la señal, la app cerrada a mitad de una renovación), la sesión se cerraba aunque nadie más hubiera usado el token. Las pruebas de la Fase 5 lo reprodujeron (`gracia_ya_usada`, `gracia_sucesor_invalidado`).
+
+**La regla ahora** (`accounts/rotation.py`):
+- **Ventana fija:** 60 s desde la **primera** rotación del token; los reintentos no la alargan.
+- **Reintentos:** dentro de la ventana, el token anterior se acepta otra vez **solo mientras su sucesor nunca se haya presentado**. Cada reintento emite un sucesor nuevo e invalida el anterior, así que nunca hay más de uno válido.
+- **Tope de 3 reintentos** (`AUTH_REFRESH_GRACE_RETRIES`): cubre tres respuestas perdidas seguidas además de la rotación original, y limita cuántas veces un token robado puede canjearse en esa ventana. Pasado el tope: `gracia_ya_usada`, sin emitir nada y sin tocar el sucesor vigente.
+- **Detección de reutilización** (`reutilizacion_detectada`): si el sucesor ya se usó y alguien presenta el anterior, se invalida **toda la cadena** (los sucesores que salieron de él). También si se presenta un sucesor que un reintento ya había descartado: si el teléfono lo tenía, su respuesta no se perdió y el reintento lo hizo alguien más.
+- **Logout:** cierra la gracia del token que se cierra y del que sustituyó; si se cierra con una cookie vieja, también se invalida su sucesor.
+- **Concurrencia:** las decisiones se toman con la fila de la persona bloqueada (`select_for_update`). Dos renovaciones simultáneas del mismo token cuentan como rotación más reintento y nunca dejan dos válidos.
+
+**El compromiso de seguridad:** durante esos 60 s, quien tenga una copia del token anterior (robada de la cookie o del tráfico) puede canjearlo mientras el teléfono legítimo no haya usado aún su sucesor; antes podía hacerlo una vez, ahora hasta tres. Lo acotan:
+- la ventana fija y corta, y el tope de reintentos;
+- un solo sucesor válido a la vez, así que el canje del atacante deja inválido el del teléfono;
+- la detección de reutilización: en cuanto el teléfono legítimo presente su token (ya descartado) o el sucesor ya usado, se invalida toda la cadena y el atacante pierde la sesión (el legítimo también tiene que volver a entrar);
+- la cookie es httpOnly, `SameSite=Strict`, limitada a `/api/auth/` y solo viaja por HTTPS fuera de desarrollo.
+
+Se aceptó a cambio de no cerrar la sesión de alguien que reporta con mala señal, que es el caso de uso principal. Cada rechazo deja su motivo en el registro (`gracia_ya_usada`, `gracia_sucesor_invalidado`, `reutilizacion_detectada`, `refresh_revocado`).
+
 ## Pendientes
 
 - **Moderación de fotos:** detectar o difuminar caras y placas de vehículos antes de mostrar las fotos a otras personas (hoy cualquier usuario con sesión ve todas las fotos).
 - **Ocultar o eliminar reportes desde el admin:** hoy el admin solo cambia el estado; falta un estado o bandera de "oculto" para reportes inapropiados o duplicados, con registro de quién y por qué, en lugar de borrarlos.
 - **Tipografía display propia (fase final de pulido de diseño):** sustituir la tipografía del sistema en los títulos por una fuente propia, **alojada localmente** (sin CDN de terceros) y **precacheada por el service worker** para que la PWA la tenga sin conexión. Aplicarla solo al rol display mediante una variable (`--font-display`); cuerpo y controles siguen con la pila del sistema.
-- **Sesión cerrada por dos refresh perdidos seguidos:** el periodo de gracia acepta el token anterior una sola vez durante 60 s. Si la app se abre dos veces seguidas y en ambas se pierde la respuesta del refresh, la segunda vez no hay gracia y la sesión se cierra. No se ha observado; si aparece, el registro lo mostrará como `gracia_ya_usada` o `gracia_sucesor_invalidado`, y entonces se valorará aceptar el token anterior mientras su sucesor siga sin usarse.
+- **Background Sync:** ver "Modo sin conexión y cola de reportes".
+- **Renovaciones cruzadas en el mismo navegador:** si dos renovaciones salen a la vez con la misma cookie (dos pestañas sin Web Locks, p. ej. Safari anterior a 15.4, o una recarga justo mientras la app renueva), el servidor deja un solo sucesor válido y rechaza la otra con un 401 que borra la cookie. Si ese 401 llega después que la respuesta buena, borra también la cookie válida y la sesión se cierra. Ocurriría solo cuando ambas peticiones llevan la misma cookie y la rechazada responde última. En la app, Web Locks y la renovación única por pestaña lo hacen raro. Si apareciera, el registro lo mostrará como `gracia_sucesor_invalidado` seguido de `sin_cookie`, y se valorará no borrar la cookie en ese rechazo concreto.
+- **Editar un reporte pendiente:** hoy solo se puede reintentar o descartar.
 - **HEIC en un iPhone real:** el rechazo de HEIC está probado con un archivo de muestra, no con la cámara y la galería de un iPhone. Falta probarlo en un dispositivo con el túnel.

@@ -1,3 +1,5 @@
+import 'fake-indexeddb/auto'
+import { IDBFactory } from 'fake-indexeddb'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router'
@@ -6,6 +8,7 @@ import type { Reporte } from '../api/reportes'
 import { AuthProvider } from '../auth/AuthContext'
 import { clearLocalSession, profileCache } from '../auth/session'
 import { ana, json, mockFetch } from '../test/helpers'
+import { cerrarParaPruebas } from '../offline/cola'
 import { MyReports } from './MyReports'
 import { NewReport } from './NewReport'
 
@@ -85,7 +88,9 @@ function stubGeo(impl: (ok: PositionCallback, fail: PositionErrorCallback) => vo
   Object.defineProperty(navigator, 'geolocation', { configurable: true, value: { getCurrentPosition: impl } })
 }
 
-beforeEach(() => {
+beforeEach(async () => {
+  await cerrarParaPruebas()
+  globalThis.indexedDB = new IDBFactory()
   crearReporte.mockReset()
 })
 
@@ -161,6 +166,8 @@ describe('Nuevo reporte', () => {
         latitud: 18.8505,
       }),
       expect.any(Function),
+      // La clave de la cola: el mismo envío repetido no se duplica en el servidor.
+      expect.stringMatching(/^[0-9a-f-]{36}$/),
     )
   })
 

@@ -1,15 +1,28 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router'
 import { ApiError, NetworkError } from '../api/client'
-import { fetchMisReportes, type Reporte } from '../api/reportes'
+import { fetchMisReportes, fetchMisReportesConOrigen, type Reporte } from '../api/reportes'
+import { NotaGuardado } from '../components/offline/NotaGuardado'
+import { PendientesDeEnvio } from '../components/offline/Pendientes'
+import { useOnline } from '../lib/useOnline'
+import { useApiActualizada } from '../offline/useApiActualizada'
+import { sincronizador } from '../offline/sincronizador'
+import { useCola } from '../offline/useCola'
 import { FormAlert } from '../components/form/fields'
-import { CheckIcon, CloudOffIcon, PlusIcon, RefreshIcon, Spinner } from '../components/Icons'
+import { CheckIcon, CloudOffIcon, CloudUpIcon, PlusIcon, RefreshIcon, Spinner } from '../components/Icons'
 import { PageHeader } from '../components/PageHeader'
 import { ReportRow } from '../components/report/ReportRow'
 
 type Estado =
   | { kind: 'loading' }
-  | { kind: 'ok'; reportes: Reporte[]; total: number; siguiente: number | null }
+  | {
+      kind: 'ok'
+      reportes: Reporte[]
+      total: number
+      siguiente: number | null
+      copia: Date | null
+      sinConexion: boolean
+    }
   | { kind: 'error'; message: string; offline: boolean }
 
 function mensajeDeError(error: unknown) {
@@ -21,7 +34,11 @@ function mensajeDeError(error: unknown) {
 
 export function MyReports() {
   const location = useLocation()
-  const nuevo = (location.state as { nuevo?: number } | null)?.nuevo
+  const navState = location.state as { nuevo?: number; guardado?: boolean } | null
+  const nuevo = navState?.nuevo
+  const guardado = navState?.guardado
+  const online = useOnline()
+  const { pendientes } = useCola()
   const [estado, setEstado] = useState<Estado>({ kind: 'loading' })
   const [intento, setIntento] = useState(0)
   const [cargandoMas, setCargandoMas] = useState(false)
@@ -29,13 +46,15 @@ export function MyReports() {
 
   useEffect(() => {
     const controller = new AbortController()
-    fetchMisReportes(1, controller.signal).then(
-      (pagina) =>
+    fetchMisReportesConOrigen(1, controller.signal).then(
+      ({ data: pagina, guardado: copia, sinConexion }) =>
         setEstado({
           kind: 'ok',
           reportes: pagina.results,
           total: pagina.count,
           siguiente: pagina.next ? 2 : null,
+          copia,
+          sinConexion,
         }),
       (error: unknown) => {
         if (!controller.signal.aborted) setEstado({ kind: 'error', ...mensajeDeError(error) })
@@ -51,7 +70,7 @@ export function MyReports() {
     try {
       const pagina = await fetchMisReportes(estado.siguiente)
       setEstado({
-        kind: 'ok',
+        ...estado,
         reportes: [...estado.reportes, ...pagina.results],
         total: pagina.count,
         siguiente: pagina.next ? estado.siguiente + 1 : null,
@@ -61,6 +80,29 @@ export function MyReports() {
     } finally {
       setCargandoMas(false)
     }
+  }
+
+  // La copia guardada se mostró al instante; si el servidor trae otra, se vuelve a pedir.
+  // También cuando la cola termina de enviar: el reporte nuevo ya está en el servidor.
+  useApiActualizada((ruta) => {
+    if (ruta === '/api/reportes/mios/') setIntento((n) => n + 1)
+  })
+  // Si no se pudo cargar sin conexión, se vuelve a pedir al volver la señal.
+  const [onlineAntes, setOnlineAntes] = useState(online)
+  if (online !== onlineAntes) {
+    setOnlineAntes(online)
+    if (online && estado.kind === 'error') setIntento((n) => n + 1)
+  }
+  // Al entrar con conexión se reintenta ya lo que espera: si llegó y la respuesta se perdió,
+  // la clave hace que el servidor devuelva el mismo reporte y sale de la cola.
+  useEffect(() => {
+    if (online) void sincronizador.sincronizar({ forzar: true })
+  }, [online])
+  const numPendientes = pendientes.length
+  const [pendientesAntes, setPendientesAntes] = useState(numPendientes)
+  if (numPendientes !== pendientesAntes) {
+    setPendientesAntes(numPendientes)
+    if (numPendientes < pendientesAntes) setIntento((n) => n + 1)
   }
 
   const reintentar = () => {
@@ -78,6 +120,18 @@ export function MyReports() {
             <CheckIcon size={20} />
             Recibimos tu reporte. Aquí puedes seguir su estado.
           </p>
+        )}
+        {guardado && pendientes.some((p) => p.estado !== 'error') && (
+          <p className="saved-success" role="status">
+            <CloudUpIcon size={20} />
+            Tu reporte quedó guardado en este teléfono y se enviará solo; aquí ves cómo va.
+          </p>
+        )}
+
+        <PendientesDeEnvio />
+
+        {estado.kind === 'ok' && (estado.sinConexion || (!online && estado.copia)) && (
+          <NotaGuardado fecha={estado.copia} />
         )}
 
         {estado.kind === 'loading' && (
@@ -99,7 +153,14 @@ export function MyReports() {
           </div>
         )}
 
-        {estado.kind === 'error' && (
+        {estado.kind === 'error' && estado.offline && !online && (
+          // Sin conexión es un estado esperado, no un error: se recarga sola al volver la señal.
+          <FormAlert tone="info" icon={<CloudOffIcon size={20} />}>
+            Sin conexión. Tus reportes enviados aparecerán al volver la señal.
+          </FormAlert>
+        )}
+
+        {estado.kind === 'error' && !(estado.offline && !online) && (
           <FormAlert icon={estado.offline ? <CloudOffIcon size={20} /> : undefined}>
             <p>{estado.message}</p>
             <p className="form-alert__help">
@@ -110,7 +171,7 @@ export function MyReports() {
           </FormAlert>
         )}
 
-        {estado.kind === 'ok' && estado.reportes.length === 0 && (
+        {estado.kind === 'ok' && estado.reportes.length === 0 && pendientes.length === 0 && (
           <section className="empty" aria-labelledby="vacio-titulo">
             <h2 id="vacio-titulo">Aún no tienes reportes</h2>
             <p>Cuando veas un bache, una luminaria fundida o una fuga, repórtalo aquí.</p>
@@ -124,9 +185,15 @@ export function MyReports() {
         {estado.kind === 'ok' && estado.reportes.length > 0 && (
           <>
             <div className="list-head">
-              <p className="list-head__count">
-                {estado.total === 1 ? '1 reporte' : `${estado.total} reportes`}
-              </p>
+              {pendientes.length > 0 ? (
+                <h2 className="list-head__title">
+                  Enviados <span className="list-head__num">{estado.total}</span>
+                </h2>
+              ) : (
+                <p className="list-head__count">
+                  {estado.total === 1 ? '1 reporte' : `${estado.total} reportes`}
+                </p>
+              )}
               <Link to="/reportes/nuevo" className="btn btn--secondary">
                 <PlusIcon size={20} />
                 Nuevo

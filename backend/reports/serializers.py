@@ -1,6 +1,6 @@
 from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
 
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from rest_framework import serializers
 
 from .images import FotoInvalida, procesar_foto
@@ -167,12 +167,22 @@ class _ReporteEscrituraBase(serializers.ModelSerializer):
 
 
 class ReporteCrearSerializer(_ReporteEscrituraBase):
-    @transaction.atomic
     def create(self, validated_data):
+        """Crea el reporte. Si choca la clave de idempotencia, borra las fotos ya escritas
+        y deja pasar el `IntegrityError` para que la vista devuelva el reporte que ganó."""
         procesada = validated_data.pop("foto")
         reporte = Reporte(autor=self.context["request"].user, **validated_data)
         self._guardar_fotos(reporte, procesada)
-        reporte.save()
+        try:
+            # Punto de guardado: tras el choque, la transacción de la petición sigue sana.
+            with transaction.atomic():
+                reporte.save()
+        except IntegrityError:
+            storage = reporte.foto.storage
+            for nombre in (reporte.foto.name, reporte.miniatura.name):
+                if nombre:
+                    storage.delete(nombre)
+            raise
         return reporte
 
 

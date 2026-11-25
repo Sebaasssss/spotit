@@ -4,17 +4,27 @@
  * servidor responde 401, renueva una vez y repite. Ambas esperas tienen límite de tiempo.
  */
 
+import { fechaGuardada, leerDeCache } from '../offline/cacheApi'
+
 export type FieldErrors = Record<string, string[]>
 
 export class ApiError extends Error {
   readonly status: number
   readonly fieldErrors: FieldErrors
+  /** Segundos de la cabecera Retry-After (429/503), si vino. */
+  readonly retryAfter: number | null
 
-  constructor(status: number, message: string, fieldErrors: FieldErrors = {}) {
+  constructor(
+    status: number,
+    message: string,
+    fieldErrors: FieldErrors = {},
+    retryAfter: number | null = null,
+  ) {
     super(message)
     this.name = 'ApiError'
     this.status = status
     this.fieldErrors = fieldErrors
+    this.retryAfter = retryAfter
   }
 }
 
@@ -143,7 +153,13 @@ export async function toApiError(response: Response): Promise<ApiError> {
     }
   }
 
-  return new ApiError(response.status, message, fieldErrors)
+  const retry = Number.parseInt(response.headers.get('Retry-After') ?? '', 10)
+  return new ApiError(
+    response.status,
+    message,
+    fieldErrors,
+    Number.isFinite(retry) && retry >= 0 ? retry : null,
+  )
 }
 
 // --- Petición ---
@@ -170,23 +186,60 @@ async function send(path: string, init: RequestInit, auth: boolean): Promise<Res
   }
 }
 
-export async function apiFetch<T>(
+export type ConOrigen<T> = {
+  data: T
+  /** Cuándo guardó el service worker esta copia (null si vino de la red). */
+  guardado: Date | null
+  /** Se leyó de la caché porque no hubo red (ni siquiera para renovar la sesión). */
+  sinConexion: boolean
+}
+
+function esLectura(init: RequestInit) {
+  return !init.method || init.method.toUpperCase() === 'GET'
+}
+
+/** Sin red, una lectura puede salir de la copia que guardó el service worker. */
+async function desdeCache<T>(path: string, error: unknown): Promise<ConOrigen<T>> {
+  const guardada = await leerDeCache(path)
+  if (!guardada) throw error
+  return { data: (await guardada.json()) as T, guardado: fechaGuardada(guardada), sinConexion: true }
+}
+
+/** Como apiFetch, pero dice si la respuesta es una copia guardada y de cuándo. */
+export async function apiFetchConOrigen<T>(
   path: string,
   init: RequestInit = {},
   { auth = true }: Options = {},
-): Promise<T> {
-  const renewedFirst = auth ? await prepareAccessToken() : false
-  let response = await send(path, init, auth)
+): Promise<ConOrigen<T>> {
+  const lectura = esLectura(init)
+  let response: Response
+  try {
+    const renewedFirst = auth ? await prepareAccessToken() : false
+    response = await send(path, init, auth)
 
-  // El access caducó entre peticiones: se renueva una vez y se repite.
-  if (response.status === 401 && auth && !renewedFirst) {
-    const renewed = await renewAccessToken()
-    if (renewed) response = await send(path, init, auth)
+    // El access caducó entre peticiones: se renueva una vez y se repite.
+    if (response.status === 401 && auth && !renewedFirst) {
+      const renewed = await renewAccessToken()
+      if (renewed) response = await send(path, init, auth)
+    }
+  } catch (error) {
+    // Sin red ni para renovar la sesión: se usa la copia guardada sin enviar nada sin token.
+    if (lectura && error instanceof NetworkError) return desdeCache<T>(path, error)
+    throw error
   }
 
   if (!response.ok) throw await toApiError(response)
-  if (response.status === 204) return undefined as T
-  return (await response.json()) as T
+  const guardado = fechaGuardada(response)
+  if (response.status === 204) return { data: undefined as T, guardado, sinConexion: false }
+  return { data: (await response.json()) as T, guardado, sinConexion: false }
+}
+
+export async function apiFetch<T>(
+  path: string,
+  init: RequestInit = {},
+  options: Options = {},
+): Promise<T> {
+  return (await apiFetchConOrigen<T>(path, init, options)).data
 }
 
 export function postJson(body: unknown): RequestInit {

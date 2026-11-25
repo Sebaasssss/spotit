@@ -106,3 +106,57 @@ export async function reporteAjeno(baseURL: string, fs: typeof import('node:fs')
   await otra.dispose()
   return reporte
 }
+
+/** Access token nuevo con la cookie de `request` (rota el refresh: úsalo con page.request). */
+export async function accessDe(request: APIRequestContext) {
+  const refresh = await request.post('/api/auth/refresh/')
+  expect(refresh.ok(), await refresh.text()).toBeTruthy()
+  return ((await refresh.json()) as { access: string }).access
+}
+
+/**
+ * Cuántos reportes ENVIADOS con esta descripción muestra Mis reportes (para detectar
+ * duplicados). Se lee de la propia app y no con `page.request`: renovar la sesión desde la
+ * prueba a la vez que la app hace que una respuesta tardía pise la cookie.
+ */
+export async function contarReportes(page: Page, descripcion: string) {
+  await page.waitForLoadState('networkidle').catch(() => {})
+  await page.goto('/reportes')
+  await expect(page.getByRole('heading', { name: 'Mis reportes', level: 1 })).toBeVisible()
+  await page.waitForLoadState('networkidle').catch(() => {})
+  await expect(page.locator('[aria-busy="true"]')).toHaveCount(0) // la lista ya cargó
+  return page
+    .locator('.report-row:not(.pend-row)')
+    .filter({ hasText: descripcion })
+    .count()
+}
+
+/**
+ * Cuenta de ciudadano nueva en su propio contexto de navegador, para pruebas que cierran la
+ * sesión o necesitan el service worker sin tocar la sesión compartida.
+ */
+export async function cuentaNueva(
+  browser: import('@playwright/test').Browser,
+  baseURL: string,
+  opciones: import('@playwright/test').BrowserContextOptions = {},
+) {
+  const api = await request.newContext({ baseURL })
+  const email = `e2e.offline.${Date.now()}.${Math.random().toString(36).slice(2, 7)}@ejemplo.mx`
+  // El registro tiene límite por minuto: si se alcanza, se espera lo que pide el servidor.
+  let res = await api.post('/api/auth/register/', {
+    data: { email, nombre: 'Prueba Sin Señal', password: PASSWORD },
+  })
+  for (let intento = 0; res.status() === 429 && intento < 5; intento++) {
+    const espera = Number(res.headers()['retry-after'] ?? '10')
+    await new Promise((r) => setTimeout(r, (espera + 1) * 1000))
+    res = await api.post('/api/auth/register/', {
+      data: { email, nombre: 'Prueba Sin Señal', password: PASSWORD },
+    })
+  }
+  expect(res.status(), await res.text()).toBe(201)
+  const storageState = await api.storageState()
+  await api.dispose()
+  const context = await browser.newContext({ ...test.info().project.use, ...opciones, storageState })
+  const page = await context.newPage()
+  return { context, page, email }
+}

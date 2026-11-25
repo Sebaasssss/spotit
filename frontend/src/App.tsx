@@ -1,6 +1,7 @@
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router'
 import { AuthProvider } from './auth/AuthContext'
 import { PublicOnly, RequireAuth, Splash } from './auth/guards'
+import { ColaGlobal } from './components/offline/ColaGlobal'
 import { UpdatePrompt } from './components/UpdatePrompt'
 import { Home } from './routes/Home'
 import { Login } from './routes/Login'
@@ -45,6 +46,7 @@ export default function App() {
   return (
     <AuthProvider>
       <RouterProvider router={router} />
+      <ColaGlobal />
       <UpdatePrompt />
     </AuthProvider>
   )
