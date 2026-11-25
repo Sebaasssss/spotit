@@ -18,6 +18,8 @@ from rest_framework_simplejwt.state import token_backend
 from rest_framework_simplejwt.token_blacklist.models import BlacklistedToken, OutstandingToken
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from . import auditoria
+
 
 def _key(jti: str) -> str:
     return f"auth:rotated:{jti}"
@@ -53,32 +55,53 @@ def _blacklist_jti(jti: str) -> bool:
     return created
 
 
+_USADA = "__usada__"
+
+
+def _usuario_activo(payload):
+    return (
+        get_user_model()
+        .objects.filter(pk=payload.get(api_settings.USER_ID_CLAIM), is_active=True)
+        .first()
+    )
+
+
 def reuse_within_grace(raw_refresh: str):
-    """Si `raw_refresh` es el predecesor recién rotado de un sucesor nunca usado, devuelve
-    (user, nuevo RefreshToken). Si no, None.
+    """Decide qué hacer con un refresh que simplejwt rechazó.
+
+    Devuelve `((user, nuevo RefreshToken), None)` si `raw_refresh` es el predecesor recién
+    rotado de un sucesor nunca usado, o `(None, motivo)` con la causa del rechazo
+    (ver accounts/auditoria.py).
     """
+    payload = auditoria.payload_sin_verificar(raw_refresh)
+    if payload is None:
+        return None, auditoria.REFRESH_ILEGIBLE
     try:
-        payload = token_backend.decode(raw_refresh, verify=True)  # firma y caducidad
+        token_backend.decode(raw_refresh, verify=True)  # firma y caducidad
     except TokenBackendError:
-        return None
+        if auditoria.esta_caducado(payload):
+            return None, auditoria.REFRESH_CADUCADO
+        return None, auditoria.REFRESH_ILEGIBLE
     if payload.get(api_settings.TOKEN_TYPE_CLAIM) != "refresh":
-        return None
+        return None, auditoria.REFRESH_ILEGIBLE
 
     key = _key(payload[api_settings.JTI_CLAIM])
     successor_jti = cache.get(key)
     if not successor_jti:
-        return None
-    cache.delete(key)  # la gracia se usa una sola vez
+        # Sin rotación reciente: revocado (logout, gracia vencida) o la cuenta se desactivó.
+        if _usuario_activo(payload) is None:
+            return None, auditoria.USUARIO_INACTIVO
+        return None, auditoria.REFRESH_REVOCADO
+    if successor_jti == _USADA:
+        return None, auditoria.GRACIA_YA_USADA
+    # La gracia se usa una sola vez; se deja la marca para registrar un segundo intento.
+    cache.set(key, _USADA, _grace_seconds())
 
     # Si el sucesor ya estaba invalidado, se usó (rotó) o hubo logout: sin gracia.
     if not _blacklist_jti(successor_jti):
-        return None
+        return None, auditoria.GRACIA_SUCESOR_INVALIDADO
 
-    user = (
-        get_user_model()
-        .objects.filter(pk=payload[api_settings.USER_ID_CLAIM], is_active=True)
-        .first()
-    )
+    user = _usuario_activo(payload)
     if user is None:
-        return None
-    return user, RefreshToken.for_user(user)
+        return None, auditoria.USUARIO_INACTIVO
+    return (user, RefreshToken.for_user(user)), None

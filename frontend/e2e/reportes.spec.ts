@@ -140,7 +140,11 @@ test.describe('Nuevo reporte', () => {
 })
 
 test.describe('Fotos', () => {
-  test('nginx no entrega la ubicación interna directamente', async ({ request }) => {
+  // `page.request` comparte las cookies con la página: la sesión rotada se guarda al terminar.
+  // (El fixture `request` tiene su propio almacén: rotaba la cookie compartida sin guardarla y
+  // la prueba siguiente dependía del único uso del periodo de gracia.)
+  test('nginx no entrega la ubicación interna directamente', async ({ page }) => {
+    const request = page.request
     const reporte = await crearReporteApi(request, fs)
     const firmada = await request.get(reporte.miniatura_url)
     expect(firmada.status()).toBe(200)

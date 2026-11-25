@@ -1,5 +1,5 @@
 import AxeBuilder from '@axe-core/playwright'
-import { test as base, expect, type APIRequestContext, type Page } from '@playwright/test'
+import { test as base, expect, request, type APIRequestContext, type Page } from '@playwright/test'
 import path from 'node:path'
 
 export const PASSWORD = 'girasol-azul-2026'
@@ -35,11 +35,11 @@ export const test = base.extend({
 export { expect }
 
 /** Guarda una captura en docs/capturas/ solo con CAPTURAS=1. */
-export async function captura(page: Page, nombre: string, fullPage = false) {
+export async function captura(page: Page, nombre: string, fullPage = false, fase = 'fase-3') {
   if (!CAPTURAS) return
   const proyecto = test.info().project.name
   await page.screenshot({
-    path: path.join('..', 'docs', 'capturas', `fase-3-${proyecto}-${nombre}.png`),
+    path: path.join('..', 'docs', 'capturas', `${fase}-${proyecto}-${nombre}.png`),
     fullPage,
     animations: 'disabled',
   })
@@ -56,7 +56,11 @@ export async function revisarAccesibilidad(page: Page) {
 }
 
 /** Crea un reporte por la API (para pruebas que necesitan uno existente). */
-export async function crearReporteApi(request: APIRequestContext, fs: typeof import('node:fs')) {
+export async function crearReporteApi(
+  request: APIRequestContext,
+  fs: typeof import('node:fs'),
+  donde: { latitude: number; longitude: number } = UTEZ,
+) {
   const refresh = await request.post('/api/auth/refresh/')
   expect(refresh.ok()).toBeTruthy()
   const { access } = (await refresh.json()) as { access: string }
@@ -65,17 +69,40 @@ export async function crearReporteApi(request: APIRequestContext, fs: typeof imp
     multipart: {
       categoria: 'alumbrado',
       descripcion: 'Luminaria fundida junto al estacionamiento norte.',
-      latitud: String(UTEZ.latitude),
-      longitud: String(UTEZ.longitude),
+      latitud: String(donde.latitude),
+      longitud: String(donde.longitude),
       precision_m: '15',
       origen_ubicacion: 'gps',
       foto: {
-        name: 'bache.jpg',
+        // Foto sintética coherente con la categoría (luminaria apagada).
+        name: 'luminaria.jpg',
         mimeType: 'image/jpeg',
-        buffer: fs.readFileSync(path.join(FIXTURES, 'bache.jpg')),
+        buffer: fs.readFileSync(path.join(FIXTURES, 'luminaria.jpg')),
       },
     },
   })
   expect(res.status(), await res.text()).toBe(201)
   return (await res.json()) as { id: number; foto_url: string; miniatura_url: string }
+}
+
+/**
+ * Crea un reporte de OTRA persona (cuenta nueva, contexto aparte) en un punto propio, para
+ * poder votarlo: el propio no se vota. No toca la sesión compartida de las pruebas.
+ */
+export async function reporteAjeno(baseURL: string, fs: typeof import('node:fs')) {
+  const otra = await request.newContext({ baseURL })
+  const email = `e2e.otra.${Date.now()}.${Math.random().toString(36).slice(2, 7)}@ejemplo.mx`
+  const res = await otra.post('/api/auth/register/', {
+    data: { email, nombre: 'Otra Persona', password: PASSWORD },
+  })
+  expect(res.status(), await res.text()).toBe(201)
+  // Lejos del punto de las demás pruebas y repartido en ~10 × 10 km, para que rara vez quede
+  // a menos de unos metros de otro reporte de prueba (entonces ni el zoom máximo los separa).
+  const donde = {
+    latitude: UTEZ.latitude + 0.02 + Math.random() * 0.09,
+    longitude: UTEZ.longitude + 0.02 + Math.random() * 0.09,
+  }
+  const reporte = await crearReporteApi(otra, fs, donde)
+  await otra.dispose()
+  return reporte
 }

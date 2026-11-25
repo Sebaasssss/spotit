@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-24T15:00:00Z",
+  "generatedAt": "2026-11-25T12:00:00Z",
   "title": "Design System: SpotIt",
   "extensions": {
     "colorMeta": {
@@ -181,6 +181,21 @@
         "name": "focus-ring",
         "value": "outline: 3px solid var(--ink); outline-offset: 3px",
         "purpose": "Foco global; 2 px de separación en campos; tinta de plano o ámbar sobre fondos oscuros."
+      },
+      {
+        "name": "map-chip",
+        "value": "0 0 0 2px var(--surface), 0 3px 6px rgb(5 30 26 / 0.35)",
+        "purpose": "Anillo de superficie y apoyo de la chapa del mapa general; la mancha usa anillo de 3 px y 0 3px 8px."
+      },
+      {
+        "name": "map-chip-selected",
+        "value": "0 0 0 2px var(--surface), 0 0 0 5px var(--pin), 0 3px 8px rgb(5 30 26 / 0.4)",
+        "purpose": "Chapa elegida: anillo ámbar de 3 px por fuera del anillo de superficie (detalle de respuesta)."
+      },
+      {
+        "name": "map-sheet",
+        "value": "0 -12px 32px rgb(27 36 33 / 0.22)",
+        "purpose": "Solo la hoja del mapa en móvil; en escritorio la hoja es columna sin sombra."
       }
     ],
     "motion": [
@@ -213,6 +228,21 @@
         "name": "press-large",
         "value": "scale(0.99) 120ms ease-out",
         "purpose": "Presión de las acciones grandes de la portada."
+      },
+      {
+        "name": "sheet-in",
+        "value": "180ms cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "La hoja del mapa en móvil sube 24 px desde opacidad 0.4; sin animación en escritorio ni con movimiento reducido."
+      },
+      {
+        "name": "chip-hover",
+        "value": "scale(1.08) 120ms ease-out",
+        "purpose": "Hover del disco de la chapa (1.06 en la mancha); la elegida queda a 1.14."
+      },
+      {
+        "name": "cluster-fly",
+        "value": "flyTo 0.35s",
+        "purpose": "Tocar una mancha acerca hasta separarla; salto directo con movimiento reducido."
       }
     ],
     "breakpoints": [
@@ -362,6 +392,46 @@
       "description": "Confirmación tras enviar: verde hecho con check, role=status.",
       "html": "<p class=\"ds-success\" role=\"status\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m5 12.5 4.5 4.5L19 7.5\"/></svg>Recibimos tu reporte. Aquí puedes seguir su estado.</p>",
       "css": ".ds-success { display: flex; align-items: center; gap: 10px; margin: 0; padding: 12px 14px; border: 2px solid #1d6b45; border-radius: 10px; background: #e3f1e8; color: #1b2421; font: 600 17px/1.5 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; } .ds-success svg { flex: none; color: #1d6b45; }"
+    },
+    {
+      "name": "Botón de voto",
+      "kind": "button",
+      "refersTo": "vote-button",
+      "description": "Voto con aria-pressed y nombre fijo \"Votar\"; votado: relleno verde con check. Conteo con aria-live y ayuda debajo; solo lectura para el propio reporte y el resuelto.",
+      "html": "<div class=\"ds-vote-pair\"><div class=\"ds-vote\"><div class=\"ds-vote__row\"><button type=\"button\" class=\"ds-vote__btn\" aria-pressed=\"false\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 16.5V4.5M6.5 10 12 4.5l5.5 5.5\"/><path d=\"M5 20h14\"/></svg><span>Votar</span></button><p class=\"ds-vote__count\">Aún sin votos</p></div><p class=\"ds-vote__help\">Vota si también te afecta: ayuda a decidir qué se atiende primero.</p></div><div class=\"ds-vote\"><div class=\"ds-vote__row\"><button type=\"button\" class=\"ds-vote__btn is-on\" aria-pressed=\"true\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m5 12.5 4.5 4.5L19 7.5\"/></svg><span>Votar</span></button><p class=\"ds-vote__count\">7 votos, incluido el tuyo</p></div><p class=\"ds-vote__help\">Vuelve a tocar para quitar tu voto.</p></div><div class=\"ds-vote ds-vote--readonly\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 16.5V4.5M6.5 10 12 4.5l5.5 5.5\"/><path d=\"M5 20h14\"/></svg><p class=\"ds-vote__count\">Tu reporte · 3 votos</p></div></div>",
+      "css": ".ds-vote-pair { display: grid; gap: 24px; font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; color: #1b2421; } .ds-vote { display: grid; gap: 8px; } .ds-vote__row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; } .ds-vote__btn { display: inline-flex; align-items: center; gap: 8px; min-height: 52px; padding: 0 20px 0 16px; border: 0; border-radius: 10px; background: #fffdf8; color: #0e5a4f; box-shadow: inset 0 0 0 2px #0e5a4f; font: 700 1.0625rem/1.2 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; cursor: pointer; transition: background-color 120ms ease-out, color 120ms ease-out, transform 120ms ease-out; } .ds-vote__btn:hover { background: #e6efec; color: #0a463d; } .ds-vote__btn.is-on { background: #0e5a4f; color: #f6f3ec; } .ds-vote__btn.is-on:hover { background: #0a463d; color: #f6f3ec; } .ds-vote__btn:active { transform: scale(0.98); } .ds-vote__btn:focus-visible { outline: 3px solid #1b2421; outline-offset: 3px; } .ds-vote__count { margin: 0; font-weight: 650; font-variant-numeric: tabular-nums; } .ds-vote__help { margin: 0; color: #4a5652; font-size: 0.9375rem; line-height: 1.4; } .ds-vote--readonly { display: flex; align-items: center; gap: 10px; color: #4a5652; } .ds-vote--readonly .ds-vote__count { color: #1b2421; }"
+    },
+    {
+      "name": "Chapas y manchas del mapa",
+      "kind": "custom",
+      "refersTo": "map-chip-recibido",
+      "description": "Cada reporte es una chapa de 44 px con relleno, borde e icono de su estado; los cercanos, una mancha verde hondo con su número. La elegida lleva el anillo ámbar.",
+      "html": "<div class=\"ds-chips\"><button type=\"button\" class=\"ds-chip ds-chip--recibido\" aria-label=\"Alumbrado, recibido, 1 voto\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3.5 13.5 6 5.5h12l2.5 8v5a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1Z\"/><path d=\"M3.5 13.5h5l1 2h5l1-2h5\"/></svg><span class=\"ds-chip__votes\" aria-hidden=\"true\">1</span></button><button type=\"button\" class=\"ds-chip ds-chip--en_proceso\" aria-label=\"Baches, en proceso, 0 votos\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M14.5 5.5a4 4 0 0 0 4.9 4.9l-8.6 8.6a2 2 0 0 1-2.8-2.8l8.6-8.6a4 4 0 0 1-2.1-2.1Z\"/></svg></button><button type=\"button\" class=\"ds-chip ds-chip--resuelto\" aria-label=\"Agua, resuelto, 0 votos\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m5 12.5 4.5 4.5L19 7.5\"/></svg></button><button type=\"button\" class=\"ds-chip ds-chip--en_proceso is-selected\" aria-current=\"true\" aria-label=\"Baches, en proceso, 7 votos\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M14.5 5.5a4 4 0 0 0 4.9 4.9l-8.6 8.6a2 2 0 0 1-2.8-2.8l8.6-8.6a4 4 0 0 1-2.1-2.1Z\"/></svg><span class=\"ds-chip__votes\" aria-hidden=\"true\">7</span></button><button type=\"button\" class=\"ds-cluster\" aria-label=\"8 reportes juntos. Acercar para verlos\">8</button><button type=\"button\" class=\"ds-cluster ds-cluster--md\" aria-label=\"36 reportes juntos. Acercar para verlos\">36</button><button type=\"button\" class=\"ds-cluster ds-cluster--lg\" aria-label=\"192 reportes juntos. Acercar para verlos\">192</button></div>",
+      "css": ".ds-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; padding: 24px; border-radius: 10px; background: #e6efec; font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; } .ds-chip { --bg: #fffdf8; --bd: #1b2421; --fg: #1b2421; position: relative; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; background: none; color: var(--fg); cursor: pointer; } .ds-chip::before { content: ''; position: absolute; inset: 4px; border-radius: 50%; border: 2.5px solid var(--bd); background: var(--bg); box-shadow: 0 0 0 2px #fffdf8, 0 3px 6px rgb(5 30 26 / 0.35); transition: transform 120ms ease-out, box-shadow 120ms ease-out; } .ds-chip svg { position: relative; } .ds-chip--en_proceso { --bg: #0e5a4f; --bd: #0a463d; --fg: #f6f3ec; } .ds-chip--resuelto { --bg: #e3f1e8; --bd: #1d6b45; --fg: #1d6b45; } .ds-chip:hover::before { transform: scale(1.08); } .ds-chip.is-selected::before { transform: scale(1.14); box-shadow: 0 0 0 2px #fffdf8, 0 0 0 5px #e8a33d, 0 3px 8px rgb(5 30 26 / 0.4); } .ds-chip:focus-visible { outline: 3px solid #1b2421; outline-offset: 2px; border-radius: 50%; } .ds-chip__votes { position: absolute; top: -1px; right: -5px; z-index: 1; min-width: 20px; height: 20px; padding: 0 5px; border-radius: 6px; background: #1b2421; color: #fffdf8; box-shadow: 0 0 0 2px #fffdf8; font-size: 0.75rem; font-weight: 800; line-height: 20px; font-variant-numeric: tabular-nums; } .ds-cluster { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: #0a463d; color: #f6f3ec; box-shadow: 0 0 0 3px #fffdf8, 0 3px 8px rgb(5 30 26 / 0.35); font: 800 1rem/1 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; font-variant-numeric: tabular-nums; cursor: pointer; transition: transform 120ms ease-out; } .ds-cluster--md { width: 48px; height: 48px; } .ds-cluster--lg { width: 54px; height: 54px; font-size: 0.9375rem; } .ds-cluster:hover { transform: scale(1.06); } .ds-cluster:focus-visible { outline: 3px solid #1b2421; outline-offset: 5px; }"
+    },
+    {
+      "name": "Controles del mapa",
+      "kind": "nav",
+      "refersTo": "view-toggle",
+      "description": "Botón \"Filtros\" con conteo de activos y conmutador Mapa | Lista con aria-pressed, ambos de 44 px.",
+      "html": "<div class=\"ds-mapctl\"><button type=\"button\" class=\"ds-filter-btn\" aria-expanded=\"false\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 6.5h16M7 12h10M10 17.5h4\"/></svg><span>Filtros</span></button><button type=\"button\" class=\"ds-filter-btn is-active\" aria-expanded=\"false\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 6.5h16M7 12h10M10 17.5h4\"/></svg><span>Filtros</span><span class=\"ds-filter-count\">2</span></button><div class=\"ds-views\" role=\"group\" aria-label=\"Ver como\"><button type=\"button\" class=\"ds-view\" aria-pressed=\"true\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3.5 6.5 9 4.5l6 2 5.5-2v13L15 19.5l-6-2-5.5 2Z\"/><path d=\"M9 4.5v13M15 6.5v13\"/></svg>Mapa</button><button type=\"button\" class=\"ds-view\" aria-pressed=\"false\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M9 6.5h11M9 12h11M9 17.5h11\"/><circle cx=\"4.5\" cy=\"6.5\" r=\"1\" fill=\"currentColor\"/><circle cx=\"4.5\" cy=\"12\" r=\"1\" fill=\"currentColor\"/><circle cx=\"4.5\" cy=\"17.5\" r=\"1\" fill=\"currentColor\"/></svg>Lista</button></div></div>",
+      "css": ".ds-mapctl { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; } .ds-filter-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px 0 12px; border: 0; border-radius: 10px; background: #fffdf8; color: #1b2421; box-shadow: inset 0 0 0 2px #8a8576; font: 650 17px/1.2 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; cursor: pointer; } .ds-filter-btn:hover { box-shadow: inset 0 0 0 2px #4a5652; } .ds-filter-btn.is-active { background: #e6efec; color: #0a463d; box-shadow: inset 0 0 0 2px #0e5a4f; } .ds-filter-btn:focus-visible, .ds-view:focus-visible { outline: 3px solid #1b2421; outline-offset: 3px; } .ds-filter-count { display: grid; place-items: center; min-width: 24px; height: 24px; padding: 0 6px; border-radius: 6px; background: #0e5a4f; color: #f6f3ec; font-size: 0.875rem; font-weight: 800; } .ds-views { display: inline-flex; padding: 2px; border-radius: 10px; background: #fffdf8; box-shadow: inset 0 0 0 2px #8a8576; } .ds-view { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: #4a5652; font: 650 17px/1.2 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; cursor: pointer; transition: background-color 120ms ease-out; } .ds-view:hover { color: #1b2421; } .ds-view[aria-pressed='true'] { background: #0e5a4f; color: #f6f3ec; }"
+    },
+    {
+      "name": "Chip de filtro",
+      "kind": "chip",
+      "refersTo": "filter-chip",
+      "description": "Filtro en línea con aria-pressed: chapa de estado o icono de categoría; marcado con borde verde, fondo verde aviso, 650 y check.",
+      "html": "<div class=\"ds-fchips\"><button type=\"button\" class=\"ds-fchip\" aria-pressed=\"true\"><span class=\"ds-fchip__sw ds-fchip__sw--en_proceso\" aria-hidden=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M14.5 5.5a4 4 0 0 0 4.9 4.9l-8.6 8.6a2 2 0 0 1-2.8-2.8l8.6-8.6a4 4 0 0 1-2.1-2.1Z\"/></svg></span>En proceso<span class=\"ds-fchip__check\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m5 12.5 4.5 4.5L19 7.5\"/></svg></span></button><button type=\"button\" class=\"ds-fchip\" aria-pressed=\"false\"><span class=\"ds-fchip__sw\" aria-hidden=\"true\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3.5 13.5 6 5.5h12l2.5 8v5a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1Z\"/><path d=\"M3.5 13.5h5l1 2h5l1-2h5\"/></svg></span>Recibido</button><button type=\"button\" class=\"ds-fchip\" aria-pressed=\"false\"><span class=\"ds-fchip__icon\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3.5 13.5 6 5.5h12l2.5 8v5a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1Z\"/><path d=\"M3.5 13.5h5l1 2h5l1-2h5\"/></svg></span>Alumbrado</button></div>",
+      "css": ".ds-fchips { display: flex; flex-wrap: wrap; gap: 8px; font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; } .ds-fchip { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px 0 10px; border: 2px solid #8a8576; border-radius: 10px; background: #fffdf8; color: #1b2421; font: 400 1rem/1.2 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; cursor: pointer; transition: border-color 120ms ease-out, background-color 120ms ease-out; } .ds-fchip:hover { border-color: #4a5652; } .ds-fchip[aria-pressed='true'] { border-color: #0e5a4f; background: #e6efec; font-weight: 650; } .ds-fchip:focus-visible { outline: 3px solid #1b2421; outline-offset: 3px; } .ds-fchip__icon, .ds-fchip__check { display: inline-flex; color: #0e5a4f; } .ds-fchip__sw { display: grid; place-items: center; width: 24px; height: 24px; border: 2.5px solid #1b2421; border-radius: 50%; background: #fffdf8; color: #1b2421; } .ds-fchip__sw--en_proceso { border-color: #0a463d; background: #0e5a4f; color: #f6f3ec; }"
+    },
+    {
+      "name": "Hoja del reporte",
+      "kind": "card",
+      "refersTo": "map-sheet",
+      "description": "Hoja sobre papel con lo esencial y el voto; en móvil comparte el alto con el mapa (borde superior de 2 px, esquinas de 14 px arriba), en escritorio es una columna de 380 px sin sombra.",
+      "html": "<section class=\"ds-sheet\" aria-labelledby=\"ds-sheet-t\"><div class=\"ds-sheet__head\"><h2 id=\"ds-sheet-t\" class=\"ds-sheet__title\">Alumbrado</h2><button type=\"button\" class=\"ds-sheet__close\" aria-label=\"Cerrar el reporte\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M6 6l12 12M18 6 6 18\"/></svg></button></div><div class=\"ds-sheet__summary\"><span class=\"ds-sheet__thumb\"></span><div class=\"ds-sheet__body\"><p class=\"ds-sheet__meta\"><span class=\"ds-pill\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3.5 13.5 6 5.5h12l2.5 8v5a1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1Z\"/><path d=\"M3.5 13.5h5l1 2h5l1-2h5\"/></svg>Recibido</span><span>hace un momento</span></p><p class=\"ds-sheet__desc\">Luminaria fundida junto al estacionamiento norte.</p></div></div><a href=\"#\" class=\"ds-sheet__more\">Ver el reporte completo<svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m9.5 6 6 6-6 6\"/></svg></a></section>",
+      "css": ".ds-sheet { display: grid; gap: 14px; max-width: 390px; padding: 12px 20px 18px; border-top: 2px solid #8a8576; border-radius: 14px 14px 0 0; background: #f6f3ec; color: #1b2421; box-shadow: 0 -12px 32px rgb(27 36 33 / 0.22); font: 400 17px/1.5 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; } .ds-sheet__head { display: flex; align-items: center; justify-content: space-between; gap: 12px; } .ds-sheet__title { margin: 0; font-size: 1.375rem; line-height: 1.2; letter-spacing: -0.01em; font-weight: 700; } .ds-sheet__close { display: grid; place-items: center; width: 44px; height: 44px; margin-right: -8px; padding: 0; border: 0; border-radius: 10px; background: none; color: #1b2421; cursor: pointer; } .ds-sheet__close:hover { background: #e6efec; } .ds-sheet__close:focus-visible, .ds-sheet__more:focus-visible { outline: 3px solid #1b2421; outline-offset: 3px; } .ds-sheet__summary { display: grid; grid-template-columns: 72px 1fr; gap: 14px; align-items: start; } .ds-sheet__thumb { width: 72px; height: 72px; border-radius: 10px; background: #0a463d; } .ds-sheet__body { display: grid; gap: 6px; } .ds-sheet__meta { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; color: #4a5652; font-size: 0.875rem; } .ds-pill { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px 3px 8px; border: 2px solid #8a8576; border-radius: 999px; background: #fffdf8; color: #1b2421; font-weight: 650; } .ds-sheet__desc { margin: 0; font-size: 0.9375rem; line-height: 1.4; } .ds-sheet__more { display: flex; align-items: center; justify-content: space-between; min-height: 52px; padding: 0 16px; border-radius: 10px; background: #fffdf8; color: #0e5a4f; box-shadow: inset 0 0 0 2px #0e5a4f; font-weight: 700; text-decoration: none; } .ds-sheet__more:hover { background: #e6efec; color: #0a463d; }"
     }
   ],
   "narrative": {
@@ -371,6 +441,7 @@
       "Un campo verde que ocupa una banda (móvil) o una columna entera (escritorio) en la entrada y la portada, y una franja a todo lo ancho en las pantallas internas; nunca un adorno pequeño.",
       "Cuando hay un mapa real, ese mapa es el plano: se mueve el mapa bajo un pin ámbar fijo al centro, no el pin.",
       "Un solo pin ámbar por pantalla; el ámbar es el punto, no un color de interfaz.",
+      "En el mapa general cada reporte es una chapa redonda con el icono de su estado (no un pin) y los cercanos se juntan en una mancha verde con su número.",
       "Formulario directo sobre papel, sin tarjeta, con etiquetas encima del campo.",
       "Bordes de 2 px para todo lo que se toca o avisa; el color nunca es la única señal.",
       "Movimiento mínimo: el pin se asienta una vez y la interfaz responde en 120 ms."
@@ -378,7 +449,7 @@
     "rules": [
       {
         "name": "The Un Solo Pin Rule",
-        "body": "El ámbar aparece como el pin del plano (dibujado o real) y en detalles de respuesta (hover de enlace, selección, foco sobre oscuro). No se usa para botones, fondos, estados ni texto.",
+        "body": "El ámbar aparece como el pin del plano (dibujado o real) y en detalles de respuesta (hover de enlace, selección, foco sobre oscuro). No se usa para botones, fondos, estados ni texto. En el mapa general el anillo ámbar de 3 px alrededor de la chapa elegida es un detalle de respuesta (selección): marca cuál se abrió, nunca rellena una chapa ni distingue un estado.",
         "section": "colors"
       },
       {
@@ -408,7 +479,12 @@
       "Do mantener toda zona táctil en 44 px como mínimo, también los enlaces del pie y el botón de mostrar contraseña.",
       "Do usar el anillo de foco global (3 px en tinta, 3 px de separación) y cambiarlo a tinta de plano o ámbar solo sobre fondos oscuros.",
       "Do mostrar el estado pendiente dentro del propio botón: spinner más la acción en gerundio.",
-      "Do desactivar el asentamiento del pin y el pulso de estado con prefers-reduced-motion."
+      "Do desactivar el asentamiento del pin y el pulso de estado con prefers-reduced-motion.",
+      "Do mostrar cada reporte del mapa general como chapa de 44 px con relleno, borde e icono de su estado, y juntar los cercanos en una mancha verde hondo con su número.",
+      "Do marcar la chapa elegida solo con el anillo ámbar y no dibujar chapas cortadas por el borde o tapadas por un control.",
+      "Do desplegar los filtros en línea con el resultado en un pie fijo (\"Ver N reportes\") y dejar visible el mapa.",
+      "Do hacer que la hoja del mapa en móvil comparta el alto con el mapa en lugar de taparlo.",
+      "Do dar al voto aria-pressed con nombre fijo, conteo con aria-live y reversión con mensaje si falla."
     ],
     "donts": [
       "Don't poner el formulario en una tarjeta blanca centrada sobre fondo gris con el logo encima.",
@@ -418,7 +494,11 @@
       "Don't añadir modo oscuro ni fondos oscuros a pantalla completa.",
       "Don't usar iconos de otra familia o glifos tipográficos en lugar de los iconos dibujados.",
       "Don't usar marcadores arrastrables de mapa ni un asistente de varios pasos con barra de progreso para reportar.",
-      "Don't hacer que el aviso 911 se pueda cerrar u ocultar."
+      "Don't hacer que el aviso 911 se pueda cerrar u ocultar.",
+      "Don't rellenar chapas de ámbar ni usarlo para distinguir un estado en el mapa.",
+      "Don't distinguir estados solo por color: chapas, chips de filtro y pastillas llevan siempre el icono del estado.",
+      "Don't usar los marcadores azules de Leaflet ni pines por reporte en el mapa general.",
+      "Don't poner los filtros del mapa en un modal ni cambiar la etiqueta del voto según su estado."
     ]
   }
 }

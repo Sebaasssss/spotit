@@ -10,6 +10,7 @@ from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.serializers import TokenRefreshSerializer
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
+from . import auditoria
 from .cookies import (
     clear_refresh_cookie,
     enforce_same_origin,
@@ -78,16 +79,16 @@ class RefreshView(_PublicAuthView):
     def post(self, request):
         raw = get_refresh_cookie(request)
         if not raw:
-            return self._unauthorized("No hay una sesión iniciada.")
+            return self._unauthorized("No hay una sesión iniciada.", auditoria.SIN_COOKIE)
 
         serializer = TokenRefreshSerializer(data={"refresh": raw})
         try:
             serializer.is_valid(raise_exception=True)
         except (TokenError, InvalidToken, AuthenticationFailed):
             # ¿Es el token anterior de una rotación cuya respuesta se perdió?
-            reused = reuse_within_grace(raw)
+            reused, motivo = reuse_within_grace(raw)
             if reused is None:
-                return self._unauthorized(SESION_INVALIDA)
+                return self._unauthorized(SESION_INVALIDA, motivo, raw)
             user, refresh = reused
             return _session_response(user, refresh)
 
@@ -95,7 +96,7 @@ class RefreshView(_PublicAuthView):
         user_id = AccessToken(data["access"])["user_id"]
         user = get_user_model().objects.filter(pk=user_id, is_active=True).first()
         if user is None:
-            return self._unauthorized(SESION_INVALIDA)
+            return self._unauthorized(SESION_INVALIDA, auditoria.USUARIO_INACTIVO, raw)
 
         remember_rotation(raw, data["refresh"])
         response = Response(
@@ -104,12 +105,12 @@ class RefreshView(_PublicAuthView):
         set_refresh_cookie(response, data["refresh"])
         return response
 
-    def _unauthorized(self, detail):
+    def _unauthorized(self, detail, motivo, raw=None):
         response = Response(
             {"detail": detail}, status=status.HTTP_401_UNAUTHORIZED, headers=NO_STORE
         )
         clear_refresh_cookie(response)
-        return response
+        return auditoria.marcar_401(response, motivo, raw)
 
 
 class LogoutView(_PublicAuthView):
