@@ -14,6 +14,7 @@ import {
   postJson,
   setRefreshHandler,
 } from '../api/client'
+import { olvidarCacheApi, prepararCacheParaUsuario } from '../offline/cacheApi'
 
 export type Rol = 'ciudadano' | 'administrador'
 
@@ -85,7 +86,9 @@ function emit(user: User | null, reason?: EndReason) {
   for (const listener of listeners) listener(user, reason)
 }
 
-function applySession({ access, user }: SessionPayload) {
+/** Antes de usar la sesión: si la caché de la API es de otra persona, se borra. */
+async function applySession({ access, user }: SessionPayload) {
+  await prepararCacheParaUsuario(user.id)
   accessTokenStore.set(access)
   profileCache.save(user)
   emit(user)
@@ -94,6 +97,7 @@ function applySession({ access, user }: SessionPayload) {
 export function clearLocalSession(reason?: EndReason) {
   accessTokenStore.set(null)
   profileCache.clear()
+  void olvidarCacheApi()
   emit(null, reason)
 }
 
@@ -105,7 +109,7 @@ export async function login(email: string, password: string): Promise<User> {
     postJson({ email, password }),
     { auth: false },
   )
-  applySession(session)
+  await applySession(session)
   return session.user
 }
 
@@ -117,7 +121,7 @@ export async function register(data: {
   const session = await apiFetch<SessionPayload>('/api/auth/register/', postJson(data), {
     auth: false,
   })
-  applySession(session)
+  await applySession(session)
   return session.user
 }
 
@@ -143,7 +147,7 @@ export function refreshSession(): Promise<SessionPayload | null> {
         { method: 'POST' },
         { auth: false },
       )
-      applySession(session)
+      await applySession(session)
       return session
     } catch (error) {
       if (error instanceof ApiError && error.status === 401) {
@@ -160,8 +164,13 @@ export function refreshSession(): Promise<SessionPayload | null> {
 }
 
 export async function logout(): Promise<void> {
+  // Una renovación en curso respondería después del cierre con una cookie nueva y volvería a
+  // abrir la sesión: se espera a que termine y el cierre toma el mismo candado.
+  await inflight?.catch(() => undefined)
   try {
-    await apiFetch<void>('/api/auth/logout/', { method: 'POST' }, { auth: false })
+    await withRefreshLock(() =>
+      apiFetch<void>('/api/auth/logout/', { method: 'POST' }, { auth: false }),
+    )
   } catch (error) {
     // Sin conexión no se puede invalidar el refresh en el servidor; la sesión local se cierra igual.
     if (!(error instanceof NetworkError) && !(error instanceof ApiError)) throw error

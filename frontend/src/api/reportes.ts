@@ -1,12 +1,14 @@
 import {
   accessTokenStore,
   apiFetch,
+  apiFetchConOrigen,
   ApiError,
   NetworkError,
   prepareAccessToken,
   renewAccessToken,
   toApiError,
 } from './client'
+import { invalidarTrasCrear, invalidarTrasVotar } from '../offline/cacheApi'
 
 export type EstadoReporte = 'recibido' | 'en_proceso' | 'resuelto'
 export type OrigenUbicacion = 'gps' | 'manual'
@@ -85,26 +87,38 @@ export function fetchMisReportes(page = 1, signal?: AbortSignal) {
   return apiFetch<Pagina<Reporte>>(`/api/reportes/mios/?page=${page}`, { signal })
 }
 
+/** Como fetchMisReportes, diciendo si es la copia guardada (sin conexión) y de cuándo. */
+export function fetchMisReportesConOrigen(page = 1, signal?: AbortSignal) {
+  return apiFetchConOrigen<Pagina<Reporte>>(`/api/reportes/mios/?page=${page}`, { signal })
+}
+
 export function fetchPuntosMapa(filtros: FiltrosMapa, signal?: AbortSignal) {
+  return apiFetchConOrigen<{ results: PuntoMapa[]; truncado: boolean }>(urlMapa(filtros), {
+    signal,
+  })
+}
+
+function urlMapa(filtros: FiltrosMapa) {
   const params = new URLSearchParams()
   if (filtros.categorias.length) params.set('categoria', filtros.categorias.join(','))
   if (filtros.estados.length) params.set('estado', filtros.estados.join(','))
   const query = params.toString()
-  return apiFetch<{ results: PuntoMapa[]; truncado: boolean }>(
-    `/api/reportes/mapa/${query ? `?${query}` : ''}`,
-    { signal },
-  )
+  return `/api/reportes/mapa/${query ? `?${query}` : ''}`
 }
 
 /** Vota (`true`) o quita el voto (`false`). Repetirlo no falla: el servidor es idempotente. */
-export function votarReporte(id: number, votar: boolean) {
-  return apiFetch<ResultadoVoto>(`/api/reportes/${id}/voto/`, {
+export async function votarReporte(id: number, votar: boolean) {
+  const resultado = await apiFetch<ResultadoVoto>(`/api/reportes/${id}/voto/`, {
     method: votar ? 'POST' : 'DELETE',
   })
+  void invalidarTrasVotar(id)
+  return resultado
 }
 
 export function fetchReporte(id: number | string, signal?: AbortSignal) {
-  return apiFetch<Reporte>(`/api/reportes/${encodeURIComponent(String(id))}/`, { signal })
+  return apiFetchConOrigen<Reporte>(`/api/reportes/${encodeURIComponent(String(id))}/`, {
+    signal,
+  })
 }
 
 function aFormData(datos: NuevoReporte): FormData {
@@ -121,38 +135,63 @@ function aFormData(datos: NuevoReporte): FormData {
 
 type Progreso = (fraccion: number) => void
 
+type RespuestaSubida = { status: number; body: string; retryAfter: string | null }
+
 /** POST con XMLHttpRequest: fetch no informa el progreso de subida. */
-function enviar(form: FormData, onProgress?: Progreso): Promise<{ status: number; body: string }> {
+function enviar(
+  form: FormData,
+  clave: string | undefined,
+  onProgress?: Progreso,
+): Promise<RespuestaSubida> {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest()
     xhr.open('POST', '/api/reportes/')
     xhr.setRequestHeader('Accept', 'application/json')
+    // Misma clave en cada intento: si la respuesta se perdió, el servidor no lo duplica.
+    if (clave) xhr.setRequestHeader('Idempotency-Key', clave)
     const token = accessTokenStore.get()
     if (token) xhr.setRequestHeader('Authorization', `Bearer ${token}`)
     xhr.upload.onprogress = (event) => {
       if (event.lengthComputable && onProgress) onProgress(event.loaded / event.total)
     }
-    xhr.onload = () => resolve({ status: xhr.status, body: xhr.responseText })
+    xhr.onload = () =>
+      resolve({
+        status: xhr.status,
+        body: xhr.responseText,
+        retryAfter: xhr.getResponseHeader('Retry-After'),
+      })
     xhr.onerror = () => reject(new NetworkError())
     xhr.ontimeout = () => reject(new NetworkError())
+    xhr.onabort = () => reject(new NetworkError())
     xhr.timeout = 120_000
     xhr.send(form)
   })
 }
 
-export async function crearReporte(datos: NuevoReporte, onProgress?: Progreso): Promise<Reporte> {
+/**
+ * Sube un reporte. Con `clave` (la de la cola) el envío se puede repetir sin duplicarlo:
+ * si ya llegó, el servidor responde 200 con el mismo reporte.
+ */
+export async function crearReporte(
+  datos: NuevoReporte,
+  onProgress?: Progreso,
+  clave?: string,
+): Promise<Reporte> {
   const form = aFormData(datos)
   const renovado = await prepareAccessToken()
-  let respuesta = await enviar(form, onProgress)
+  let respuesta = await enviar(form, clave, onProgress)
   if (respuesta.status === 401 && !renovado && (await renewAccessToken())) {
-    respuesta = await enviar(form, onProgress)
+    respuesta = await enviar(form, clave, onProgress)
   }
-  const response = new Response(respuesta.body || null, {
-    status: respuesta.status,
-    headers: { 'Content-Type': 'application/json' },
-  })
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+  if (respuesta.retryAfter) headers['Retry-After'] = respuesta.retryAfter
+  // 0 = sin respuesta (p. ej. bloqueada): igual que un corte de red.
+  if (respuesta.status === 0) throw new NetworkError()
+  const response = new Response(respuesta.body || null, { status: respuesta.status, headers })
   if (!response.ok) throw await toApiError(response)
-  return (await response.json()) as Reporte
+  const reporte = (await response.json()) as Reporte
+  void invalidarTrasCrear()
+  return reporte
 }
 
 export function esErrorDeFoto(error: unknown): string | null {
