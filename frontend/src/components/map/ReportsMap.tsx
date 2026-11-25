@@ -121,7 +121,8 @@ export function ReportsMap({ puntos, nombres, seleccionado, onSelect, onSelectGr
     L.control
       .zoom({ zoomInText: ZOOM_MAS, zoomOutText: ZOOM_MENOS, zoomInTitle: 'Acercar', zoomOutTitle: 'Alejar' })
       .addTo(map)
-    L.tileLayer(TESELAS, { maxZoom: ZOOM_MAX, attribution: ATRIBUCION }).addTo(map)
+    // crossOrigin: respuestas CORS (no opacas) para que el service worker las guarde sin inflar la cuota.
+    L.tileLayer(TESELAS, { maxZoom: ZOOM_MAX, attribution: ATRIBUCION, crossOrigin: true }).addTo(map)
     capa.current = L.layerGroup().addTo(map)
     // También al cambiar de tamaño (la hoja encoge el mapa): las chapas del borde se recalculan.
     map.on('moveend resize', () => dibujar.current())

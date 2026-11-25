@@ -21,6 +21,10 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'prompt',
+      // SW propio (src/sw.ts) solo para la caché: plugins de Workbox que el SW generado no permite.
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.ts',
       // El registro lo hace <UpdatePrompt /> con virtual:pwa-register/react.
       injectRegister: false,
       includeAssets: ['favicon.ico', 'logo.svg', 'apple-touch-icon-180x180.png'],
@@ -51,13 +55,9 @@ export default defineConfig({
           },
         ],
       },
-      workbox: {
-        // Precache solo del shell. Las estrategias para API y tiles llegan en su fase.
+      injectManifest: {
+        // Precache del shell (incluye las pantallas que se cargan aparte, para abrirlas sin red).
         globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2}'],
-        navigateFallback: '/index.html',
-        // Estas rutas las atiende Django, no la SPA.
-        navigateFallbackDenylist: [/^\/api\//, /^\/admin(\/|$)/, /^\/django-static\//],
-        cleanupOutdatedCaches: true,
       },
     }),
   ],

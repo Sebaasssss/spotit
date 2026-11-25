@@ -81,7 +81,8 @@ export function MapView({
         })
         .addTo(map)
     }
-    L.tileLayer(TESELAS, { maxZoom: 19, attribution: ATRIBUCION }).addTo(map)
+    // crossOrigin: respuestas CORS (no opacas) para que el service worker las guarde sin inflar la cuota.
+    L.tileLayer(TESELAS, { maxZoom: 19, attribution: ATRIBUCION, crossOrigin: true }).addTo(map)
     map.on('moveend', () => {
       if (programatico.current) {
         programatico.current = false
