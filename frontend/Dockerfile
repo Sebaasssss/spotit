@@ -9,6 +9,8 @@ RUN npm ci --no-audit --no-fund
 
 COPY . .
 # Las variables VITE_* se incrustan aquí, en tiempo de build: nunca poner secretos.
+ARG VITE_MAPA_CENTRO=""
+ENV VITE_MAPA_CENTRO=$VITE_MAPA_CENTRO
 RUN npm run build
 
 # --- Etapa 2: nginx sin root sirviendo el build y haciendo proxy de /api ---
