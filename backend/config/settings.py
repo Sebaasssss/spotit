@@ -61,6 +61,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # Una línea por cada 401 con ruta, motivo y prefijo del jti (sin datos personales).
+    "accounts.auditoria.Registro401Middleware",
 ]
 
 ROOT_URLCONF = "config.urls"

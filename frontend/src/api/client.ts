@@ -1,6 +1,7 @@
 /**
- * Cliente HTTP de la API. Añade el access token (que solo vive en memoria) y, ante un 401,
- * intenta renovar la sesión una vez antes de rendirse.
+ * Cliente HTTP de la API. Añade el access token (que solo vive en memoria). Si aún no hay
+ * token (arranque en frío) espera la renovación antes de enviar; si el token caducó y el
+ * servidor responde 401, renueva una vez y repite. Ambas esperas tienen límite de tiempo.
  */
 
 export type FieldErrors = Record<string, string[]>
@@ -45,9 +46,64 @@ export function setRefreshHandler(handler: RefreshHandler | null) {
   refreshHandler = handler
 }
 
-/** Renueva el access token (lo usan peticiones que no pasan por apiFetch, como las subidas). */
+/** La renovación no terminó a tiempo (red muy lenta). Se trata como "sin conexión". */
+export class SlowNetworkError extends NetworkError {
+  constructor() {
+    super()
+    this.name = 'SlowNetworkError'
+    this.message = 'La conexión está muy lenta. Inténtalo de nuevo en un momento.'
+  }
+}
+
+/**
+ * Tiempo máximo que una petición espera a que se renueve la sesión. Pasado ese tiempo la
+ * petición se rinde con SlowNetworkError (la renovación sigue en segundo plano y la aplica
+ * cuando llegue), para que una red lenta no deje la pantalla colgada.
+ */
+let refreshWaitMs = 8_000
+
+export function setRefreshWaitMs(ms: number) {
+  refreshWaitMs = ms
+}
+
+function withLimit<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new SlowNetworkError()), ms)
+    promise.then(
+      (value) => {
+        clearTimeout(timer)
+        resolve(value)
+      },
+      (error: unknown) => {
+        clearTimeout(timer)
+        reject(error)
+      },
+    )
+  })
+}
+
+/**
+ * Renueva el access token con límite de tiempo. Devuelve null si ya no hay sesión válida;
+ * lanza NetworkError sin red y SlowNetworkError si tarda demasiado.
+ * Lo usan también las peticiones que no pasan por apiFetch, como las subidas.
+ */
 export async function renewAccessToken(): Promise<string | null> {
-  return refreshHandler ? refreshHandler() : null
+  return refreshHandler ? withLimit(refreshHandler(), refreshWaitMs) : null
+}
+
+/**
+ * Arranque en frío: con el perfil guardado la app entra antes de tener access token (solo
+ * vive en memoria). En vez de enviar una petición que seguro recibe 401, espera la
+ * renovación que ya está en curso (o la inicia).
+ *
+ * Devuelve true si tuvo que renovar, para no repetir la renovación ante un 401 posterior.
+ * Sin red lanza NetworkError, igual que la petición habría fallado sin la espera.
+ */
+export async function prepareAccessToken(): Promise<boolean> {
+  if (accessToken || !refreshHandler) return false
+  const token = await renewAccessToken()
+  if (!token) throw new ApiError(401, STATUS_MESSAGES[401])
+  return true
 }
 
 // --- Errores ---
@@ -119,10 +175,12 @@ export async function apiFetch<T>(
   init: RequestInit = {},
   { auth = true }: Options = {},
 ): Promise<T> {
+  const renewedFirst = auth ? await prepareAccessToken() : false
   let response = await send(path, init, auth)
 
-  if (response.status === 401 && auth && refreshHandler) {
-    const renewed = await refreshHandler()
+  // El access caducó entre peticiones: se renueva una vez y se repite.
+  if (response.status === 401 && auth && !renewedFirst) {
+    const renewed = await renewAccessToken()
     if (renewed) response = await send(path, init, auth)
   }
 
