@@ -15,6 +15,8 @@ const brand = '#0E5A4F'
 const paper = '#F6F3EC'
 
 export default defineConfig({
+  // El .env vive en la raíz del repo (lo comparte con Docker). Vite solo expone VITE_*.
+  envDir: '..',
   plugins: [
     react(),
     VitePWA({
@@ -68,6 +70,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/test/setup.ts'],
+    include: ['src/**/*.test.{ts,tsx}'],
     css: false,
   },
 })

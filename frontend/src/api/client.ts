@@ -45,6 +45,11 @@ export function setRefreshHandler(handler: RefreshHandler | null) {
   refreshHandler = handler
 }
 
+/** Renueva el access token (lo usan peticiones que no pasan por apiFetch, como las subidas). */
+export async function renewAccessToken(): Promise<string | null> {
+  return refreshHandler ? refreshHandler() : null
+}
+
 // --- Errores ---
 
 const STATUS_MESSAGES: Record<number, string> = {
