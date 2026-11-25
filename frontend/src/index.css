@@ -706,22 +706,6 @@ a:hover {
   overflow-wrap: anywhere;
 }
 
-.offline-pill {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 14px;
-  border-radius: var(--radius-sm);
-  background: var(--info-tint);
-  border: 2px solid var(--field);
-  font-weight: 600;
-}
-
-.offline-pill svg {
-  flex: none;
-  color: var(--field);
-}
-
 @media (min-width: 900px) {
   .home__field {
     padding: 24px 48px 44px;

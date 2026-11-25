@@ -2,7 +2,6 @@ import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router'
 import { ApiError, NetworkError } from '../api/client'
 import {
-  crearReporte,
   DESCRIPCION_MAX,
   DESCRIPCION_MIN,
   fetchCategorias,
@@ -17,6 +16,8 @@ import { LocationPicker, type Ubicacion } from '../components/report/LocationPic
 import { PhotoPicker } from '../components/report/PhotoPicker'
 import type { FotoPreparada } from '../lib/foto'
 import { useOnline } from '../lib/useOnline'
+import { ColaLlena, SinEspacio } from '../offline/cola'
+import { sincronizador } from '../offline/sincronizador'
 
 type Campo = 'foto' | 'categoria' | 'descripcion' | 'ubicacion'
 type Errores = Partial<Record<Campo, string>>
@@ -111,44 +112,61 @@ export function NewReport() {
     }
 
     setProgreso(0)
+    const categoriaNombre =
+      (categorias.kind === 'ok' && categorias.categorias.find((c) => c.slug === categoria)?.nombre) ||
+      categoria
     try {
-      const reporte = await crearReporte(
+      // Siempre pasa por la cola: se guarda en el teléfono y luego se intenta enviar.
+      // Si la señal falla a mitad, se queda guardado y se envía solo (sin duplicarse).
+      const resultado = await sincronizador.guardarYEnviar(
+        user!.id,
         {
           categoria,
+          categoriaNombre,
           descripcion: descripcion.trim(),
-          foto: foto!.blob,
           latitud: ubicacion!.lat,
           longitud: ubicacion!.lng,
           precision_m: ubicacion!.precision,
           origen_ubicacion: ubicacion!.origen,
         },
+        foto!.blob,
         (f) => setProgreso(f),
       )
-      navigate('/reportes', { replace: true, state: { nuevo: reporte.id } })
+      if (resultado.tipo === 'enviado') {
+        navigate('/reportes', { replace: true, state: { nuevo: resultado.reporte.id } })
+      } else if (resultado.tipo === 'guardado') {
+        navigate('/reportes', { replace: true, state: { guardado: true } })
+      } else {
+        setProgreso(null)
+        mostrarRechazo(resultado.error)
+      }
     } catch (error) {
       setProgreso(null)
-      if (error instanceof ApiError) {
-        const servidor: Errores = {}
-        for (const campo of ['foto', 'categoria', 'descripcion'] as const) {
-          if (error.fieldErrors[campo]) servidor[campo] = error.fieldErrors[campo].join(' ')
-        }
-        if (error.fieldErrors.latitud || error.fieldErrors.longitud)
-          servidor.ubicacion = 'La ubicación no es válida. Vuelve a elegir el punto.'
-        if (Object.keys(servidor).length) {
-          setErrores(servidor)
-          refs[ORDEN.find((c) => servidor[c])!].current?.focus()
-          return
-        }
-        setFormError(
-          error.status === 403
-            ? 'Tu cuenta no puede crear reportes.'
-            : error.message,
-        )
-      } else if (error instanceof NetworkError) {
-        setFormError('No hay conexión. Tu reporte no se envió; inténtalo cuando vuelva la señal.')
-      } else {
-        setFormError('Algo salió mal. Inténtalo de nuevo.')
+      setFormError(
+        error instanceof ColaLlena || error instanceof SinEspacio
+          ? error.message
+          : 'No pudimos guardar el reporte en este teléfono. Inténtalo de nuevo.',
+      )
+    }
+  }
+
+  /** El servidor rechazó los datos: se marcan los campos para corregirlos aquí mismo. */
+  const mostrarRechazo = (error: unknown) => {
+    if (error instanceof ApiError) {
+      const servidor: Errores = {}
+      for (const campo of ['foto', 'categoria', 'descripcion'] as const) {
+        if (error.fieldErrors[campo]) servidor[campo] = error.fieldErrors[campo].join(' ')
       }
+      if (error.fieldErrors.latitud || error.fieldErrors.longitud)
+        servidor.ubicacion = 'La ubicación no es válida. Vuelve a elegir el punto.'
+      if (Object.keys(servidor).length) {
+        setErrores(servidor)
+        refs[ORDEN.find((c) => servidor[c])!].current?.focus()
+        return
+      }
+      setFormError(error.status === 403 ? 'Tu cuenta no puede crear reportes.' : error.message)
+    } else {
+      setFormError('Algo salió mal. Inténtalo de nuevo.')
     }
   }
 
@@ -188,7 +206,8 @@ export function NewReport() {
         <form className="form form--report" onSubmit={(e) => void onSubmit(e)} noValidate>
           {!online && (
             <FormAlert tone="info" icon={<CloudOffIcon size={20} />}>
-              Estás sin conexión. Puedes llenar el reporte, pero necesitas internet para enviarlo.
+              Estás sin conexión. Puedes enviar el reporte igual: se guarda en este teléfono y se
+              envía solo cuando vuelva la señal.
             </FormAlert>
           )}
           {formError && <FormAlert>{formError}</FormAlert>}

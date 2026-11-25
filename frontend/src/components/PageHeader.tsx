@@ -1,5 +1,6 @@
 import { Link } from 'react-router'
 import { ArrowLeftIcon } from './Icons'
+import { EstadoConexion } from './offline/EstadoConexion'
 
 type Props = {
   title: string
@@ -21,6 +22,7 @@ export function PageHeader({ title, back, lead }: Props) {
           SpotIt
         </span>
       </div>
+      <EstadoConexion />
       <header className="page-head">
         <h1 className="page-head__title">{title}</h1>
         {lead && <p className="page-head__lead">{lead}</p>}

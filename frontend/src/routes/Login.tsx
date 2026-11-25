@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router'
 import { ApiError, NetworkError } from '../api/client'
 import { useAuth } from '../auth/context'
 import { AuthLayout } from '../components/AuthLayout'
 import { FormAlert, PasswordField, SubmitButton, TextField } from '../components/form/fields'
 import { useForm } from '../components/form/useForm'
-import { CheckIcon, CloudOffIcon } from '../components/Icons'
+import { CheckIcon, CloudOffIcon, CloudUpIcon } from '../components/Icons'
+import { cola } from '../offline/cola'
 import { useOnline } from '../lib/useOnline'
 import { validateEmail, validateLoginPassword } from '../lib/validation'
 
@@ -17,6 +18,19 @@ export function Login() {
   const [pending, setPending] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
   const [badCredentials, setBadCredentials] = useState(false)
+  const [guardados, setGuardados] = useState(0)
+
+  // Reportes de alguien que salió (o cuya sesión expiró) con la opción "Guardarlos".
+  useEffect(() => {
+    let vigente = true
+    cola.contar().then(
+      (n) => vigente && setGuardados(n),
+      () => undefined, // sin IndexedDB no hay nada guardado
+    )
+    return () => {
+      vigente = false
+    }
+  }, [])
 
   const form = useForm(
     { email: '', password: '' },
@@ -72,6 +86,13 @@ export function Login() {
             {reason === 'logout'
               ? 'Cerraste sesión. Vuelve cuando quieras.'
               : 'Tu sesión expiró. Vuelve a entrar para seguir.'}
+          </FormAlert>
+        )}
+        {guardados > 0 && (
+          <FormAlert tone="info" icon={<CloudUpIcon size={20} />}>
+            {guardados === 1
+              ? 'Hay 1 reporte guardado en este teléfono sin enviar. Entra con la cuenta que lo creó y se enviará solo.'
+              : `Hay ${guardados} reportes guardados en este teléfono sin enviar. Entra con la cuenta que los creó y se enviarán solos.`}
           </FormAlert>
         )}
         {/* Sin red manda el aviso de conexión; un error anterior solo confundiría. */}

@@ -9,22 +9,30 @@ import { MapView } from '../components/report/MapView'
 import { StatusPill } from '../components/report/StatusPill'
 import { VoteButton } from '../components/report/VoteButton'
 import { fechaCompleta } from '../lib/fechas'
+import { useOnline } from '../lib/useOnline'
+import { useApiActualizada } from '../offline/useApiActualizada'
+import { NotaGuardado } from '../components/offline/NotaGuardado'
 import { formatoCoordenadas } from '../lib/mapa'
 
 type Estado =
   | { kind: 'loading' }
-  | { kind: 'ok'; reporte: Reporte }
+  | { kind: 'ok'; reporte: Reporte; copia: Date | null; sinConexion: boolean }
   | { kind: 'error'; message: string; retry: boolean }
 
 export function ReportDetail() {
   const { id = '' } = useParams()
   const [estado, setEstado] = useState<Estado>({ kind: 'loading' })
   const [intento, setIntento] = useState(0)
+  const online = useOnline()
+  useApiActualizada((ruta) => {
+    if (ruta === `/api/reportes/${id}/`) setIntento((n) => n + 1)
+  })
 
   useEffect(() => {
     const controller = new AbortController()
     fetchReporte(id, controller.signal).then(
-      (reporte) => setEstado({ kind: 'ok', reporte }),
+      ({ data: reporte, guardado, sinConexion }) =>
+        setEstado({ kind: 'ok', reporte, copia: guardado, sinConexion }),
       (error: unknown) => {
         if (controller.signal.aborted) return
         if (error instanceof ApiError && error.status === 404) {
@@ -85,6 +93,9 @@ export function ReportDetail() {
           </FormAlert>
         )}
 
+        {estado.kind === 'ok' && (estado.sinConexion || (!online && estado.copia)) && (
+          <NotaGuardado fecha={estado.copia} />
+        )}
         {estado.kind === 'ok' && <Detalle reporte={estado.reporte} />}
       </main>
     </div>

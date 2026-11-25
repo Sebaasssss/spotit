@@ -11,6 +11,7 @@ import {
   type Reporte,
 } from '../api/reportes'
 import { useAuth } from '../auth/context'
+import { NotaGuardado } from '../components/offline/NotaGuardado'
 import { FormAlert } from '../components/form/fields'
 import {
   CategoriaIcon,
@@ -30,6 +31,8 @@ import { PageHeader } from '../components/PageHeader'
 import { StatusPill } from '../components/report/StatusPill'
 import { VoteButton } from '../components/report/VoteButton'
 import { haceCuanto } from '../lib/fechas'
+import { useOnline } from '../lib/useOnline'
+import { useApiActualizada } from '../offline/useApiActualizada'
 import '../map.css'
 
 const ESTADOS: { valor: EstadoReporte; nombre: string }[] = [
@@ -44,7 +47,15 @@ const lista = (valor: string | null) => (valor ? valor.split(',').filter(Boolean
 
 type Carga =
   | { kind: 'loading' }
-  | { kind: 'ok'; puntos: PuntoMapa[]; truncado: boolean; clave: string }
+  | {
+      kind: 'ok'
+      puntos: PuntoMapa[]
+      truncado: boolean
+      clave: string
+      /** Copia guardada por el service worker (null si vino de la red). */
+      guardado: Date | null
+      sinConexion: boolean
+    }
   | { kind: 'error'; message: string; offline: boolean; clave: string }
 
 function mensajeError(error: unknown, que: string) {
@@ -106,7 +117,8 @@ export function MapPage() {
   useEffect(() => {
     const controller = new AbortController()
     fetchPuntosMapa({ estados, categorias }, controller.signal).then(
-      ({ results, truncado }) => setCarga({ kind: 'ok', puntos: results, truncado, clave }),
+      ({ data: { results, truncado }, guardado, sinConexion }) =>
+        setCarga({ kind: 'ok', puntos: results, truncado, clave, guardado, sinConexion }),
       (error: unknown) => {
         if (controller.signal.aborted) return
         setCarga({
@@ -122,6 +134,11 @@ export function MapPage() {
   }, [clave])
 
   const puntos = carga.kind === 'ok' ? carga.puntos : []
+
+  // La copia guardada se mostró al instante; si el servidor trae otra, se vuelve a pedir.
+  useApiActualizada((ruta) => {
+    if (ruta === '/api/reportes/mapa/') setIntento((n) => n + 1)
+  })
 
   // El conteo confirmado de un voto se refleja en la chapa del mapa y en la lista.
   const onVoto = useCallback((id: number, votos: number) => {
@@ -488,6 +505,7 @@ function MapaAviso({
   onQuitarFiltros: () => void
   puedeReportar: boolean
 }) {
+  const online = useOnline()
   if (oculto) return null
   if (carga.kind === 'loading' || (actualizando && carga.kind !== 'error')) {
     return (
@@ -512,6 +530,13 @@ function MapaAviso({
             Haz el primer reporte
           </Link>
         )}
+      </div>
+    )
+  }
+  if (carga.kind === 'ok' && (carga.sinConexion || (!online && carga.guardado))) {
+    return (
+      <div className="rmap__notice rmap__notice--quiet">
+        <NotaGuardado fecha={carga.guardado} />
       </div>
     )
   }
@@ -675,7 +700,7 @@ function ListaReportes({
 
 type CargaHoja =
   | { kind: 'loading' }
-  | { kind: 'ok'; reporte: Reporte }
+  | { kind: 'ok'; reporte: Reporte; copia: Date | null; sinConexion: boolean }
   | { kind: 'error'; message: string; retry: boolean }
 
 function HojaReporte({
@@ -693,11 +718,16 @@ function HojaReporte({
 }) {
   const [carga, setCarga] = useState<CargaHoja>({ kind: 'loading' })
   const [intento, setIntento] = useState(0)
+  const online = useOnline()
+  useApiActualizada((ruta) => {
+    if (ruta === `/api/reportes/${id}/`) setIntento((n) => n + 1)
+  })
 
   useEffect(() => {
     const controller = new AbortController()
     fetchReporte(id, controller.signal).then(
-      (reporte) => setCarga({ kind: 'ok', reporte }),
+      ({ data: reporte, guardado, sinConexion }) =>
+        setCarga({ kind: 'ok', reporte, copia: guardado, sinConexion }),
       (error: unknown) => {
         if (controller.signal.aborted) return
         const noExiste = error instanceof ApiError && error.status === 404
@@ -762,6 +792,7 @@ function HojaReporte({
 
       {carga.kind === 'ok' && (
         <>
+          {(carga.sinConexion || (!online && carga.copia)) && <NotaGuardado fecha={carga.copia} />}
           <div className="sheet__summary">
             <img
               className="sheet__thumb"

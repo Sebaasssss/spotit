@@ -4,7 +4,6 @@ import { BackendStatus } from '../components/BackendStatus'
 import { Link } from 'react-router'
 import {
   ChevronRightIcon,
-  CloudOffIcon,
   ListIcon,
   LogOutIcon,
   MapIcon,
@@ -13,12 +12,19 @@ import {
 } from '../components/Icons'
 import { MapBand } from '../components/MapBand'
 import { useOnline } from '../lib/useOnline'
+import { DialogoSalir } from '../components/offline/DialogoSalir'
+import { EstadoConexion } from '../components/offline/EstadoConexion'
+import { sincronizador } from '../offline/sincronizador'
+import { useCola } from '../offline/useCola'
 
 const ROLE_LABEL = { ciudadano: 'Ciudadano', administrador: 'Administrador' } as const
 
 export function Home() {
   const { user, offline, logout } = useAuth()
   const [leaving, setLeaving] = useState(false)
+  const [preguntar, setPreguntar] = useState(false)
+  const [saliendo, setSaliendo] = useState<'guardar' | 'borrar' | null>(null)
+  const { pendientes } = useCola()
   const online = useOnline()
   const showOffline = offline || !online
 
@@ -26,8 +32,20 @@ export function Home() {
   const firstName = user.nombre.split(' ')[0] || user.nombre
 
   const onLogout = async () => {
+    // Con reportes sin enviar, primero se pregunta qué hacer con ellos.
+    if (pendientes.length) {
+      setPreguntar(true)
+      return
+    }
     setLeaving(true)
     // Al cerrar la sesión, <RequireAuth> lleva a /entrar, que muestra el motivo.
+    await logout()
+  }
+
+  const salir = async (modo: 'guardar' | 'borrar') => {
+    setSaliendo(modo)
+    setLeaving(true)
+    if (modo === 'borrar') await sincronizador.borrarTodos(user.id)
     await logout()
   }
 
@@ -56,13 +74,9 @@ export function Home() {
         </div>
       </header>
 
+      <EstadoConexion />
+
       <main className="home__main">
-        {showOffline && (
-          <p className="offline-pill" role="status">
-            <CloudOffIcon size={18} />
-            Sin conexión. Tu sesión sigue guardada en este dispositivo.
-          </p>
-        )}
 
         <nav className="home__actions" aria-label="Acciones principales">
           {user.rol === 'ciudadano' && (
@@ -114,6 +128,15 @@ export function Home() {
         {/* Diagnóstico técnico: solo en desarrollo o para administradores. */}
         {!showOffline && (import.meta.env.DEV || user.rol === 'administrador') && <BackendStatus />}
       </main>
+
+      <DialogoSalir
+        abierto={preguntar}
+        pendientes={pendientes.length}
+        saliendo={saliendo}
+        onGuardar={() => void salir('guardar')}
+        onBorrar={() => void salir('borrar')}
+        onCancelar={() => setPreguntar(false)}
+      />
     </div>
   )
 }

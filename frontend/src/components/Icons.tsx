@@ -281,3 +281,22 @@ export function CategoriaIcon({ icono, ...p }: IconProps & { icono: string }) {
     CategoriaIcons[icono as keyof typeof CategoriaIcons] ?? CategoriaIcons.otro
   return <Componente {...p} />
 }
+
+/** Nube con flecha hacia arriba: guardado en el teléfono, por enviar. */
+export const CloudUpIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M7.5 18.5h-.5a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 17.9 9.1 4 4 0 0 1 17.5 18.5h-1" />
+    <path d="M12 20.5v-8" />
+    <path d="M9 15.5l3-3 3 3" />
+  </Icon>
+)
+
+export const TrashIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4.5 7h15" />
+    <path d="M9.5 7V4.5h5V7" />
+    <path d="M6.5 7l1 12.5h9l1-12.5" />
+    <path d="M10.5 11v5" />
+    <path d="M13.5 11v5" />
+  </Icon>
+)
