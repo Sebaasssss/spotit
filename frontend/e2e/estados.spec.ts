@@ -54,7 +54,7 @@ test('Estados en proceso y resuelto en la lista y el detalle', async ({ page }) 
   await page.route('**/api/reportes/mios/**', async (route) => {
     const res = await route.fetch()
     const body = await res.json()
-    // Un 401 (access caducado) lo reintenta la app tras renovar: se deja pasar tal cual.
+    // Una respuesta que no es la lista (p. ej. un error) se deja pasar tal cual.
     if (!Array.isArray(body.results)) return route.fulfill({ response: res })
     body.results = body.results.map((r: { estado: string }, i: number) => ({
       ...r,
