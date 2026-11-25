@@ -1,0 +1,812 @@
+/* ==========================================================================
+   Fase 4 — mapa general: el plano real ocupa una región entera.
+   Chapas redondas por estado (nunca ámbar), manchas verdes con número y
+   el anillo ámbar solo para marcar la chapa elegida.
+   ========================================================================== */
+
+.mapa {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+}
+
+.mapa .page-head {
+  /* En la columna flex, el margen automático impediría que ocupe todo el ancho. */
+  width: 100%;
+  padding-top: 20px;
+}
+
+/* --- Controles ------------------------------------------------------------ */
+
+.mapa__controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px calc(env(safe-area-inset-right) + 20px) 14px calc(env(safe-area-inset-left) + 20px);
+}
+
+.mapa__filter-btn {
+  min-height: 44px;
+  padding: 0 14px 0 12px;
+  gap: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: inset 0 0 0 2px var(--line-strong);
+  font-weight: 650;
+}
+
+.mapa__filter-btn:hover {
+  box-shadow: inset 0 0 0 2px var(--ink-soft);
+}
+
+.mapa__filter-btn.is-active {
+  background: var(--info-tint);
+  color: var(--field-deep);
+  box-shadow: inset 0 0 0 2px var(--field);
+}
+
+.mapa__filter-count {
+  display: grid;
+  place-items: center;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 6px;
+  border-radius: 6px;
+  background: var(--field);
+  color: var(--field-ink);
+  font-size: 0.875rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.mapa__views {
+  display: inline-flex;
+  padding: 2px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  box-shadow: inset 0 0 0 2px var(--line-strong);
+}
+
+.mapa__view {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink-soft);
+  font-weight: 650;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color 120ms ease-out;
+}
+
+.mapa__view:hover {
+  color: var(--ink);
+}
+
+.mapa__view[aria-pressed='true'] {
+  background: var(--field);
+  color: var(--field-ink);
+}
+
+/* --- Filtros (se despliegan en línea, sin modal) ---------------------------- */
+
+.mapa__filters {
+  display: grid;
+  gap: 20px;
+  /* Deja al menos un tercio del alto al mapa para que se vea el efecto de cada filtro. */
+  max-height: 50dvh;
+  overflow: auto;
+  padding: 4px calc(env(safe-area-inset-right) + 20px) 18px calc(env(safe-area-inset-left) + 20px);
+  border-bottom: 1px solid var(--line);
+  overscroll-behavior: contain;
+}
+
+.filter-group__title {
+  margin-bottom: 8px;
+  font-size: 1.0625rem;
+  font-weight: 650;
+}
+
+.filter-group__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-group__hint {
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 12px 0 10px;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 1rem;
+  line-height: 1.2;
+  text-align: left;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition:
+    border-color 120ms ease-out,
+    background-color 120ms ease-out;
+}
+
+.filter-chip > svg:first-child {
+  color: var(--field);
+}
+
+.filter-chip:hover {
+  border-color: var(--ink-soft);
+}
+
+.filter-chip[aria-pressed='true'] {
+  border-color: var(--field);
+  background: var(--info-tint);
+  font-weight: 650;
+}
+
+.filter-chip__check {
+  color: var(--field);
+}
+
+.filter-chip__swatch.rmap-chip {
+  width: 28px;
+  height: 28px;
+  cursor: inherit;
+}
+
+.filter-chip__swatch.rmap-chip::before {
+  inset: 2px;
+  box-shadow: none;
+}
+
+.mapa__filters-foot {
+  position: sticky;
+  bottom: -18px; /* compensa el padding inferior del panel */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+  margin-bottom: -18px;
+  padding: 12px 0 18px;
+  border-top: 1px solid var(--line);
+  background: var(--paper);
+}
+
+.mapa__filters-foot .btn--secondary {
+  margin-left: auto;
+}
+
+.mapa__filters-hint {
+  flex: 1 1 100%;
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+}
+
+.mapa__alert {
+  padding: 0 calc(env(safe-area-inset-right) + 20px) 14px calc(env(safe-area-inset-left) + 20px);
+}
+
+.mapa__alert-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* --- Cuerpo: mapa a sangre (móvil) ------------------------------------------ */
+
+.mapa__body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+}
+
+.rmap.map-view {
+  position: absolute;
+  inset: 0;
+  height: auto;
+  border-width: 2px 0 0;
+  border-radius: 0;
+}
+
+.rmap__canvas {
+  position: absolute;
+  inset: 0;
+  font: inherit;
+}
+
+.rmap__notice {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  z-index: 900;
+  translate: -50% 0;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  width: max-content;
+  max-width: calc(100% - 128px);
+  padding: 10px 16px;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  text-align: center;
+}
+
+@media (max-width: 899px) {
+  /* Arriba están el zoom y "Leyenda": en móvil el aviso va abajo, sobre la atribución. */
+  .rmap__notice {
+    top: auto;
+    bottom: 36px;
+    max-width: calc(100% - 32px);
+  }
+}
+
+.rmap__notice--quiet {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-color: var(--line-strong);
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.rmap__notice-title {
+  font-weight: 650;
+}
+
+/* Las chapas viven dentro de un icono de Leaflet sin fondo. */
+.rmap-icon {
+  display: grid;
+  place-items: center;
+  background: none;
+  border: 0;
+}
+
+/* --- Chapa de un reporte: 44 px táctiles, disco de 36 px --------------------- */
+
+.rmap-chip {
+  --chip-bg: var(--surface);
+  --chip-border: var(--ink);
+  --chip-ink: var(--ink);
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--chip-ink);
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.rmap-chip::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  border: 2.5px solid var(--chip-border);
+  background: var(--chip-bg);
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 3px 6px rgb(5 30 26 / 0.35);
+  transition:
+    transform 120ms ease-out,
+    box-shadow 120ms ease-out;
+}
+
+.rmap-chip svg {
+  position: relative;
+}
+
+.rmap-chip--en_proceso {
+  --chip-bg: var(--field);
+  --chip-border: var(--field-deep);
+  --chip-ink: var(--field-ink);
+}
+
+.rmap-chip--resuelto {
+  --chip-bg: var(--ok-tint);
+  --chip-border: var(--ok);
+  --chip-ink: var(--ok);
+}
+
+.rmap-chip:hover::before {
+  transform: scale(1.08);
+}
+
+/* La elegida: anillo ámbar (detalle de respuesta, nunca relleno). */
+.rmap-chip.is-selected::before {
+  transform: scale(1.14);
+  box-shadow:
+    0 0 0 2px var(--surface),
+    0 0 0 5px var(--pin),
+    0 3px 8px rgb(5 30 26 / 0.4);
+}
+
+.rmap-chip:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+  border-radius: 50%;
+}
+
+.rmap-chip__votes {
+  position: absolute;
+  top: -1px;
+  right: -5px;
+  z-index: 1;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 6px;
+  background: var(--ink);
+  color: var(--surface);
+  box-shadow: 0 0 0 2px var(--surface);
+  font-size: 0.75rem;
+  font-weight: 800;
+  line-height: 20px;
+  font-variant-numeric: tabular-nums;
+}
+
+.rmap-chip--static {
+  cursor: default;
+}
+
+/* --- Mancha: varios reportes juntos ------------------------------------------ */
+
+.rmap-cluster {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--field-deep);
+  color: var(--field-ink);
+  box-shadow:
+    0 0 0 3px var(--surface),
+    0 3px 8px rgb(5 30 26 / 0.35);
+  font-size: 1rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 120ms ease-out;
+}
+
+.rmap-cluster--md {
+  width: 48px;
+  height: 48px;
+}
+
+.rmap-cluster--lg {
+  width: 54px;
+  height: 54px;
+  font-size: 0.9375rem;
+}
+
+.rmap-cluster:hover {
+  transform: scale(1.06);
+}
+
+/* La mancha que lleva el reporte abierto (comparten lugar): mismo anillo ámbar de selección. */
+.rmap-cluster.is-selected {
+  box-shadow:
+    0 0 0 3px var(--surface),
+    0 0 0 6px var(--pin),
+    0 3px 8px rgb(5 30 26 / 0.4);
+}
+
+.rmap-cluster:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 5px;
+}
+
+/* --- Hoja del reporte (móvil: comparte el alto con el mapa) ------------------- */
+
+/* La hoja no flota sobre el mapa: el mapa se encoge encima, así ningún punto queda tapado. */
+@media (max-width: 899px) {
+  .mapa__body:has(> .sheet) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mapa__body:has(> .sheet) > .rmap.map-view,
+  .mapa__body--lista:has(> .sheet) > :first-child {
+    position: relative;
+    inset: auto;
+    flex: 1;
+    min-height: 140px;
+  }
+}
+
+.sheet {
+  position: relative;
+  flex: none;
+  z-index: 1001;
+  display: grid;
+  gap: 14px;
+  max-height: 62%;
+  overflow: auto;
+  padding: 12px calc(env(safe-area-inset-right) + 20px) calc(env(safe-area-inset-bottom) + 18px)
+    calc(env(safe-area-inset-left) + 20px);
+  border-top: 2px solid var(--line-strong);
+  border-radius: var(--radius) var(--radius) 0 0;
+  background: var(--paper);
+  box-shadow: 0 -12px 32px rgb(27 36 33 / 0.22);
+  overscroll-behavior: contain;
+  animation: sheet-in 180ms var(--ease-out);
+}
+
+@keyframes sheet-in {
+  from {
+    transform: translateY(24px);
+    opacity: 0.4;
+  }
+}
+
+.sheet__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sheet__title {
+  font-size: 1.375rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.sheet__title:focus {
+  outline: none;
+}
+
+.sheet__title:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.sheet__close {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  margin-right: -8px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.sheet__close:hover {
+  background: var(--info-tint);
+}
+
+.sheet__summary,
+.sheet__skeleton {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+.sheet__skeleton-lines {
+  display: grid;
+  gap: 10px;
+  padding-top: 6px;
+}
+
+.sheet__thumb {
+  width: 72px;
+  height: 72px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background: var(--line);
+}
+
+.sheet__body {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.sheet__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+}
+
+.sheet__desc {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.sheet__more {
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* --- Leyenda (solo escritorio) ---------------------------------------------- */
+
+.mapa__legend {
+  display: none;
+}
+
+/* En móvil la leyenda se abre como hoja desde un botón sobre el mapa. */
+.mapa__legend.sheet {
+  display: grid;
+}
+
+.mapa__legend.sheet ul {
+  margin: 0;
+}
+
+.mapa__legend-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 900;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 12px 0 10px;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.mapa__legend-btn:hover {
+  border-color: var(--ink-soft);
+}
+
+.mapa__legend-title {
+  font-size: 1.375rem;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  font-weight: 700;
+}
+
+.mapa__legend ul {
+  display: grid;
+  gap: 10px;
+  margin: 16px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mapa__legend li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mapa__legend .rmap-cluster {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  margin: 6px;
+  font-size: 0.875rem;
+  cursor: default;
+}
+
+.mapa__legend p {
+  color: var(--ink-soft);
+}
+
+/* --- Lista (alternativa al mapa) ----------------------------------------------- */
+
+.mapa__body--lista > :first-child {
+  position: absolute;
+  inset: 0;
+  overflow: auto;
+  padding: 4px calc(env(safe-area-inset-right) + 20px) calc(env(safe-area-inset-bottom) + 32px)
+    calc(env(safe-area-inset-left) + 20px);
+  border-top: 1px solid var(--line);
+}
+
+.map-list__wrap {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+}
+
+.map-list__head {
+  padding-top: 12px;
+  color: var(--ink-soft);
+  font-weight: 650;
+}
+
+.map-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.map-list__row {
+  border-bottom: 1px solid var(--line);
+}
+
+.map-list__row--skeleton {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+}
+
+.map-list__link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 64px;
+  padding: 10px 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.map-list__link:hover .map-list__title {
+  color: var(--field-deep);
+  text-decoration: underline;
+  text-decoration-color: var(--pin);
+  text-underline-offset: 3px;
+}
+
+.map-list__icon {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--info-tint);
+  color: var(--field);
+}
+
+.map-list__body {
+  flex: 1;
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.map-list__title {
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+
+.map-list__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.map-list__chevron {
+  flex: none;
+  color: var(--ink-soft);
+}
+
+/* --- Escritorio: mapa enmarcado y la hoja como columna --------------------------- */
+
+@media (min-width: 900px) {
+  .mapa .page-head {
+    max-width: none;
+    margin: 0;
+    padding: 32px 32px 0;
+  }
+
+  .mapa__controls,
+  .mapa__filters,
+  .mapa__alert {
+    padding-inline: 32px;
+  }
+
+  .mapa__controls {
+    justify-content: flex-start;
+    gap: 16px;
+  }
+
+  .mapa__filters {
+    max-height: 40dvh;
+  }
+
+  .mapa__filters-hint {
+    flex: 0 1 auto;
+  }
+
+  .mapa__body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: 28px;
+    padding: 0 32px 32px;
+  }
+
+  .rmap.map-view {
+    position: relative;
+    inset: auto;
+    border-width: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  .sheet,
+  .mapa__legend {
+    position: static;
+    display: grid;
+    align-content: start;
+    max-height: none;
+    overflow: auto;
+    padding: 4px 4px 4px 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    animation: none;
+  }
+
+  .mapa__body--lista > :first-child {
+    position: static;
+    min-height: 0;
+    padding: 0 8px 0 0;
+    border-top: 0;
+  }
+
+  .map-list__wrap {
+    max-width: 640px;
+  }
+
+  .mapa__legend-btn {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet {
+    animation: none;
+  }
+
+  .rmap-chip::before,
+  .rmap-cluster {
+    transition: none;
+  }
+}

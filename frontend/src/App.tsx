@@ -27,6 +27,11 @@ const router = createBrowserRouter([
         HydrateFallback: Splash,
       },
       {
+        path: '/mapa',
+        lazy: async () => ({ Component: (await import('./routes/MapPage')).MapPage }),
+        HydrateFallback: Splash,
+      },
+      {
         path: '/reportes/:id',
         lazy: async () => ({ Component: (await import('./routes/ReportDetail')).ReportDetail }),
         HydrateFallback: Splash,

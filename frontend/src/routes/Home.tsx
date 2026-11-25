@@ -7,6 +7,7 @@ import {
   CloudOffIcon,
   ListIcon,
   LogOutIcon,
+  MapIcon,
   PlusIcon,
   Spinner,
 } from '../components/Icons'
@@ -76,6 +77,16 @@ export function Home() {
               <ChevronRightIcon size={22} className="action__chevron" />
             </Link>
           )}
+          <Link to="/mapa" className="action">
+            <span className="action__icon">
+              <MapIcon size={24} />
+            </span>
+            <span className="action__text">
+              <span className="action__title">Mapa de reportes</span>
+              <span className="action__desc">Mira qué se reportó y vota lo que te afecta.</span>
+            </span>
+            <ChevronRightIcon size={22} className="action__chevron" />
+          </Link>
           <Link to="/reportes" className="action">
             <span className="action__icon">
               <ListIcon size={24} />

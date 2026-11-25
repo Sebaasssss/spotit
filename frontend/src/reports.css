@@ -396,12 +396,30 @@ a.btn--primary:hover {
   outline-offset: -5px;
 }
 
-.map-view .leaflet-bar a {
+.map-view .leaflet-control-zoom.leaflet-bar {
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  box-shadow: none;
+}
+
+/* Más específico que `.leaflet-touch .leaflet-bar a` de Leaflet: 44 px táctiles. */
+.map-view .leaflet-control-zoom.leaflet-bar a {
   width: 44px;
   height: 44px;
   line-height: 44px;
   font-size: 22px;
   color: var(--ink);
+  background: var(--surface);
+  border-radius: 0;
+}
+
+.map-view .leaflet-control-zoom.leaflet-bar a:hover {
+  background: var(--info-tint);
+}
+
+.map-view .leaflet-control-zoom.leaflet-bar a:first-child {
+  border-bottom: 1px solid var(--line);
 }
 
 .map-view .leaflet-control-attribution {
@@ -748,4 +766,101 @@ a.btn--primary:hover {
   .skeleton {
     animation: none;
   }
+}
+
+/* --- Voto (detalle y hoja del mapa) --------------------------------------- */
+
+.vote {
+  display: grid;
+  gap: 8px;
+}
+
+.vote__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+}
+
+.vote__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 0 20px 0 16px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--field);
+  box-shadow: inset 0 0 0 2px var(--field);
+  font-size: 1.0625rem;
+  font-weight: 700;
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  transition:
+    background-color 120ms ease-out,
+    color 120ms ease-out,
+    transform 120ms ease-out;
+}
+
+.vote__btn:hover {
+  background: var(--info-tint);
+  color: var(--field-deep);
+}
+
+/* Votado: relleno verde con check; la señal no es solo el color. */
+.vote__btn.is-on {
+  background: var(--field);
+  color: var(--field-ink);
+}
+
+.vote__btn.is-on:hover {
+  background: var(--field-deep);
+  color: var(--field-ink);
+}
+
+.vote__btn:active:not([aria-disabled='true']) {
+  transform: scale(0.98);
+}
+
+.vote__btn[aria-disabled='true'] {
+  cursor: progress;
+}
+
+.vote__count {
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.vote__help {
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+}
+
+.vote__error {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--error);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.vote__error svg {
+  flex: none;
+  margin-top: 1px;
+}
+
+.vote--readonly {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink-soft);
+}
+
+.vote--readonly .vote__count {
+  color: var(--ink);
 }

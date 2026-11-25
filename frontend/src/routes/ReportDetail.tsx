@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useParams } from 'react-router'
+import { useLocation, useParams } from 'react-router'
 import { ApiError, NetworkError } from '../api/client'
 import { fetchReporte, type Reporte } from '../api/reportes'
 import { FormAlert } from '../components/form/fields'
@@ -7,6 +7,7 @@ import { RefreshIcon, Spinner } from '../components/Icons'
 import { PageHeader } from '../components/PageHeader'
 import { MapView } from '../components/report/MapView'
 import { StatusPill } from '../components/report/StatusPill'
+import { VoteButton } from '../components/report/VoteButton'
 import { fechaCompleta } from '../lib/fechas'
 import { formatoCoordenadas } from '../lib/mapa'
 
@@ -44,10 +45,18 @@ export function ReportDetail() {
   }, [id, intento])
 
   const titulo = estado.kind === 'ok' ? estado.reporte.categoria.nombre : 'Reporte'
+  // Desde el mapa se vuelve al mapa con sus filtros. Si se abrió por enlace o tras recargar:
+  // el propio vuelve a "Mis reportes" y uno ajeno al mapa, con su hoja abierta.
+  const volverA = (useLocation().state as { volverA?: string } | null)?.volverA
+  const back = volverA?.startsWith('/mapa')
+    ? { to: volverA, label: 'Mapa' }
+    : estado.kind === 'ok' && !estado.reporte.es_mio
+      ? { to: `/mapa?r=${estado.reporte.id}`, label: 'Mapa' }
+      : { to: '/reportes', label: 'Mis reportes' }
 
   return (
     <div className="page">
-      <PageHeader title={titulo} back={{ to: '/reportes', label: 'Mis reportes' }} />
+      <PageHeader title={titulo} back={back} />
 
       <main className="page__main">
         {estado.kind === 'loading' && (
@@ -90,8 +99,9 @@ function Detalle({ reporte }: { reporte: Reporte }) {
     <article className="detail">
       <div className="detail__status">
         <StatusPill estado={reporte.estado} />
-        {reporte.es_mio && <span className="detail__mine">Tu reporte</span>}
       </div>
+
+      <VoteButton key={reporte.id} reporte={reporte} />
 
       <figure className="detail__photo">
         <img src={reporte.foto_url} alt={`Foto del reporte: ${reporte.categoria.nombre}`} />

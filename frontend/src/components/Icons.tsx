@@ -172,6 +172,43 @@ export const WrenchIcon = (p: IconProps) => (
   </Icon>
 )
 
+// --- Mapa general y votos ---
+
+/** Votar: flecha hacia arriba sobre una base (subir la prioridad). */
+export const VoteIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 16.5V4.5M6.5 10 12 4.5l5.5 5.5" />
+    <path d="M5 20h14" />
+  </Icon>
+)
+
+export const FilterIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4 6.5h16M7 12h10M10 17.5h4" />
+  </Icon>
+)
+
+export const MapIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M3.5 6.5 9 4.5l6 2 5.5-2v13L15 19.5l-6-2-5.5 2Z" />
+    <path d="M9 4.5v13M15 6.5v13" />
+  </Icon>
+)
+
+export const InfoIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 11v5.5" />
+    <path d="M12 7.5h.01" />
+  </Icon>
+)
+
+export const CloseIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M6 6l12 12M18 6 6 18" />
+  </Icon>
+)
+
 // --- Categorías (clave = campo `icono` de la API) ---
 
 const CategoriaIcons = {

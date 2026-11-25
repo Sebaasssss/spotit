@@ -3,6 +3,7 @@ import {
   apiFetch,
   ApiError,
   NetworkError,
+  prepareAccessToken,
   renewAccessToken,
   toApiError,
 } from './client'
@@ -33,7 +34,28 @@ export type Reporte = {
   miniatura_url: string
   es_mio: boolean
   puede_editar: boolean
+  /** Votos para priorizarlo. */
+  votos: number
+  /** La persona con sesión ya votó este reporte. */
+  votado: boolean
+  /** Puede votar o quitar su voto (no es suyo, no está resuelto y es ciudadano). */
+  puede_votar: boolean
 }
+
+/** Lo mínimo para dibujar un reporte en el mapa general (sin fotos ni descripción). */
+export type PuntoMapa = {
+  id: number
+  lat: number
+  lng: number
+  /** slug de la categoría */
+  categoria: string
+  estado: EstadoReporte
+  votos: number
+}
+
+export type FiltrosMapa = { categorias: string[]; estados: EstadoReporte[] }
+
+export type ResultadoVoto = { votos: number; votado: boolean }
 
 export type Pagina<T> = {
   count: number
@@ -61,6 +83,24 @@ export function fetchCategorias(signal?: AbortSignal) {
 
 export function fetchMisReportes(page = 1, signal?: AbortSignal) {
   return apiFetch<Pagina<Reporte>>(`/api/reportes/mios/?page=${page}`, { signal })
+}
+
+export function fetchPuntosMapa(filtros: FiltrosMapa, signal?: AbortSignal) {
+  const params = new URLSearchParams()
+  if (filtros.categorias.length) params.set('categoria', filtros.categorias.join(','))
+  if (filtros.estados.length) params.set('estado', filtros.estados.join(','))
+  const query = params.toString()
+  return apiFetch<{ results: PuntoMapa[]; truncado: boolean }>(
+    `/api/reportes/mapa/${query ? `?${query}` : ''}`,
+    { signal },
+  )
+}
+
+/** Vota (`true`) o quita el voto (`false`). Repetirlo no falla: el servidor es idempotente. */
+export function votarReporte(id: number, votar: boolean) {
+  return apiFetch<ResultadoVoto>(`/api/reportes/${id}/voto/`, {
+    method: votar ? 'POST' : 'DELETE',
+  })
 }
 
 export function fetchReporte(id: number | string, signal?: AbortSignal) {
@@ -102,8 +142,9 @@ function enviar(form: FormData, onProgress?: Progreso): Promise<{ status: number
 
 export async function crearReporte(datos: NuevoReporte, onProgress?: Progreso): Promise<Reporte> {
   const form = aFormData(datos)
+  const renovado = await prepareAccessToken()
   let respuesta = await enviar(form, onProgress)
-  if (respuesta.status === 401 && (await renewAccessToken())) {
+  if (respuesta.status === 401 && !renovado && (await renewAccessToken())) {
     respuesta = await enviar(form, onProgress)
   }
   const response = new Response(respuesta.body || null, {
