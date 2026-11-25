@@ -16,8 +16,10 @@ COPY --chown=app:app . .
 
 # Estáticos del admin de Django (los sirve whitenoise). La clave es solo para este paso.
 RUN SECRET_KEY=collectstatic-solo-build python manage.py collectstatic --noinput \
-    && chown -R app:app staticfiles
+    && mkdir -p media \
+    && chown -R app:app staticfiles media
 
+# Fotos de reportes: aquí se monta el volumen `media` (el contenedor de nginx lo lee).
 USER app
 
 EXPOSE 8000
