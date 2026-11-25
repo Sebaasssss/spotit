@@ -30,3 +30,25 @@ Registro breve de decisiones de arquitectura: qué se decidió, por qué y qué 
 **Decisión:** el contenedor `frontend` siempre sirve el **build de producción** con nginx. Para iterar con recarga en caliente se usa `npm run dev` en el host; Vite hace proxy de `/api` al backend, expuesto solo en `127.0.0.1` por el override.
 
 **Por qué:** el service worker solo existe en el build, así que nginx debe servir lo mismo que en producción. Correr Vite con HMR dentro de Docker en Windows es lento (vigilancia de archivos sobre volúmenes) y no aporta nada para la PWA.
+
+## 2026-11-24 — Reportes: visibilidad, fotos y ubicación
+
+**Visibilidad:** cualquier persona con sesión ve todos los reportes (lista y detalle), pero la API nunca expone nombre ni email de quien reportó; solo un indicador `es_mio`. El autor edita su reporte únicamente mientras está en `recibido`; el administrador solo cambia el estado (`recibido → en_proceso → resuelto`, y `resuelto → en_proceso` para reabrir).
+
+**Fotos obligatorias y saneadas en el servidor:** el tipo se decide abriendo la imagen (JPEG, PNG o WebP), con límite de 10 MB y de 40 Mpx (bombas de descompresión). Se aplica la orientación EXIF, se recodifica a JPEG sin metadatos (se pierde el GPS de la cámara) y se guarda con nombre aleatorio. HEIC se rechaza con un mensaje claro; el cliente también lo detecta antes de subir.
+
+**Entrega de fotos sin rutas internas:** la API devuelve URLs firmadas de 6 h hacia `/api/reportes/<id>/foto/` (las etiquetas `<img>` no pueden enviar el token). En Docker, Django responde con `X-Accel-Redirect` y nginx sirve el archivo desde una ubicación `internal`, con el volumen `media` montado en **solo lectura**. Para migrar a S3 basta con que `foto_url` devuelva una URL prefirmada.
+
+**Ubicación:** el mapa usa Leaflet + teselas de OpenStreetMap con atribución. El centro sin GPS se configura con `VITE_MAPA_CENTRO` (por defecto la Ciudad de México). Si la persona mueve el punto a mano, `origen_ubicacion = manual` y se descarta la precisión del GPS. La política de uso de las teselas de OSM es suficiente para el MVP; con tráfico real habrá que usar un proveedor de teselas propio o de pago.
+
+## 2026-11-24 — Tipografía de los títulos
+
+**Decisión:** por ahora los títulos (voz display) siguen usando la tipografía del sistema, igual que el cuerpo y los controles.
+
+**Por qué:** carga al instante, no añade peso ni dependencias externas y funciona sin conexión desde el primer arranque. Cambiarla afecta todas las pantallas (Fases 1 a 3), así que no se hace pantalla por pantalla.
+
+## Pendientes
+
+- **Moderación de fotos:** detectar o difuminar caras y placas de vehículos antes de mostrar las fotos a otras personas (hoy cualquier usuario con sesión ve todas las fotos).
+- **Ocultar o eliminar reportes desde el admin:** hoy el admin solo cambia el estado; falta un estado o bandera de "oculto" para reportes inapropiados o duplicados, con registro de quién y por qué, en lugar de borrarlos.
+- **Tipografía display propia (fase final de pulido de diseño):** sustituir la tipografía del sistema en los títulos por una fuente propia, **alojada localmente** (sin CDN de terceros) y **precacheada por el service worker** para que la PWA la tenga sin conexión. Aplicarla solo al rol display mediante una variable (`--font-display`); cuerpo y controles siguen con la pila del sistema.

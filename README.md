@@ -34,6 +34,22 @@ cd frontend && npm install && npm test                # pruebas del frontend
 cd frontend && npm run lint                           # linter del frontend (oxlint)
 ```
 
+### Pruebas de extremo a extremo y accesibilidad (Playwright + axe)
+
+Con el compose levantado (nginx en `:8080`):
+
+```sh
+cd frontend && npx playwright install chromium         # solo la primera vez
+cd frontend && npm run test:e2e                        # flujos y WCAG 2.2 AA en 390×844 y 1440×900
+CAPTURAS=1 npm run test:e2e                            # además guarda capturas en docs/capturas/
+```
+
+La suite crea un ciudadano de prueba por tamaño de pantalla, simula la geolocalización (campus de la UTEZ) y el permiso negado, y pasa axe por cada pantalla.
+
+### Mapa
+
+El centro del mapa sin GPS se define con `VITE_MAPA_CENTRO=latitud,longitud,zoom` en `.env` (ver `.env.example`). Se incrusta al construir el frontend: tras cambiarlo, `docker compose up --build`.
+
 ### Frontend con recarga en caliente
 
 Con el compose levantado (expone el backend en `127.0.0.1:8000`):

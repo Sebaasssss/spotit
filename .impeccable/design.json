@@ -1,48 +1,229 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-24T00:00:00Z",
+  "generatedAt": "2026-11-24T15:00:00Z",
   "title": "Design System: SpotIt",
   "extensions": {
     "colorMeta": {
-      "field": { "role": "primary", "displayName": "Verde Plano", "canonical": "#0e5a4f", "tonalRamp": ["#04211d", "#0a463d", "#0e5a4f", "#2f7a6e", "#5a9a8f", "#8fbdb4", "#cfe1dc", "#e6efec"] },
-      "field-deep": { "role": "primary", "displayName": "Verde Plano Hondo", "canonical": "#0a463d" },
-      "field-ink": { "role": "primary", "displayName": "Tinta de Plano", "canonical": "#f6f3ec" },
-      "field-ink-soft": { "role": "primary", "displayName": "Tinta de Plano Suave", "canonical": "#cfe1dc" },
-      "pin": { "role": "secondary", "displayName": "Ámbar Pin", "canonical": "#e8a33d", "tonalRamp": ["#4a2e07", "#7a4e10", "#b8781c", "#e8a33d", "#eeb862", "#f3cd8d", "#f8e2bb", "#fcf2e0"] },
-      "pin-deep": { "role": "secondary", "displayName": "Ámbar Hondo", "canonical": "#b8781c" },
-      "paper": { "role": "neutral", "displayName": "Papel", "canonical": "#f6f3ec", "tonalRamp": ["#1b2421", "#4a5652", "#8a8576", "#cfc7b6", "#e4ddcf", "#efeadf", "#f6f3ec", "#fffdf8"] },
-      "surface": { "role": "neutral", "displayName": "Superficie", "canonical": "#fffdf8" },
-      "ink": { "role": "neutral", "displayName": "Tinta", "canonical": "#1b2421" },
-      "ink-soft": { "role": "neutral", "displayName": "Tinta Suave", "canonical": "#4a5652" },
-      "line": { "role": "neutral", "displayName": "Línea", "canonical": "#cfc7b6" },
-      "line-strong": { "role": "neutral", "displayName": "Línea Fuerte", "canonical": "#8a8576" },
-      "ok": { "role": "status", "displayName": "Verde Hecho", "canonical": "#1d6b45" },
-      "error": { "role": "status", "displayName": "Rojo Error", "canonical": "#b3261e", "tonalRamp": ["#3d0c09", "#7a1914", "#b3261e", "#cc4a40", "#de7a72", "#eeaea8", "#f7d6d2", "#fbe9e6"] },
-      "error-tint": { "role": "status", "displayName": "Rosa Error", "canonical": "#fbe9e6" },
-      "info-tint": { "role": "status", "displayName": "Verde Aviso", "canonical": "#e6efec" }
+      "field": {
+        "role": "primary",
+        "displayName": "Verde Plano",
+        "canonical": "#0e5a4f",
+        "tonalRamp": [
+          "#04211d",
+          "#0a463d",
+          "#0e5a4f",
+          "#2f7a6e",
+          "#5a9a8f",
+          "#8fbdb4",
+          "#cfe1dc",
+          "#e6efec"
+        ]
+      },
+      "field-deep": {
+        "role": "primary",
+        "displayName": "Verde Plano Hondo",
+        "canonical": "#0a463d"
+      },
+      "field-ink": {
+        "role": "primary",
+        "displayName": "Tinta de Plano",
+        "canonical": "#f6f3ec"
+      },
+      "field-ink-soft": {
+        "role": "primary",
+        "displayName": "Tinta de Plano Suave",
+        "canonical": "#cfe1dc"
+      },
+      "pin": {
+        "role": "secondary",
+        "displayName": "Ámbar Pin",
+        "canonical": "#e8a33d",
+        "tonalRamp": [
+          "#4a2e07",
+          "#7a4e10",
+          "#b8781c",
+          "#e8a33d",
+          "#eeb862",
+          "#f3cd8d",
+          "#f8e2bb",
+          "#fcf2e0"
+        ]
+      },
+      "pin-deep": {
+        "role": "secondary",
+        "displayName": "Ámbar Hondo",
+        "canonical": "#b8781c"
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Papel",
+        "canonical": "#f6f3ec",
+        "tonalRamp": [
+          "#1b2421",
+          "#4a5652",
+          "#8a8576",
+          "#cfc7b6",
+          "#e4ddcf",
+          "#efeadf",
+          "#f6f3ec",
+          "#fffdf8"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Superficie",
+        "canonical": "#fffdf8"
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Tinta",
+        "canonical": "#1b2421"
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Tinta Suave",
+        "canonical": "#4a5652"
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Línea",
+        "canonical": "#cfc7b6"
+      },
+      "line-strong": {
+        "role": "neutral",
+        "displayName": "Línea Fuerte",
+        "canonical": "#8a8576"
+      },
+      "ok": {
+        "role": "status",
+        "displayName": "Verde Hecho",
+        "canonical": "#1d6b45"
+      },
+      "ok-tint": {
+        "role": "status",
+        "displayName": "Verde Hecho Claro",
+        "canonical": "#e3f1e8"
+      },
+      "error": {
+        "role": "status",
+        "displayName": "Rojo Error",
+        "canonical": "#b3261e",
+        "tonalRamp": [
+          "#3d0c09",
+          "#7a1914",
+          "#b3261e",
+          "#cc4a40",
+          "#de7a72",
+          "#eeaea8",
+          "#f7d6d2",
+          "#fbe9e6"
+        ]
+      },
+      "error-tint": {
+        "role": "status",
+        "displayName": "Rosa Error",
+        "canonical": "#fbe9e6"
+      },
+      "info-tint": {
+        "role": "status",
+        "displayName": "Verde Aviso",
+        "canonical": "#e6efec"
+      }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display", "purpose": "Título único de cada pantalla. 2.75rem en la entrada de escritorio, 3rem en el saludo de escritorio. Pila del sistema registrada tal como está construida; rol abierto a una cara propia." },
-      "headline": { "displayName": "Headline", "purpose": "Títulos de sección sobre el papel." },
-      "title": { "displayName": "Title", "purpose": "Nombre SpotIt junto al logo sobre el plano." },
-      "body": { "displayName": "Body", "purpose": "Texto corrido; 36ch bajo el título, 48ch en secciones." },
-      "label": { "displayName": "Label", "purpose": "Etiquetas de campo encima del control, en tinta." },
-      "small": { "displayName": "Small", "purpose": "Ayudas, errores en línea (600) y metadatos." }
+      "display": {
+        "displayName": "Display",
+        "purpose": "Título único de cada pantalla. 2.75rem en la entrada de escritorio, 3rem en el saludo de escritorio. Pila del sistema registrada tal como está construida; rol abierto a una cara propia."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Títulos de sección sobre el papel."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Nombre SpotIt junto al logo sobre el plano."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Texto corrido; 36ch bajo el título, 48ch en secciones."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Etiquetas de campo encima del control, en tinta."
+      },
+      "small": {
+        "displayName": "Small",
+        "purpose": "Ayudas, errores en línea (600) y metadatos."
+      }
     },
     "shadows": [
-      { "name": "pin-drop", "value": "drop-shadow(0 6px 8px rgb(5 30 26 / 0.35))", "purpose": "Filtro del pin clavado en el plano, con elipse de suelo rgb(5 30 26 / 0.35)." },
-      { "name": "button-rest", "value": "0 1px 3px rgb(5 30 26 / 0.25)", "purpose": "Apoyo mínimo del botón principal." },
-      { "name": "toast", "value": "0 12px 32px rgb(27 36 33 / 0.25)", "purpose": "Solo el aviso flotante de actualización." },
-      { "name": "focus-ring", "value": "outline: 3px solid var(--ink); outline-offset: 3px", "purpose": "Foco global; 2 px de separación en campos; tinta de plano o ámbar sobre fondos oscuros." }
+      {
+        "name": "pin-drop",
+        "value": "drop-shadow(0 6px 8px rgb(5 30 26 / 0.35))",
+        "purpose": "Filtro del pin clavado en el plano, con elipse de suelo rgb(5 30 26 / 0.35)."
+      },
+      {
+        "name": "pin-drop-map",
+        "value": "drop-shadow(0 4px 6px rgb(5 30 26 / 0.35))",
+        "purpose": "Pin ámbar de 40 × 50 fijo al centro del mapa real; el pin fantasma no lleva sombra."
+      },
+      {
+        "name": "button-rest",
+        "value": "0 1px 3px rgb(5 30 26 / 0.25)",
+        "purpose": "Apoyo mínimo del botón principal."
+      },
+      {
+        "name": "toast",
+        "value": "0 12px 32px rgb(27 36 33 / 0.25)",
+        "purpose": "Solo el aviso flotante de actualización."
+      },
+      {
+        "name": "focus-ring",
+        "value": "outline: 3px solid var(--ink); outline-offset: 3px",
+        "purpose": "Foco global; 2 px de separación en campos; tinta de plano o ámbar sobre fondos oscuros."
+      }
     ],
     "motion": [
-      { "name": "ease-out", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "Asentamiento del pin (700 ms, una vez, bajada de 14 px)." },
-      { "name": "state-fast", "value": "120ms ease-out", "purpose": "Color de fondo, borde y escala de controles (press: scale 0.98)." },
-      { "name": "spinner", "value": "800ms linear infinite", "purpose": "Spinner de carga; 2.4 s con movimiento reducido." },
-      { "name": "reduced-motion", "value": "prefers-reduced-motion: reduce", "purpose": "Sin asentamiento del pin ni pulso de estado." }
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Asentamiento del pin (700 ms, una vez, bajada de 14 px)."
+      },
+      {
+        "name": "state-fast",
+        "value": "120ms ease-out",
+        "purpose": "Color de fondo, borde y escala de controles (press: scale 0.98)."
+      },
+      {
+        "name": "spinner",
+        "value": "800ms linear infinite",
+        "purpose": "Spinner de carga; 2.4 s con movimiento reducido."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "prefers-reduced-motion: reduce",
+        "purpose": "Sin asentamiento del pin ni pulso de estado."
+      },
+      {
+        "name": "skeleton-pulse",
+        "value": "1.4s ease-in-out infinite",
+        "purpose": "Pulso de las filas esqueleto; sin animación con movimiento reducido."
+      },
+      {
+        "name": "press-large",
+        "value": "scale(0.99) 120ms ease-out",
+        "purpose": "Presión de las acciones grandes de la portada."
+      }
     ],
     "breakpoints": [
-      { "name": "desktop", "value": "900px" }
+      {
+        "name": "picker-2col",
+        "value": "480px"
+      },
+      {
+        "name": "desktop",
+        "value": "900px"
+      }
     ]
   },
   "components": [
@@ -101,26 +282,126 @@
       "description": "Componente firma: campo verde con manzanas, calles translúcidas y el pin ámbar que se asienta una vez.",
       "html": "<div class=\"ds-map\" aria-hidden=\"true\"><svg class=\"ds-map__streets\" viewBox=\"0 0 400 300\" preserveAspectRatio=\"xMidYMid slice\"><g class=\"ds-map__blocks\"><path d=\"M18 24h88l-4 60H14Z\"/><path d=\"M134 22h96l4 58H130Z\"/><path d=\"M266 20h112v64H262Z\"/><path d=\"M12 116h84l-6 70H8Z\"/><path d=\"M130 112h66l10 76h-82Z\"/><path d=\"M236 116h60l-2 72h-70Z\"/><path d=\"M326 118h60v70h-64Z\"/><path d=\"M8 216h82l-4 70H4Z\"/><path d=\"M116 218h104l6 70H110Z\"/><path d=\"M254 220h132v68H248Z\"/></g><g class=\"ds-map__minor\"><path d=\"M0 100h400\"/><path d=\"M0 202h400\"/><path d=\"M118 0c-3 100-6 200-6 300\"/><path d=\"M248 0c-4 110 2 200-4 300\"/></g><path class=\"ds-map__avenue\" d=\"M-10 270C80 232 150 168 230 156s120-62 190-126\"/></svg><svg class=\"ds-map__pin\" viewBox=\"0 0 64 80\"><ellipse cx=\"32\" cy=\"76\" rx=\"12\" ry=\"3.5\" fill=\"rgb(5 30 26 / 0.35)\"/><path fill=\"#e8a33d\" d=\"M32 2C16.5 2 4 14.2 4 29.3 4 49 27.1 70.1 30.3 72.9a2.6 2.6 0 0 0 3.4 0C36.9 70.1 60 49 60 29.3 60 14.2 47.5 2 32 2Z\"/><circle cx=\"32\" cy=\"29\" r=\"10\" fill=\"#f6f3ec\"/></svg></div>",
       "css": ".ds-map { position: relative; height: 240px; overflow: hidden; background: #0e5a4f; } .ds-map__streets { position: absolute; inset: 0; width: 100%; height: 100%; } .ds-map__blocks path { fill: #0a463d; opacity: 0.55; } .ds-map__minor path { fill: none; stroke: #f6f3ec; stroke-opacity: 0.16; stroke-width: 5; } .ds-map__avenue { fill: none; stroke: #f6f3ec; stroke-opacity: 0.16; stroke-width: 14; stroke-linecap: round; } .ds-map__pin { position: absolute; right: 14%; top: 22%; width: 56px; height: 70px; filter: drop-shadow(0 6px 8px rgb(5 30 26 / 0.35)); animation: ds-pin-settle 700ms cubic-bezier(0.16, 1, 0.3, 1) both; } @keyframes ds-pin-settle { from { transform: translateY(-14px); } } @media (prefers-reduced-motion: reduce) { .ds-map__pin { animation: none; } }"
+    },
+    {
+      "name": "Botón secundario",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Trazo verde de 2 px sobre superficie, 52 px; hover verde aviso; deshabilitado en tinta suave.",
+      "html": "<button class=\"ds-btn-secondary\" type=\"button\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"6.5\"/><circle cx=\"12\" cy=\"12\" r=\"2\" fill=\"currentColor\" stroke=\"none\"/><path d=\"M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3\"/></svg><span>Usar mi ubicación</span></button>",
+      "css": ".ds-btn-secondary { display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px; padding: 0 16px; border: 0; border-radius: 10px; background: #fffdf8; color: #0e5a4f; box-shadow: inset 0 0 0 2px #0e5a4f; font: 700 17px/1.5 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; cursor: pointer; transition: background-color 120ms ease-out, transform 120ms ease-out; } .ds-btn-secondary:hover { background: #e6efec; color: #0a463d; } .ds-btn-secondary:active { transform: scale(0.98); } .ds-btn-secondary:disabled { color: #4a5652; box-shadow: inset 0 0 0 2px #8a8576; cursor: progress; } .ds-btn-secondary:focus-visible { outline: 3px solid #1b2421; outline-offset: 3px; }"
+    },
+    {
+      "name": "Botón-enlace",
+      "kind": "button",
+      "refersTo": "link-button",
+      "description": "Reintentar dentro de avisos: texto verde subrayado de 2 px, 44 px táctiles.",
+      "html": "<button class=\"ds-link-btn\" type=\"button\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M20 11a8 8 0 1 0-2.3 5.7\"/><path d=\"M20 4.5V11h-6.5\"/></svg>Reintentar</button>",
+      "css": ".ds-link-btn { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0; border: 0; background: none; color: #0e5a4f; font: 650 17px/1.5 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; cursor: pointer; } .ds-link-btn:hover { color: #0a463d; text-decoration-color: #e8a33d; } .ds-link-btn:focus-visible { outline: 3px solid #1b2421; outline-offset: 3px; }"
+    },
+    {
+      "name": "Franja de página interna",
+      "kind": "nav",
+      "refersTo": "page-bar",
+      "description": "Franja verde de 64 px con volver a la izquierda y la marca a la derecha.",
+      "html": "<div class=\"ds-page-bar\"><a class=\"ds-page-bar__back\" href=\"#\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M19 12H5\"/><path d=\"M11 6 5 12l6 6\"/></svg><span>Inicio</span></a><span class=\"ds-page-bar__brand\" aria-hidden=\"true\">SpotIt</span></div>",
+      "css": ".ds-page-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 64px; padding: 10px 12px; background: #0e5a4f; color: #f6f3ec; font: 400 17px/1.5 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; } .ds-page-bar__back { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px 0 10px; border-radius: 10px; color: #f6f3ec; font-weight: 650; text-decoration: none; background: rgb(246 243 236 / 0.14); box-shadow: inset 0 0 0 1.5px rgb(246 243 236 / 0.5); transition: background-color 120ms ease-out; } .ds-page-bar__back:hover { background: rgb(246 243 236 / 0.24); } .ds-page-bar__back:focus-visible { outline: 3px solid #f6f3ec; outline-offset: 3px; } .ds-page-bar__brand { font-weight: 700; }"
+    },
+    {
+      "name": "Aviso 911",
+      "kind": "custom",
+      "refersTo": "notice-911",
+      "description": "Aviso fijo de emergencias con borde de tinta; no se cierra.",
+      "html": "<aside class=\"ds-notice-911\" aria-label=\"Aviso de emergencias\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2\"/></svg><p><strong>Esta app no es para emergencias.</strong> Si hay peligro, <a href=\"tel:911\">llama al 911</a>.</p></aside>",
+      "css": ".ds-notice-911 { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border: 2px solid #1b2421; border-radius: 10px; background: #fffdf8; color: #1b2421; font: 400 17px/1.4 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; } .ds-notice-911 p { margin: 0; } .ds-notice-911 svg { flex: none; } .ds-notice-911 a { display: inline-block; padding: 10px 0; margin: -10px 0; color: #1b2421; font-weight: 800; } .ds-notice-911 a:focus-visible { outline: 3px solid #1b2421; outline-offset: 3px; }"
+    },
+    {
+      "name": "Opción de categoría",
+      "kind": "chip",
+      "refersTo": "choice",
+      "description": "Radio nativo como fila de 56 px con icono en círculo, una columna; la elegida en verde aviso con check. En error, solo la pregunta va en rojo.",
+      "html": "<div class=\"ds-choices\"><label class=\"ds-choice is-checked\"><input type=\"radio\" name=\"ds-cat\" checked><span class=\"ds-choice__icon\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><ellipse cx=\"12\" cy=\"13\" rx=\"7\" ry=\"3.5\"/></svg></span><span class=\"ds-choice__label\">Baches y pavimento</span><span class=\"ds-choice__check\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m5 12.5 4.5 4.5L19 7.5\"/></svg></span></label><label class=\"ds-choice\"><input type=\"radio\" name=\"ds-cat\"><span class=\"ds-choice__icon\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 3.5c3 4 5 6.6 5 9.5a5 5 0 0 1-10 0c0-2.9 2-5.5 5-9.5Z\"/></svg></span><span class=\"ds-choice__label\">Agua y drenaje</span><span class=\"ds-choice__check\"></span></label></div>",
+      "css": ".ds-choices { display: grid; gap: 8px; font: 400 17px/1.5 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; color: #1b2421; } .ds-choice { position: relative; display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 14px; border: 2px solid #8a8576; border-radius: 10px; background: #fffdf8; cursor: pointer; transition: border-color 120ms ease-out, background-color 120ms ease-out; } .ds-choice input { position: absolute; opacity: 0; pointer-events: none; } .ds-choice:hover { border-color: #4a5652; } .ds-choice:has(input:focus-visible) { outline: 3px solid #1b2421; outline-offset: 2px; } .ds-choice__icon { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; color: #0e5a4f; background: #f6f3ec; } .ds-choice__label { flex: 1; line-height: 1.3; } .ds-choice__check { flex: none; width: 18px; color: #0e5a4f; } .ds-choice.is-checked { border-color: #0e5a4f; background: #e6efec; } .ds-choice.is-checked .ds-choice__icon { background: #0e5a4f; color: #f6f3ec; } .ds-choice.is-checked .ds-choice__label { font-weight: 650; }"
+    },
+    {
+      "name": "Pastillas de estado",
+      "kind": "chip",
+      "refersTo": "status-pill-recibido",
+      "description": "Recibido, en proceso y resuelto: icono más texto, nunca solo color ni ámbar.",
+      "html": "<div class=\"ds-pills\"><span class=\"ds-pill\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M3.5 13.5h5l1.5 2.5h4l1.5-2.5h5\"/><path d=\"M5.5 5.5h13l2 8v5h-17v-5Z\"/></svg>Recibido</span><span class=\"ds-pill ds-pill--proceso\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M14.5 6.5a4 4 0 0 0 5 5L12 19a2.1 2.1 0 0 1-3-3l7.5-7.5\"/></svg>En proceso</span><span class=\"ds-pill ds-pill--resuelto\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m5 12.5 4.5 4.5L19 7.5\"/></svg>Resuelto</span></div>",
+      "css": ".ds-pills { display: flex; flex-wrap: wrap; gap: 8px; } .ds-pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 8px; border: 2px solid #8a8576; border-radius: 999px; font: 650 0.875rem/1.3 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; white-space: nowrap; color: #1b2421; background: #fffdf8; } .ds-pill--proceso { border-color: #0e5a4f; background: #e6efec; color: #0a463d; } .ds-pill--resuelto { border-color: #1d6b45; background: #e3f1e8; color: #1d6b45; }"
+    },
+    {
+      "name": "Fila de reporte",
+      "kind": "card",
+      "refersTo": "report-row",
+      "description": "Miniatura de 72 px, categoría, descripción a dos líneas, estado y tiempo; la fila nueva solo cambia el fondo; esqueleto de carga.",
+      "html": "<ul class=\"ds-report-list\"><li class=\"ds-report-row ds-report-row--new\"><a class=\"ds-report-row__link\" href=\"#\"><span class=\"ds-report-row__thumb\"></span><span class=\"ds-report-row__body\"><span class=\"ds-report-row__title\">Baches y pavimento</span><span class=\"ds-report-row__desc\">Bache profundo frente a la entrada principal.</span><span class=\"ds-report-row__meta\"><span class=\"ds-pill\">Recibido</span><time>hace 2 min</time></span></span><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m9 6 6 6-6 6\"/></svg></a></li><li class=\"ds-report-row ds-report-row--skeleton\" aria-hidden=\"true\"><span class=\"ds-skel ds-skel--thumb\"></span><span class=\"ds-report-row__body\"><span class=\"ds-skel\"></span><span class=\"ds-skel ds-skel--short\"></span></span></li></ul>",
+      "css": ".ds-report-list { display: grid; margin: 0; padding: 0; list-style: none; border-top: 1px solid #cfc7b6; font: 400 17px/1.5 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; } .ds-report-row { border-bottom: 1px solid #cfc7b6; } .ds-report-row__link { display: grid; grid-template-columns: 72px 1fr 20px; align-items: center; gap: 14px; padding: 14px 10px; color: #1b2421; text-decoration: none; border-radius: 10px; } .ds-report-row__link:hover { background: rgb(27 36 33 / 0.04); } .ds-report-row__link:focus-visible { outline: 3px solid #1b2421; outline-offset: 3px; } .ds-report-row--new .ds-report-row__link { background: #e6efec; } .ds-report-row__thumb { width: 72px; height: 72px; border-radius: 10px; background: #cfc7b6; } .ds-report-row__body { display: grid; gap: 4px; min-width: 0; } .ds-report-row__title { font-weight: 650; } .ds-report-row__desc { color: #4a5652; font-size: 0.9375rem; line-height: 1.4; } .ds-report-row__meta { display: flex; gap: 6px 12px; align-items: center; color: #4a5652; font-size: 0.875rem; } .ds-pill { display: inline-flex; padding: 3px 10px; border: 2px solid #8a8576; border-radius: 999px; font-weight: 650; color: #1b2421; background: #fffdf8; } .ds-report-row--skeleton { display: grid; grid-template-columns: 72px 1fr; gap: 14px; padding: 14px 10px; } .ds-skel { display: block; height: 14px; width: 70%; border-radius: 10px; background: #cfc7b6; animation: ds-pulse 1.4s ease-in-out infinite; } .ds-skel--short { width: 45%; } .ds-skel--thumb { width: 72px; height: 72px; border-radius: 10px; } @media (min-width: 480px) { .ds-report-list { margin: 0 -10px; } } @keyframes ds-pulse { 50% { opacity: 0.5; } } @media (prefers-reduced-motion: reduce) { .ds-skel { animation: none; } }"
+    },
+    {
+      "name": "Mapa con pin fijo",
+      "kind": "custom",
+      "refersTo": "map-view",
+      "description": "El plano real: marco de 2 px, pin fijo al centro (fantasma sin punto, ámbar con contorno hondo cuando hay punto), círculo de precisión y estado en texto.",
+      "html": "<div class=\"ds-map-pair\"><div><div class=\"ds-map-view\"><svg class=\"ds-map-view__pin ds-map-view__pin--ghost\" viewBox=\"0 0 64 80\" aria-hidden=\"true\"><ellipse class=\"ds-pin-shadow\" cx=\"32\" cy=\"76\" rx=\"10\" ry=\"3\"/><path class=\"ds-pin-body\" d=\"M32 2C16.5 2 4 14.2 4 29.3 4 49 27.1 70.1 30.3 72.9a2.6 2.6 0 0 0 3.4 0C36.9 70.1 60 49 60 29.3 60 14.2 47.5 2 32 2Z\"/><circle class=\"ds-pin-dot\" cx=\"32\" cy=\"29\" r=\"10\"/></svg></div><button class=\"ds-link-btn\" type=\"button\">El problema está aquí: usar este punto</button></div><div><div class=\"ds-map-view\"><span class=\"ds-map-view__accuracy\"></span><svg class=\"ds-map-view__pin\" viewBox=\"0 0 64 80\" aria-hidden=\"true\"><ellipse class=\"ds-pin-shadow\" cx=\"32\" cy=\"76\" rx=\"10\" ry=\"3\"/><path class=\"ds-pin-body\" d=\"M32 2C16.5 2 4 14.2 4 29.3 4 49 27.1 70.1 30.3 72.9a2.6 2.6 0 0 0 3.4 0C36.9 70.1 60 49 60 29.3 60 14.2 47.5 2 32 2Z\"/><circle class=\"ds-pin-dot\" cx=\"32\" cy=\"29\" r=\"10\"/></svg></div><p class=\"ds-map-status\">Ubicación del GPS, precisión de ±15 m. Mueve el mapa si el punto no es exacto.</p></div></div>",
+      "css": ".ds-map-pair { display: grid; gap: 16px; } .ds-map-view { position: relative; height: 220px; border: 2px solid #8a8576; border-radius: 10px; overflow: hidden; background: #e6efec; } .ds-map-view__accuracy { position: absolute; left: 50%; top: 50%; width: 90px; height: 90px; translate: -50% -50%; border: 2px solid #0e5a4f; border-radius: 50%; background: rgb(14 90 79 / 0.12); } .ds-map-view__pin { position: absolute; left: 50%; top: 50%; width: 40px; height: 50px; translate: -50% -100%; pointer-events: none; filter: drop-shadow(0 4px 6px rgb(5 30 26 / 0.35)); } .ds-pin-body { fill: #e8a33d; stroke: #b8781c; stroke-width: 2; } .ds-pin-dot { fill: #f6f3ec; } .ds-pin-shadow { fill: rgb(5 30 26 / 0.35); } .ds-map-view__pin--ghost { filter: none; } .ds-map-view__pin--ghost .ds-pin-body { fill: rgb(255 253 248 / 0.75); stroke: #4a5652; stroke-dasharray: 6 4; stroke-width: 3; } .ds-map-view__pin--ghost .ds-pin-dot { fill: none; stroke: #4a5652; stroke-width: 2; } .ds-map-view__pin--ghost .ds-pin-shadow { fill: none; } .ds-map-status { margin: 8px 0 0; color: #4a5652; font: 400 0.9375rem/1.4 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; } .ds-link-btn { display: inline-flex; align-items: center; min-height: 44px; padding: 0; border: 0; background: none; color: #0e5a4f; font: 650 17px/1.5 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; cursor: pointer; } .ds-link-btn:focus-visible { outline: 3px solid #1b2421; outline-offset: 3px; }"
+    },
+    {
+      "name": "Acción de la portada",
+      "kind": "card",
+      "refersTo": "action-home-primary",
+      "description": "Enlaces grandes de 76 px con icono en círculo, título, apoyo y chevron; la principal en verde.",
+      "html": "<nav class=\"ds-actions\"><a class=\"ds-action ds-action--primary\" href=\"#\"><span class=\"ds-action__icon\"><svg width=\"26\" height=\"26\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M12 5v14M5 12h14\"/></svg></span><span class=\"ds-action__text\"><span class=\"ds-action__title\">Nuevo reporte</span><span class=\"ds-action__desc\">Foto, tipo de problema y lugar.</span></span></a><a class=\"ds-action\" href=\"#\"><span class=\"ds-action__icon\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M9 6.5h11M9 12h11M9 17.5h11\"/></svg></span><span class=\"ds-action__text\"><span class=\"ds-action__title\">Mis reportes</span><span class=\"ds-action__desc\">Sigue en qué estado están.</span></span></a></nav>",
+      "css": ".ds-actions { display: grid; gap: 12px; font: 400 17px/1.5 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; } .ds-action { display: flex; align-items: center; gap: 14px; min-height: 76px; padding: 14px 16px; border: 2px solid #8a8576; border-radius: 14px; background: #fffdf8; color: #1b2421; text-decoration: none; transition: background-color 120ms ease-out, transform 120ms ease-out; } .ds-action:hover { border-color: #4a5652; } .ds-action:active { transform: scale(0.99); } .ds-action:focus-visible { outline: 3px solid #1b2421; outline-offset: 3px; } .ds-action__icon { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: #e6efec; color: #0e5a4f; } .ds-action__text { display: grid; gap: 2px; } .ds-action__title { font-size: 1.125rem; font-weight: 700; } .ds-action__desc { font-size: 0.9375rem; color: #4a5652; } .ds-action--primary { border-color: #0e5a4f; background: #0e5a4f; color: #f6f3ec; } .ds-action--primary:hover { background: #0a463d; border-color: #0a463d; } .ds-action--primary .ds-action__icon { background: rgb(246 243 236 / 0.16); color: #f6f3ec; } .ds-action--primary .ds-action__desc { color: #cfe1dc; }"
+    },
+    {
+      "name": "Nota de éxito",
+      "kind": "custom",
+      "refersTo": "success-note",
+      "description": "Confirmación tras enviar: verde hecho con check, role=status.",
+      "html": "<p class=\"ds-success\" role=\"status\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m5 12.5 4.5 4.5L19 7.5\"/></svg>Recibimos tu reporte. Aquí puedes seguir su estado.</p>",
+      "css": ".ds-success { display: flex; align-items: center; gap: 10px; margin: 0; padding: 12px 14px; border: 2px solid #1d6b45; border-radius: 10px; background: #e3f1e8; color: #1b2421; font: 600 17px/1.5 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; } .ds-success svg { flex: none; color: #1d6b45; }"
     }
   ],
   "narrative": {
     "northStar": "El punto en el plano",
     "overview": "SpotIt es un plano de calles verde donde cae un pin ámbar, y al lado, papel cálido donde se escribe. Todo el sistema sale de esas dos materias: el plano (verde profundo con manzanas, calles translúcidas y un pin) marca la identidad y ocupa una región entera de la pantalla; el papel lleva el trabajo (formularios, texto, datos) sin tarjetas ni marcos que lo encierren.\n\nEstá hecho para la calle: modo claro siempre (se usa con sol), texto base de 17 px, controles de 56 px y toques de 44 px como mínimo, contraste alto y mensajes que dicen qué pasó y cómo seguir. La densidad es baja y directa: una columna, pocas piezas, nada decorativo que compita con la tarea.",
     "keyCharacteristics": [
-      "Un campo verde que ocupa una banda (móvil) o una columna entera (escritorio), nunca un adorno pequeño.",
+      "Un campo verde que ocupa una banda (móvil) o una columna entera (escritorio) en la entrada y la portada, y una franja a todo lo ancho en las pantallas internas; nunca un adorno pequeño.",
+      "Cuando hay un mapa real, ese mapa es el plano: se mueve el mapa bajo un pin ámbar fijo al centro, no el pin.",
       "Un solo pin ámbar por pantalla; el ámbar es el punto, no un color de interfaz.",
       "Formulario directo sobre papel, sin tarjeta, con etiquetas encima del campo.",
       "Bordes de 2 px para todo lo que se toca o avisa; el color nunca es la única señal.",
       "Movimiento mínimo: el pin se asienta una vez y la interfaz responde en 120 ms."
     ],
     "rules": [
-      { "name": "The Un Solo Pin Rule", "body": "El ámbar aparece como el pin del plano y en detalles de respuesta (hover de enlace, selección, foco sobre oscuro). No se usa para botones, fondos ni texto.", "section": "colors" },
-      { "name": "The Siempre Claro Rule", "body": "color-scheme: light fijo: no hay modo oscuro. La app vive al sol.", "section": "colors" },
-      { "name": "The Nada Bajo 16 Rule", "body": "El texto de los campos es 1.0625rem (17 px): por encima de 16 px para que iOS no haga zoom. Ningún control de entrada baja de ahí.", "section": "typography" },
-      { "name": "The Papel Sin Tarjeta Rule", "body": "El contenido se escribe sobre el papel; no se envuelve en tarjetas blancas con sombra. Los grupos se separan con espacio o con una línea de 1 px.", "section": "elevation" }
+      {
+        "name": "The Un Solo Pin Rule",
+        "body": "El ámbar aparece como el pin del plano (dibujado o real) y en detalles de respuesta (hover de enlace, selección, foco sobre oscuro). No se usa para botones, fondos, estados ni texto.",
+        "section": "colors"
+      },
+      {
+        "name": "The Siempre Claro Rule",
+        "body": "color-scheme: light fijo: no hay modo oscuro. La app vive al sol.",
+        "section": "colors"
+      },
+      {
+        "name": "The Nada Bajo 16 Rule",
+        "body": "El texto de los campos es 1.0625rem (17 px): por encima de 16 px para que iOS no haga zoom. Ningún control de entrada baja de ahí.",
+        "section": "typography"
+      },
+      {
+        "name": "The Papel Sin Tarjeta Rule",
+        "body": "El contenido se escribe sobre el papel; no se envuelve en tarjetas blancas con sombra. Los grupos se separan con espacio o con una línea de 1 px.",
+        "section": "elevation"
+      }
     ],
     "dos": [
-      "Do dar al plano una región entera (banda de ~30 % de alto en móvil, columna de 45 % en escritorio) y poner un solo pin ámbar en él.",
+      "Do dar al plano una región entera (banda de ~30 % de alto en móvil, columna de 45 % en escritorio) en la entrada y la portada, y poner un solo pin ámbar en él; en pantallas internas, la franja verde de 64 px con \"volver\".",
+      "Do fijar el pin al centro del mapa real y mover el mapa debajo; anunciar en texto de dónde viene el punto.",
+      "Do mostrar cada estado de reporte como pastilla con icono y texto.",
+      "Do dar a cada lista sus estados de carga (esqueleto con la forma real), vacío (qué hacer primero) y error (con \"Reintentar\").",
       "Do escribir formularios directo sobre el papel, con la etiqueta visible encima de cada campo de 56 px.",
       "Do acompañar cada error de icono y texto que diga cómo seguir, enlazado al campo con aria-describedby y aria-invalid.",
       "Do usar borde completo de 2 px para avisos y campos; 1 px solo para divisores.",
@@ -135,7 +416,9 @@
       "Don't indicar un error o un requisito solo con color.",
       "Don't usar texto de campo por debajo de 16 px.",
       "Don't añadir modo oscuro ni fondos oscuros a pantalla completa.",
-      "Don't usar iconos de otra familia o glifos tipográficos en lugar de los iconos dibujados."
+      "Don't usar iconos de otra familia o glifos tipográficos en lugar de los iconos dibujados.",
+      "Don't usar marcadores arrastrables de mapa ni un asistente de varios pasos con barra de progreso para reportar.",
+      "Don't hacer que el aviso 911 se pueda cerrar u ocultar."
     ]
   }
 }
