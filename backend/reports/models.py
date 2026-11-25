@@ -10,6 +10,8 @@ from django.core.validators import (
 from django.db import models
 from django.utils import timezone
 
+from accounts.models import Rol
+
 DESCRIPCION_MIN = 10
 DESCRIPCION_MAX = 1000
 
@@ -135,3 +137,45 @@ class Reporte(models.Model):
     def puede_editar(self, user) -> bool:
         """Solo el autor y solo mientras nadie lo ha tomado."""
         return self.es_de(user) and self.estado == Estado.RECIBIDO
+
+    def votos_abiertos(self) -> bool:
+        """En `resuelto` los votos se congelan; si se reabre, vuelven a estar disponibles."""
+        return self.estado != Estado.RESUELTO
+
+    def motivo_sin_voto(self, user) -> str | None:
+        """Por qué `user` no puede votar (o quitar su voto) aquí; None si puede."""
+        if not user or not user.is_authenticated:
+            return "Inicia sesión para votar."
+        if getattr(user, "rol", None) != Rol.CIUDADANO:
+            return "Solo un ciudadano puede votar."
+        if self.es_de(user):
+            return "No puedes votar tu propio reporte."
+        if not self.votos_abiertos():
+            return "Este reporte ya está resuelto: los votos están cerrados."
+        return None
+
+
+class Voto(models.Model):
+    """Un voto por persona y reporte para priorizarlo. Se puede quitar."""
+
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name="usuario",
+        on_delete=models.CASCADE,
+        related_name="votos",
+    )
+    reporte = models.ForeignKey(
+        Reporte, verbose_name="reporte", on_delete=models.CASCADE, related_name="votos"
+    )
+    creado = models.DateTimeField("creado", auto_now_add=True)
+
+    class Meta:
+        verbose_name = "voto"
+        verbose_name_plural = "votos"
+        constraints = [
+            # La base de datos garantiza el "un voto por persona" aun con peticiones simultáneas.
+            models.UniqueConstraint(fields=["usuario", "reporte"], name="voto_unico_por_persona"),
+        ]
+
+    def __str__(self):
+        return f"Voto en #{self.reporte_id}"

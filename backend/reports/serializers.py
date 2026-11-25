@@ -31,6 +31,9 @@ class ReporteSerializer(serializers.ModelSerializer):
     miniatura_url = serializers.SerializerMethodField()
     es_mio = serializers.SerializerMethodField()
     puede_editar = serializers.SerializerMethodField()
+    votos = serializers.SerializerMethodField()
+    votado = serializers.SerializerMethodField()
+    puede_votar = serializers.SerializerMethodField()
 
     class Meta:
         model = Reporte
@@ -50,6 +53,9 @@ class ReporteSerializer(serializers.ModelSerializer):
             "miniatura_url",
             "es_mio",
             "puede_editar",
+            "votos",
+            "votado",
+            "puede_votar",
         )
         read_only_fields = fields
 
@@ -68,6 +74,23 @@ class ReporteSerializer(serializers.ModelSerializer):
 
     def get_puede_editar(self, obj):
         return obj.puede_editar(self._user())
+
+    # Las listas y el detalle traen `num_votos` y `votado_por_mi` anotados en la consulta
+    # (sin una consulta por fila); si faltan (recién creado o editado), se calculan aquí.
+
+    def get_votos(self, obj):
+        anotado = getattr(obj, "num_votos", None)
+        return anotado if anotado is not None else obj.votos.count()
+
+    def get_votado(self, obj):
+        anotado = getattr(obj, "votado_por_mi", None)
+        if anotado is not None:
+            return anotado
+        user = self._user()
+        return bool(user and user.is_authenticated and obj.votos.filter(usuario=user).exists())
+
+    def get_puede_votar(self, obj):
+        return obj.motivo_sin_voto(self._user()) is None
 
 
 class _ReporteEscrituraBase(serializers.ModelSerializer):
