@@ -17,6 +17,7 @@
   --line: #cfc7b6;
   --line-strong: #8a8576;
   --ok: #1d6b45;
+  --ok-tint: #e3f1e8;
   --error: #b3261e;
   --error-tint: #fbe9e6;
   --info-tint: #e6efec;
@@ -71,7 +72,9 @@ ul {
 }
 
 button,
-input {
+input,
+textarea,
+select {
   font: inherit;
   color: inherit;
 }

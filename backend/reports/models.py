@@ -1,0 +1,137 @@
+import uuid
+
+from django.conf import settings
+from django.core.validators import (
+    MaxLengthValidator,
+    MaxValueValidator,
+    MinLengthValidator,
+    MinValueValidator,
+)
+from django.db import models
+from django.utils import timezone
+
+DESCRIPCION_MIN = 10
+DESCRIPCION_MAX = 1000
+
+
+class Categoria(models.Model):
+    """Tipo de incidencia. Se gestiona desde el admin; desactivarla la oculta del formulario."""
+
+    nombre = models.CharField("nombre", max_length=80, unique=True)
+    slug = models.SlugField("identificador", max_length=40, unique=True)
+    icono = models.SlugField(
+        "icono",
+        max_length=40,
+        blank=True,
+        help_text="Clave del icono en el frontend (bache, alumbrado…). Vacío usa el genérico.",
+    )
+    orden = models.PositiveSmallIntegerField("orden", default=0)
+    activa = models.BooleanField("activa", default=True)
+
+    class Meta:
+        verbose_name = "categoría"
+        verbose_name_plural = "categorías"
+        ordering = ["orden", "nombre"]
+
+    def __str__(self):
+        return self.nombre
+
+
+class Estado(models.TextChoices):
+    RECIBIDO = "recibido", "Recibido"
+    EN_PROCESO = "en_proceso", "En proceso"
+    RESUELTO = "resuelto", "Resuelto"
+
+
+# Transiciones permitidas para el administrador (resuelto → en_proceso = reabrir).
+TRANSICIONES = {
+    Estado.RECIBIDO: {Estado.EN_PROCESO},
+    Estado.EN_PROCESO: {Estado.RESUELTO, Estado.RECIBIDO},
+    Estado.RESUELTO: {Estado.EN_PROCESO},
+}
+
+
+class OrigenUbicacion(models.TextChoices):
+    GPS = "gps", "GPS del dispositivo"
+    MANUAL = "manual", "Ajustada a mano"
+
+
+def _ruta_foto(prefijo: str) -> str:
+    # Nombre aleatorio: no revela usuario, fecha exacta ni nombre original del archivo.
+    return f"reportes/{timezone.now():%Y/%m}/{prefijo}{uuid.uuid4().hex}.jpg"
+
+
+def ruta_foto(instance, filename):
+    return _ruta_foto("")
+
+
+def ruta_miniatura(instance, filename):
+    return _ruta_foto("min-")
+
+
+class Reporte(models.Model):
+    autor = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name="autor",
+        on_delete=models.SET_NULL,  # el reporte sobrevive aunque se borre la cuenta
+        null=True,
+        related_name="reportes",
+    )
+    categoria = models.ForeignKey(
+        Categoria, verbose_name="categoría", on_delete=models.PROTECT, related_name="reportes"
+    )
+    descripcion = models.TextField(
+        "descripción",
+        validators=[MinLengthValidator(DESCRIPCION_MIN), MaxLengthValidator(DESCRIPCION_MAX)],
+    )
+    foto = models.FileField("foto", upload_to=ruta_foto, max_length=200)
+    miniatura = models.FileField("miniatura", upload_to=ruta_miniatura, max_length=200)
+    latitud = models.DecimalField(
+        "latitud",
+        max_digits=9,
+        decimal_places=6,
+        validators=[MinValueValidator(-90), MaxValueValidator(90)],
+    )
+    longitud = models.DecimalField(
+        "longitud",
+        max_digits=9,
+        decimal_places=6,
+        validators=[MinValueValidator(-180), MaxValueValidator(180)],
+    )
+    precision_m = models.PositiveIntegerField(
+        "precisión (m)",
+        null=True,
+        blank=True,
+        help_text="Radio de incertidumbre del GPS. Vacío si la ubicación se ajustó a mano.",
+    )
+    origen_ubicacion = models.CharField(
+        "origen de la ubicación",
+        max_length=10,
+        choices=OrigenUbicacion.choices,
+        default=OrigenUbicacion.GPS,
+    )
+    estado = models.CharField(
+        "estado", max_length=12, choices=Estado.choices, default=Estado.RECIBIDO
+    )
+    creado = models.DateTimeField("creado", auto_now_add=True)
+    actualizado = models.DateTimeField("actualizado", auto_now=True)
+
+    class Meta:
+        verbose_name = "reporte"
+        verbose_name_plural = "reportes"
+        ordering = ["-creado", "-id"]
+        indexes = [
+            models.Index(fields=["estado"]),
+            models.Index(fields=["categoria", "estado"]),
+            models.Index(fields=["-creado"]),
+        ]
+
+    def __str__(self):
+        return f"#{self.pk} {self.categoria} ({self.get_estado_display()})"
+
+    def es_de(self, user) -> bool:
+        return bool(user and user.is_authenticated and self.autor_id == user.pk)
+
+    def puede_editar(self, user) -> bool:
+        """Solo el autor y solo mientras nadie lo ha tomado."""
+        return self.es_de(user) and self.estado == Estado.RECIBIDO

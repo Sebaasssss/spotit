@@ -1,7 +1,15 @@
 import { useState } from 'react'
 import { useAuth } from '../auth/context'
 import { BackendStatus } from '../components/BackendStatus'
-import { CloudOffIcon, LogOutIcon, Spinner } from '../components/Icons'
+import { Link } from 'react-router'
+import {
+  ChevronRightIcon,
+  CloudOffIcon,
+  ListIcon,
+  LogOutIcon,
+  PlusIcon,
+  Spinner,
+} from '../components/Icons'
 import { MapBand } from '../components/MapBand'
 import { useOnline } from '../lib/useOnline'
 
@@ -55,13 +63,30 @@ export function Home() {
           </p>
         )}
 
-        <section className="home__next" aria-labelledby="next-title">
-          <h2 id="next-title">Muy pronto podrás reportar desde aquí</h2>
-          <p>
-            Tomarás una foto, SpotIt guardará la ubicación y verás tu reporte en el mapa mientras
-            se atiende.
-          </p>
-        </section>
+        <nav className="home__actions" aria-label="Acciones principales">
+          {user.rol === 'ciudadano' && (
+            <Link to="/reportes/nuevo" className="action action--primary">
+              <span className="action__icon">
+                <PlusIcon size={26} />
+              </span>
+              <span className="action__text">
+                <span className="action__title">Nuevo reporte</span>
+                <span className="action__desc">Foto, tipo de problema y lugar.</span>
+              </span>
+              <ChevronRightIcon size={22} className="action__chevron" />
+            </Link>
+          )}
+          <Link to="/reportes" className="action">
+            <span className="action__icon">
+              <ListIcon size={24} />
+            </span>
+            <span className="action__text">
+              <span className="action__title">Mis reportes</span>
+              <span className="action__desc">Sigue en qué estado están.</span>
+            </span>
+            <ChevronRightIcon size={22} className="action__chevron" />
+          </Link>
+        </nav>
 
         <dl className="account">
           <div>

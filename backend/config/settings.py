@@ -18,6 +18,8 @@ env = environ.Env(
     JWT_REFRESH_DAYS=(int, 14),
     AUTH_THROTTLE_RATE=(str, "10/min"),
     AUTH_REFRESH_GRACE_SECONDS=(int, 60),
+    REPORT_THROTTLE_RATE=(str, "20/hour"),
+    MEDIA_X_ACCEL=(bool, False),
 )
 
 # Fuera de Docker se puede usar un .env junto a manage.py o en la raíz del repo.
@@ -46,6 +48,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt.token_blacklist",
     "core",
     "accounts",
+    "reports",
 ]
 
 MIDDLEWARE = [
@@ -119,6 +122,26 @@ STORAGES = {
     "staticfiles": {"BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"},
 }
 
+# --- Fotos de reportes ---
+# Se guardan en un volumen (MEDIA_ROOT) y NUNCA se sirven por una URL pública directa:
+# la API entrega URLs firmadas a /api/reportes/<id>/foto/ (ver reports/storage.py).
+MEDIA_ROOT = Path(env("MEDIA_ROOT", default=str(BASE_DIR / "media")))
+MEDIA_URL = "/_media_protegida/"  # solo la usa nginx de forma interna
+# En Docker nginx entrega el archivo (X-Accel-Redirect); sin nginx lo entrega Django.
+MEDIA_X_ACCEL = env("MEDIA_X_ACCEL")
+MEDIA_X_ACCEL_PREFIX = "/_media_protegida/"
+REPORT_PHOTO = {
+    "MAX_BYTES": 10 * 1024 * 1024,
+    "MAX_PIXELS": 40_000_000,  # ~ 8000 × 5000; frena bombas de descompresión
+    "MAX_SIDE": 1600,
+    "THUMB_SIDE": 400,
+    "JPEG_QUALITY": 82,
+    "URL_MAX_AGE": 6 * 60 * 60,  # validez de las URLs firmadas, en segundos
+}
+# Subidas de hasta 10 MB de foto más el resto del formulario.
+DATA_UPLOAD_MAX_MEMORY_SIZE = 12 * 1024 * 1024
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
+
 # --- Seguridad detrás de nginx (y del túnel/ALB) ---
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_CONTENT_TYPE_NOSNIFF = True
@@ -134,7 +157,10 @@ REST_FRAMEWORK = {
     ],
     # Seguro por defecto: cada vista pública lo declara explícitamente.
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
-    "DEFAULT_THROTTLE_RATES": {"auth": env("AUTH_THROTTLE_RATE")},
+    "DEFAULT_THROTTLE_RATES": {
+        "auth": env("AUTH_THROTTLE_RATE"),
+        "reportes": env("REPORT_THROTTLE_RATE"),
+    },
 }
 
 SIMPLE_JWT = {
