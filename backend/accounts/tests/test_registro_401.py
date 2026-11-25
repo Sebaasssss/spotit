@@ -3,6 +3,7 @@
 from datetime import timedelta
 
 import jwt
+from django.conf import settings
 from django.test import override_settings
 from django.urls import reverse
 from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
@@ -129,8 +130,9 @@ class Registro401Tests(AuthTestCase):
     def test_gracia_ya_usada(self):
         viejo = self.login().cookies[COOKIE].value
         self.client.post(self.refresh_url)  # rotación cuya respuesta "se pierde"
-        self.client.cookies[COOKIE] = viejo
-        self.assertEqual(self.client.post(self.refresh_url).status_code, 200)  # usa la gracia
+        for _ in range(settings.AUTH_REFRESH_GRACE_RETRIES):  # reintentos, también perdidos
+            self.client.cookies[COOKIE] = viejo
+            self.assertEqual(self.client.post(self.refresh_url).status_code, 200)
 
         self.client.cookies[COOKIE] = viejo
         linea, _ = self.linea(lambda: self.client.post(self.refresh_url))
@@ -148,7 +150,7 @@ class Registro401Tests(AuthTestCase):
 
         linea, _ = self.linea(lambda: self.client.post(self.refresh_url))
 
-        self.assertIn("motivo=gracia_sucesor_invalidado ", linea)
+        self.assertIn("motivo=reutilizacion_detectada ", linea)
 
     def test_usuario_desactivado(self):
         self.login()

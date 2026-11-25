@@ -17,7 +17,7 @@ from .cookies import (
     get_refresh_cookie,
     set_refresh_cookie,
 )
-from .rotation import remember_rotation, reuse_within_grace
+from .rotation import cerrar_gracia, registrar_rotacion, reuse_within_grace
 from .serializers import LoginSerializer, RegisterSerializer, UserSerializer
 
 NO_STORE = {"Cache-Control": "no-store"}
@@ -98,7 +98,10 @@ class RefreshView(_PublicAuthView):
         if user is None:
             return self._unauthorized(SESION_INVALIDA, auditoria.USUARIO_INACTIVO, raw)
 
-        remember_rotation(raw, data["refresh"])
+        # Otra renovación simultánea del mismo token cuenta como reintento: nunca dos válidos.
+        motivo = registrar_rotacion(raw, data["refresh"])
+        if motivo:
+            return self._unauthorized(SESION_INVALIDA, motivo, raw)
         response = Response(
             {"access": data["access"], "user": UserSerializer(user).data}, headers=NO_STORE
         )
@@ -119,6 +122,7 @@ class LogoutView(_PublicAuthView):
     def post(self, request):
         raw = get_refresh_cookie(request)
         if raw:
+            cerrar_gracia(raw)
             try:
                 RefreshToken(raw).blacklist()
             except TokenError:

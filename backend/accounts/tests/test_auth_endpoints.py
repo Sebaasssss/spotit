@@ -291,11 +291,22 @@ class RefreshGraceTests(AuthTestCase):
         self.client.cookies[COOKIE] = self.lost_successor
         self.assertEqual(self.client.post(self.url).status_code, 401)
 
-    def test_la_gracia_solo_se_usa_una_vez(self):
-        self.client.post(self.url)
+    def test_el_anterior_no_vale_si_su_sucesor_ya_se_presento(self):
+        self.client.post(self.url)  # reintento: llega el sucesor nuevo
+        self.client.post(self.url)  # y se usa
 
         self.client.cookies[COOKIE] = self.old
         self.assertEqual(self.client.post(self.url).status_code, 401)
+
+    def test_la_gracia_sobrevive_a_mucho_trafico_en_la_cache(self):
+        """Con el tope por defecto de DatabaseCache (300) Django descartaba un tercio de las
+        claves en orden alfabético y la de gracia ("auth:gracia:…") caía primero."""
+        for i in range(600):
+            cache.set(f"throttle_reportes_{i}", [i], 3600)
+
+        response = self.client.post(self.url)
+
+        self.assertEqual(response.status_code, 200)
 
     def test_sin_gracia_tras_logout(self):
         self.client.cookies[COOKIE] = self.lost_successor
