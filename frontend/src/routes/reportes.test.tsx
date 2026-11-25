@@ -52,6 +52,9 @@ function reporte(extra: Partial<Reporte> = {}): Reporte {
     miniatura_url: '/api/reportes/7/foto/?t=y',
     es_mio: true,
     puede_editar: true,
+    votos: 0,
+    votado: false,
+    puede_votar: false,
     ...extra,
   }
 }
@@ -273,5 +276,35 @@ describe('Mis reportes', () => {
     renderEn('/reportes')
 
     expect(await screen.findByText('Sin conexión: no pudimos cargar tus reportes.')).toBeInTheDocument()
+  })
+
+  it('al abrir la app sin conexión cae al modo sin conexión con el perfil guardado', async () => {
+    const fetchMock = mockFetch({
+      '/api/auth/refresh/': 'offline',
+      '/api/reportes/mios/?page=1': 'offline',
+    })
+    const router = renderEn('/reportes')
+
+    expect(await screen.findByText('Sin conexión: no pudimos cargar tus reportes.')).toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/reportes')
+    expect(screen.queryByText(/sesión expiró/i)).not.toBeInTheDocument()
+    expect(profileCache.load()).toEqual(ana)
+    // Sin token no se envía la lista: no hay 401 que confunda el diagnóstico.
+    expect(fetchMock.mock.calls.filter(([url]) => url === '/api/reportes/mios/?page=1')).toHaveLength(0)
+  })
+
+  it('al abrir la app no pide la lista sin token', async () => {
+    const fetchMock = mockFetch({
+      ...refresh,
+      '/api/reportes/mios/?page=1': (init) =>
+        new Headers(init?.headers).has('Authorization')
+          ? json(pagina([reporte()]))
+          : json({ detail: 'sin token' }, 401),
+    })
+    renderEn('/reportes')
+
+    expect(await screen.findByText('1 reporte')).toBeInTheDocument()
+    const lista = fetchMock.mock.calls.filter(([url]) => url === '/api/reportes/mios/?page=1')
+    expect(lista.every(([, init]) => new Headers(init?.headers).has('Authorization'))).toBe(true)
   })
 })
