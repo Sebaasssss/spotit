@@ -66,6 +66,14 @@ CLAUDE.md
 - El texto de la interfaz va en español (es-MX, trato de tú)
 - El código y los identificadores se quedan como ya están (mezcla actual de español e inglés); no renombrar por idioma
 
+## Flujo de ramas
+- Ramas permanentes: `develop` (integración), `test` (pruebas), `main` (versión estable) y `prod` (lo desplegado)
+- Las ramas de trabajo (`feat/…`, `fix/…`, `docs/…`) salen de `develop` actualizado y vuelven a `develop` con pull request
+- La promoción es `develop → test → main → prod` y **solo la hace el usuario**; nunca se fusiona ni se hace push directo a `test`, `main` ni `prod`
+- Para empezar una rama: `git switch develop`, `git pull --ff-only origin develop`, `git switch -c <rama>`
+- Se conservan las ramas de fases anteriores (no se borran)
+- El usuario hace los commits y los push; Claude propone los comandos exactos
+
 ## Forma de trabajar
 - **Antes de escribir código en cada fase, proponer un plan** y esperar confirmación
 - Trabajar por fases pequeñas; no adelantar funcionalidades de fases futuras
