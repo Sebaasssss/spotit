@@ -61,6 +61,11 @@ CLAUDE.md
 - Zonas táctiles de al menos 44 px, contraste accesible, estados de carga, vacío y error en cada pantalla
 - Verificar cada pantalla con Playwright (capturas) antes de darla por terminada
 
+## Idioma
+- Responder siempre en español: planes, preguntas, reportes de cierre, mensajes de commit y comentarios
+- El texto de la interfaz va en español (es-MX, trato de tú)
+- El código y los identificadores se quedan como ya están (mezcla actual de español e inglés); no renombrar por idioma
+
 ## Forma de trabajar
 - **Antes de escribir código en cada fase, proponer un plan** y esperar confirmación
 - Trabajar por fases pequeñas; no adelantar funcionalidades de fases futuras

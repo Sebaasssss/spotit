@@ -356,6 +356,77 @@ components:
     rounded: "{rounded.md}"
     padding: "24px 20px 16px"
     width: "420px"
+  status-pill-oculto:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.full}"
+    padding: "3px 10px 3px 8px"
+  report-row-thumb-oculto:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink-soft}"
+    rounded: "{rounded.sm}"
+    size: "72px"
+  admin-tab:
+    textColor: "{colors.ink-soft}"
+    padding: "0 12px"
+    height: "44px"
+  admin-tab-current:
+    backgroundColor: "{colors.field}"
+    textColor: "{colors.field-ink}"
+  state-legend-row:
+    textColor: "{colors.ink}"
+    rounded: "{rounded.sm}"
+    padding: "8px 10px"
+    height: "56px"
+  votes-badge:
+    backgroundColor: "{colors.ink}"
+    textColor: "{colors.paper}"
+    rounded: "{rounded.full}"
+    padding: "3px 9px"
+  admin-filters-mobile:
+    backgroundColor: "{colors.surface}"
+    rounded: "{rounded.sm}"
+    padding: "16px"
+  admin-filters-desktop:
+    width: "280px"
+    padding: "0"
+  admin-table-row:
+    textColor: "{colors.ink}"
+    padding: "12px 10px"
+  admin-table-thumb:
+    backgroundColor: "{colors.line}"
+    rounded: "{rounded.sm}"
+    size: "56px"
+  admin-actions:
+    width: "380px"
+  admin-option:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.sm}"
+    padding: "6px 14px"
+    height: "56px"
+  admin-option-checked:
+    backgroundColor: "{colors.info-tint}"
+  hidden-box:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.sm}"
+    padding: "12px 14px"
+  hide-warning:
+    backgroundColor: "{colors.error-tint}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.sm}"
+    padding: "12px 14px"
+  timeline-note:
+    backgroundColor: "{colors.info-tint}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.sm}"
+    padding: "8px 12px"
+  timeline-note-internal:
+    backgroundColor: "{colors.surface}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.sm}"
+    padding: "8px 12px"
 ---
 
 # Design System: SpotIt
@@ -403,9 +474,13 @@ Dos materias, verde de plano y papel cálido, con un único acento ámbar y un r
 - **Verde Hecho** (ok): requisitos cumplidos, backend sano, borde y texto del estado "resuelto" y borde de la nota de éxito.
 - **Verde Hecho Claro** (ok-tint): fondo de la pastilla "resuelto" y de la nota de éxito.
 - **Rojo Error** (error) sobre **Rosa Error** (error-tint): borde y relleno del campo inválido, texto e icono del error, borde y fondo del aviso de error, de la franja de estado con envíos fallidos, de la pastilla "No se envió" y de la confirmación de descartar. El rojo solo como trazo y texto marca además la acción destructiva (botón destructivo), nunca como relleno.
-- **Verde Aviso** (info-tint): fondo de avisos informativos (sin conexión), de la franja de estado, de la pastilla "Enviando", de la nota "Tu reporte quedó guardado", de la opción elegida, de la pastilla "en proceso", de la fila recién creada, del hover del botón secundario, del círculo de icono de las acciones de la portada y fondo del mapa mientras cargan las teselas.
+- **Verde Aviso** (info-tint): fondo de avisos informativos (sin conexión, aviso de oculto para el autor), de la franja de estado, de la pastilla "Enviando", de la nota "Tu reporte quedó guardado", de la opción elegida (también la transición elegida del panel), de la nota pública en la línea de tiempo, de la pastilla "en proceso", de la fila recién creada, del hover del botón secundario, del círculo de icono de las acciones de la portada y fondo del mapa mientras cargan las teselas.
 
 El círculo de precisión del GPS sobre el mapa usa verde plano: trazo de 2 px y relleno al 12 %.
+
+Lo **oculto** (moderación) no tiene color propio: se dice en tinta con trazo discontinuo (pastilla, caja y punto de la línea de tiempo) más el ojo tachado. No es un estado del flujo ni un error, así que no usa verde, rojo ni ámbar.
+
+En los conteos del panel, cada estado lleva el tratamiento de su pastilla: recibido en línea con borde línea fuerte, en proceso relleno verde plano, resuelto verde hecho claro con borde verde hecho y rayado diagonal al 28 %; el rayado es la segunda señal para quien no distingue los verdes.
 
 ### Named Rules
 **The Un Solo Pin Rule.** El ámbar aparece como el pin del plano (dibujado o real) y en detalles de respuesta (hover de enlace, selección, foco sobre oscuro). No se usa para botones, fondos, estados ni texto. En el mapa general el anillo ámbar de 3 px alrededor de la chapa elegida es un detalle de respuesta (selección): marca cuál se abrió, nunca rellena una chapa ni distingue un estado.
@@ -425,6 +500,9 @@ El círculo de precisión del GPS sobre el mapa usa verde plano: trazo de 2 px y
 - **Título de acción** (700, 1.125rem): el nombre de cada acción grande de la portada.
 - **Title** (700, 1.25rem, -0.01em): el nombre SpotIt junto al logo sobre el plano.
 - **Frase del plano** (500, 1.0625rem, 1.4 en móvil; 700, 1.75rem, 1.2 en escritorio): la frase de la banda, máximo 22ch, `text-wrap: balance`.
+- **Título del detalle del panel** (800, 1.75rem, 1.15, -0.02em): la categoría del reporte con su número ("Alumbrado #920", el número en tinta suave 650 con cifras tabulares), bajo el display "Panel".
+- **Título de sección de acciones** (750, 1.125rem): "Cambiar estado", "Quién lo envió", "Moderación". Los títulos de bloque del panel y de la línea de tiempo ("Estado general", "Historial", "Seguimiento") usan la cabecera de sección de lista (750, 1.25rem) con su conteo en 650 tinta suave.
+- **Cifra de conteo** (750, 1.5rem, -0.01em, cifras tabulares): el número de cada estado en la leyenda del resumen. Es la única cifra grande del panel y va en línea con su pastilla, nunca sola en una tarjeta.
 - **Body** (400, 17px, 1.5): texto corrido; apoyo bajo el título a 36ch, párrafos de sección a 48ch.
 - **Label** (650, 17px): etiquetas de campo, en tinta, siempre visibles encima del control.
 - **Small** (0.9375rem, 1.4): ayudas, errores en línea (600), estado de la ubicación, descripción de filas y acciones; los términos de lista de datos, las pastillas de estado (650) y los metadatos de fila van a 0.875rem.
@@ -439,6 +517,8 @@ Mobile-first, una columna. En móvil la pantalla se parte en dos filas: la banda
 Medidas máximas: formulario de entrada 420 px (400 px en escritorio); contenido de la portada 560 px, centrado. Márgenes laterales de 24 px en la entrada y 20 px en la portada en móvil, 48 px en escritorio, siempre sumados a `env(safe-area-inset-*)`. Las alturas usan `100dvh`.
 
 **Pantallas internas** (nuevo reporte, mis reportes, detalle): franja verde de 64 px (más `safe-area-inset-top`) arriba, a todo lo ancho; debajo, una sola columna de 560 px centrada con márgenes de 20 px, título display a 24 px de la franja (40 px en escritorio) y bloques a 24 px entre sí. Igual en móvil y escritorio: la columna no se parte en dos.
+
+**Panel de administración:** la misma franja y el display "Panel", pero con densidad de escritorio: columna de **1120 px** centrada (cabecera, conmutador y contenido) con 20 px laterales más el área segura; contenido a 24 px del conmutador y bloques a 28 px. Resumen: barra de estados a lo ancho y, desde 900 px, dos columnas iguales a 48 px (categorías | más votados); debajo, una sola columna a 32 px. Lista: desde 900 px, filtros en columna fija de **280 px** (pegada a 16 px del borde superior al desplazar) y tabla a 32 px; por debajo, filtros plegables sobre la tabla. Detalle: desde 900 px, dos columnas a 48 px (reporte `minmax(0, 1fr)` | acciones **380 px**) e historial a lo ancho debajo; en móvil, acciones debajo del reporte.
 
 Ritmo: 8 px entre etiqueta y campo, 20 px entre campos, 24 px del título al formulario y entre bloques de la portada, 28 px antes del pie del formulario (con 20 px más tras su divisor). En formularios largos de secciones (el reporte) las secciones se separan 32 px. Las opciones de categoría se apilan a 8 px en una sola columna en todos los tamaños; los dos botones de foto van apilados a 10 px bajo 480 px y lado a lado desde 480 px.
 
@@ -458,9 +538,9 @@ Plano por defecto. La profundidad viene de las dos materias (verde contra papel)
 
 ## Shapes
 
-Esquinas suaves en dos pasos: **10 px** para campos, avisos, botones secundarios, opciones, mapa, fotos y miniaturas, y **14 px** para el botón principal y las acciones grandes de la portada. La única forma de cápsula (999 px) es la pastilla de estado; los círculos se reservan para el fondo de los iconos de opción (36 px), de acción y de fila del mapa (44 px), y para las chapas y manchas del mapa general. Las piezas anidadas restan el borde: segmento del conmutador a 8 px, contadores (filtros activos, votos de la chapa) a 6 px. La hoja del mapa en móvil lleva 14 px solo en las esquinas de arriba. El icono de la app usa la misma familia (112/512 de radio). El diálogo de salida usa los 14 px del botón principal. Bordes de **2 px** en todo lo que se toca o avisa (campos, avisos, la línea inferior de la franja de estado); **1 px** solo para divisores. La pastilla "Por enviar" es la única con borde discontinuo: algo que todavía no está en el servidor. Los botones sobre el plano usan un trazo interior de 1.5 px en lugar de borde.
+Esquinas suaves en dos pasos: **10 px** para campos, avisos, botones secundarios, opciones, mapa, fotos y miniaturas, y **14 px** para el botón principal y las acciones grandes de la portada. La cápsula (999 px) es de la pastilla de estado y del contador de votos de "Más votados" (tinta con número en papel); los círculos se reservan para el fondo de los iconos de opción (36 px), de acción y de fila del mapa (44 px), y para las chapas y manchas del mapa general. Las piezas anidadas restan el borde: segmento del conmutador a 8 px, contadores (filtros activos, votos de la chapa) a 6 px. La hoja del mapa en móvil lleva 14 px solo en las esquinas de arriba. El icono de la app usa la misma familia (112/512 de radio). El diálogo de salida usa los 14 px del botón principal. Bordes de **2 px** en todo lo que se toca o avisa (campos, avisos, la línea inferior de la franja de estado); **1 px** solo para divisores. El borde discontinuo dice "no está a la vista de todos": la pastilla "Por enviar" (verde plano: todavía no está en el servidor) y, en tinta, todo lo oculto por moderación (pastilla "Oculto", caja de oculto del detalle, punto de la línea de tiempo al ocultar o mostrar); en línea fuerte, la miniatura de sustitución de un reporte oculto y la caja del motivo interno, que solo ven administradores. La barra de estados del resumen mide 20 px de alto con 6 px de esquina y tramos de 4 px separados 3 px; las barras de categoría, 8 px con 4 px de esquina. Los botones sobre el plano usan un trazo interior de 1.5 px en lugar de borde.
 
-Iconos: una sola familia dibujada a mano, caja de 24, trazo de 2 px, puntas y uniones redondeadas, `currentColor`, siempre `aria-hidden`. El pin del plano es la misma silueta que el logo. La familia incluye un icono por categoría de reporte (bache, alumbrado, agua, basura, áreas verdes, banqueta, señal, edificio, otro) y uno por estado (bandeja para recibido, llave para en proceso, check para resuelto); una categoría desconocida usa el de "otro". Para el mapa general y el voto suma voto (flecha hacia arriba sobre una base), filtros (tres líneas decrecientes), mapa (plano plegado), información (círculo con "i") y cerrar (equis). Las chapas de Leaflet repiten en HTML los mismos trazos de estado.
+Iconos: una sola familia dibujada a mano, caja de 24, trazo de 2 px, puntas y uniones redondeadas, `currentColor`, siempre `aria-hidden`. El pin del plano es la misma silueta que el logo. La familia incluye un icono por categoría de reporte (bache, alumbrado, agua, basura, áreas verdes, banqueta, señal, edificio, otro) y uno por estado (bandeja para recibido, llave para en proceso, check para resuelto); una categoría desconocida usa el de "otro". Para el mapa general y el voto suma voto (flecha hacia arriba sobre una base), filtros (tres líneas decrecientes), mapa (plano plegado), información (círculo con "i") y cerrar (equis). Para el panel y la moderación: gráfica (`ChartIcon`, tres barras sobre una base) para "Resumen", lista para "Reportes", ojo (visible) y ojo tachado (oculto). Las chapas de Leaflet repiten en HTML los mismos trazos de estado.
 
 ## Components
 
@@ -528,8 +608,11 @@ Cápsula con icono de 16 px y texto (650, 0.875rem), borde de 2 px, padding 3 ×
 
 Los reportes guardados en el teléfono usan la misma cápsula, siempre con icono: **Por enviar** (borde discontinuo verde plano, superficie, texto verde hondo, nube con flecha), **Enviando** (borde verde plano, verde aviso, texto verde hondo, spinner y porcentaje con cifras tabulares: "Enviando… 45 %") y **No se envió** (borde rojo error, rosa error, texto rojo error, icono de alerta). No llevan el "Estado:" oculto: no son estados del reporte en el servidor.
 
+**Oculto** (moderación): la misma cápsula con borde discontinuo de 2 px en tinta, superficie, texto tinta y ojo tachado de 16 px ("Oculto"; "Ocultos" en la leyenda del resumen). Va siempre **junto a** la pastilla de estado, nunca en su lugar: ocultar no cambia el estado del flujo. Aparece en la fila de Mis reportes (solo para el autor), en la cabecera del detalle del panel, en la tabla del panel y en la leyenda del resumen.
+
 ### Lista de reportes
 - **Fila:** enlace a todo lo ancho, rejilla de miniatura 72 × 72 (esquinas 10 px, `cover`), cuerpo y chevron de 20 px; padding de 14 × 10 px y 14 px de separación; desde 480 px la lista sale 10 px a cada lado (margen negativo) para que la miniatura quede alineada con el título de la página; por debajo de 480 px no sale, para que el fondo de la fila nueva no toque el borde de la pantalla. Filas separadas por líneas de 1 px (línea arriba de la lista y bajo cada fila). Título (categoría) en 650, descripción en small tinta suave cortada a dos líneas, y metadatos con la pastilla de estado y el tiempo relativo. Hover: tinta al 4 %.
+- **Oculta (solo en Mis reportes del autor):** su foto no se entrega fuera del panel, así que la miniatura se sustituye por una caja de 72 × 72 con borde discontinuo de 2 px línea fuerte, superficie y ojo tachado de 28 px en tinta suave (`aria-hidden`); en los metadatos, la pastilla "Oculto" junto a la de estado.
 - **Recién creada:** la fila que acaba de enviarse solo cambia su fondo a verde aviso (sin mover nada), acompañada de la nota de éxito arriba.
 - **Cabecera:** conteo ("3 reportes", 650 tinta suave) a la izquierda y botón secundario "Nuevo" a la derecha. Cuando hay reportes por enviar, el conteo se vuelve cabecera de sección "Enviados" (ver "Por enviar"), para que las dos listas se distingan.
 - **Carga:** tres filas esqueleto con la misma rejilla (miniatura y dos líneas de 14 px al 70 % y 45 %) en color línea, esquinas de 10 px, con pulso de 1.4 s; el anuncio real va en un `role="status"` oculto y la lista esqueleto es `aria-hidden`.
@@ -568,7 +651,8 @@ Cuando hay ubicación real, el mapa de OpenStreetMap ocupa el lugar del plano di
 - Si el permiso se niega, aviso info y el mapa sigue funcionando a mano.
 
 ### Detalle de reporte
-Columna de bloques a 20 px: fila de estado (pastilla más "Tu reporte" en 0.875rem 650 tinta suave), el voto justo debajo (ver "Botón de voto"), foto en marco de 2 px línea fuerte (`contain`, hasta 60dvh), descripción a 48ch respetando saltos de línea, lista de datos y mapa de solo lectura.
+Columna de bloques a 20 px: fila de estado (pastilla más "Tu reporte" en 0.875rem 650 tinta suave), el voto justo debajo (ver "Botón de voto"), foto en marco de 2 px línea fuerte (`contain`, hasta 60dvh), descripción a 48ch respetando saltos de línea, lista de datos, mapa de solo lectura y, al final, la línea de tiempo "Seguimiento" (ver "Línea de tiempo").
+- **Aviso de oculto para el autor:** si un administrador lo ocultó, el voto se sustituye por un aviso info (borde de 2 px verde plano, verde aviso, ojo tachado de 20 px, `role="note"`): "Oculto: no aparece en el mapa ni en las listas." en 700 y una línea de ayuda que remite al seguimiento por si le dejaron nota. No es error ni lleva el motivo interno.
 
 ### El plano (componente firma)
 Banda o columna verde que se dibuja con un patrón de manzanas y calles de 400 × 300 px repetido a escala fija (conserva densidad a cualquier tamaño), una avenida curva que se estira sin engordar el trazo, dos puntos tenues y un pin ámbar con punto de papel. Es decorativo (`aria-hidden`). Al cargar, el pin baja 14 px y se asienta (700 ms, `cubic-bezier(0.16, 1, 0.3, 1)`) mientras su sombra crece; sin movimiento con `prefers-reduced-motion`. Tamaño del pin: 56 × 70 en la banda de entrada, 84 × 105 en la columna de escritorio, 44 × 55 (64 × 80 en escritorio) en la versión compacta de la portada. La marca (logo de 36 px con anillo de papel al 35 % y "SpotIt") va arriba a la izquierda sobre el plano.
@@ -624,6 +708,43 @@ Un toque para priorizar; el conteo cambia al instante.
 - **Solo lectura:** sin botón, icono de voto y conteo en una línea, en tinta suave con el conteo en tinta: el propio reporte ("Tu reporte · 3 votos") y el resuelto ("2 votos · ya está resuelto, la votación se cerró").
 - Va en el detalle, bajo la fila de estado, y en la hoja del mapa; el conteo confirmado se refleja en la chapa y en la lista.
 
+### Línea de tiempo
+Cada cambio del reporte, lo más reciente arriba, como lista ordenada sobre el papel (sin caja).
+- **Forma:** cada evento con 26 px de sangría y 18 px hasta el siguiente; un punto de 12 px (borde de 2 px verde plano, relleno de papel; el más reciente relleno de verde plano) unido al siguiente por una línea de 2 px en color línea. Al ocultar o volver a mostrar, el punto es discontinuo en tinta.
+- **Cabecera:** qué pasó en 650 ("Pasó a «En proceso»", "Se ocultó", "Se volvió a mostrar") y la fecha completa en 0.875rem tinta suave. El primer evento es el envío ("Lo enviaste" / "Se envió" para el ciudadano; "Lo envió el ciudadano" en el panel).
+- **Nota pública:** caja sin borde en verde aviso, esquinas de 10 px, 8 × 12 px, hasta 60ch, `overflow-wrap: anywhere`.
+- **Historial (panel):** título "Historial" tras una línea de 2 px línea fuerte, a lo ancho bajo las dos columnas. Añade "Por <nombre>" (o "Por una cuenta eliminada") en 0.875rem tinta suave, la nota con la etiqueta "Nota pública:" en 650, y el **motivo interno** en una caja con borde discontinuo de 2 px línea fuerte sobre superficie con la etiqueta "Motivo interno:".
+- **Seguimiento (ciudadano):** misma línea, al final del detalle, con título "Seguimiento". Nunca dice quién hizo el cambio ni el motivo interno; la nota pública va sin etiqueta.
+
+### Panel: marco y conmutador
+Franja verde con "Inicio", display "Panel" y, debajo (a 16 px), el conmutador **Resumen | Reportes**: la misma caja del conmutador Mapa | Lista (superficie, trazo interior de 2 px línea fuerte, segmentos de 44 px a 8 px de esquina, 650 tinta suave), con icono de 20 px en ambos segmentos (gráfica y lista). Son enlaces de navegación, no botones: la sección actual se marca con `aria-current="page"` y se pinta verde plano con tinta de plano. El conmutador no aparece en el detalle, que en su lugar lleva el enlace "← Reportes" (verde plano 650, subrayado de 2 px, 44 px) de vuelta a la lista con sus filtros.
+
+### Resumen del panel
+Conteos que se leen como barra y tabla, nunca como tarjetas de métricas.
+- **Estado general:** cabecera de sección con el total ("916 reportes") y a la derecha "N nuevos en los últimos 7 días" en small tinta suave. Debajo, una **barra proporcional** de 20 px: un tramo por estado con su tratamiento (ver Colors), mínimo 12 px, `aria-hidden`.
+- **Leyenda enlazada:** la que da la información real (la barra nunca va sola): rejilla `auto-fit` de 200 px mínimo con línea arriba y bajo cada celda; cada celda es un enlace de 56 px con la pastilla del estado (o "Ocultos"), la cifra de conteo a la derecha y un chevron de 18 px en tinta suave; hover tinta al 4 %. Lleva a la lista ya filtrada (los estados, solo visibles).
+- **Por tipo de problema:** tabla real (`caption` y cabeceras ocultas) con filas de 48 px separadas por líneas de 1 px: el icono de categoría de 20 px en verde plano y el nombre como enlace (hover verde hondo con subrayado ámbar), una barra de 8 px (fondo línea, relleno verde plano, proporcional al mayor, `aria-hidden`) y el número en 700 con cifras tabulares.
+- **Más votados:** lista ordenada de filas enlazadas (12 × 10 px, líneas de 1 px): contador de votos en cápsula de tinta con número en papel (700, 0.875rem, icono de voto de 16 px, mínimo 52 px), categoría en 650 con la descripción en una línea cortada, y la pastilla de estado a la derecha (bajo 600 px baja bajo el título). Al final el botón-enlace "Ver todos por votos". Sin votos: una línea en tinta suave.
+- **Estados:** carga con esqueleto de barra y dos líneas; error con aviso y "Reintentar"; sin ningún reporte, vacío con headline "Aún no hay reportes".
+
+### Lista del panel
+- **Barra:** búsqueda en la descripción (`role="search"`, campo con etiqueta oculta y botón secundario "Buscar") y, en móvil, el botón "Filtros" del mapa con su contador.
+- **Filtros:** los chips del mapa en grupos "Estado" (con la chapa del estado), "Visibilidad" (Todos, Visibles con ojo, Ocultos con ojo tachado) y "Tipo de problema", más campos de 48 px: "Enviado desde", "Hasta", "Votos mínimos" y "Ordenar por". En escritorio son una columna fija de 280 px sobre el papel, siempre a la vista, con solo "Quitar filtros" al pie. En móvil se pliegan bajo la barra en una caja de superficie con borde de 2 px línea fuerte y 16 px de padding, hasta 50dvh con scroll propio, y un pie fijo con "N filtros activos.", "Quitar filtros" y el botón secundario "Ver N reportes", que cierra y devuelve el foco a "Filtros". Los filtros viven en la URL.
+- **Tabla:** sobre el papel, sin tarjeta. Cabecera con línea de 2 px línea fuerte (0.875rem 650 tinta suave); filas con línea de 1 px y 12 × 10 px. Columnas en escritorio: reporte (miniatura de 56 px a 10 px de esquina, categoría como enlace en 650, descripción cortada a dos líneas en small tinta suave, y la pastilla "Oculto" si aplica), estado, votos (650, cifras tabulares, a la derecha) y fecha. En móvil una sola columna: estado, votos y tiempo relativo viajan en los metadatos de la fila. **Toda la fila es el enlace** (el `::after` del título cubre la fila): hover tinta al 4 % con subrayado ámbar en el título y foco de 3 px en tinta por dentro de la fila. Sin datos personales del autor.
+- **Paginación:** botones secundarios "Anterior" y "Siguiente" a los lados y "Página N de M" en el centro con cifras tabulares; 25 por página. Mientras llega otra página, spinner y "Actualizando…" junto al conteo, sin vaciar la tabla.
+- **Vacío:** "Nada coincide con «…»" cuando hay búsqueda, "Ningún reporte con estos filtros" con filtros (1.25rem 750), una línea a 44ch y el botón-enlace "Quitar búsqueda y filtros" / "Quitar filtros". Carga con cuatro filas esqueleto; error con aviso y "Reintentar".
+
+### Detalle del panel
+- **Cabecera:** título del detalle con el número, y en una línea la pastilla de estado, la de "Oculto" si aplica y "N votos" con icono en 650 tinta suave. Tras cada acción, la nota de éxito ("Estado cambiado a «En proceso». El ciudadano verá tu nota.") recibe el foco.
+- **Reporte (izquierda):** foto, descripción, lista de datos y mapa de solo lectura, igual que el detalle del ciudadano.
+- **Acciones (columna de 380 px):** secciones separadas por línea de 1 px y 20 px de padding, con título de sección de acciones.
+  - **Cambiar estado:** `fieldset` con la leyenda "Pasar de «Recibido» a" y solo las transiciones válidas como opciones: radio nativo invisible dentro de una fila de 56 px (borde de 2 px línea fuerte, superficie, 10 px de esquina) con la pastilla del estado destino ("reabrir" en small tinta suave si viene de resuelto). Elegida: borde verde plano, verde aviso, peso 650 y check de 18 px; foco con anillo de 3 px en tinta. Debajo, la **nota pública** (área de texto con la ayuda "La verá el ciudadano en su reporte." y un contador que pasa a "Te quedan N caracteres." bajo 100) y el botón principal "Cambiar estado" ("Guardando…").
+  - **Aviso 409:** si otra persona lo cambió mientras tanto, aviso de error arriba de la sección con el mensaje del servidor y "Ya ves el estado actual."; el reporte se recarga y la nota escrita se conserva.
+  - **Quién lo envió:** solo nombre (650) y email como enlace `mailto:` de 44 px con asunto "Tu reporte #N en SpotIt". Si la cuenta ya no existe, una línea en tinta suave.
+  - **Moderación:** en reposo, una línea de ayuda y el botón destructivo "Ocultar reporte…" (ojo tachado). Al abrir, **confirmación en línea**: caja con borde de 2 px rojo error sobre rosa error que explica qué pasa (deja de verse, la foto solo para administradores, el autor lo ve oculto sin el motivo, no se borra nada), el campo **"Motivo (interno)"** obligatorio con la ayuda "Obligatorio. Solo lo ven los administradores." (recibe el foco; error de campo si falta), la nota pública opcional para el autor, y el botón destructivo "Ocultar reporte" ("Ocultando…") con el botón-enlace "Cancelar" (devuelve el foco). Oculto, la sección muestra la **caja de oculto**: borde discontinuo de 2 px en tinta, superficie, 12 × 14 px, ojo tachado de 20 px con "Oculto por <nombre> el <fecha>." en 650 y "Motivo interno:" con el texto; debajo, la nota pública opcional y el botón secundario a lo ancho "Volver a mostrar" (ojo).
+- **Historial:** a lo ancho debajo (ver "Línea de tiempo").
+- **Estados:** carga con spinner y "Cargando el reporte…"; error con aviso y "Reintentar" ("Este reporte no existe." sin reintento).
+
 ## Do's and Don'ts
 
 ### Do:
@@ -647,6 +768,11 @@ Un toque para priorizar; el conteo cambia al instante.
 - **Do** tratar "sin conexión" como un estado esperado: tono info, decir de cuándo es lo que se ve y volver a pedir los datos solos al volver la señal.
 - **Do** confirmar en línea lo que se borra del teléfono, con el foco en "Cancelar", y dejar la opción segura como principal en el diálogo de salida.
 - **Do** mostrar cada reporte por enviar con la misma rejilla de la lista, sin enlace, con su pastilla y el motivo en palabras.
+- **Do** leer los conteos del panel como barra proporcional con leyenda enlazada (pastilla, número y chevron) y tablas con barras sobre el papel.
+- **Do** marcar lo oculto con borde discontinuo en tinta y ojo tachado, siempre junto a la pastilla de estado y nunca en su lugar.
+- **Do** ofrecer solo las transiciones de estado válidas y, ante un conflicto (409), decirlo, recargar el reporte y conservar la nota escrita.
+- **Do** pedir motivo obligatorio y confirmar en línea antes de ocultar, con la opción de volver a mostrar.
+- **Do** hacer enlace toda la fila de la tabla del panel y marcar la sección actual del conmutador con `aria-current`.
 
 ### Don't:
 - **Don't** poner el formulario en una tarjeta blanca centrada sobre fondo gris con el logo encima.
@@ -665,3 +791,8 @@ Un toque para priorizar; el conteo cambia al instante.
 - **Don't** ofrecer forzar el envío ("Enviar ahora") mientras un reporte espera el límite por hora: solo traería otro rechazo.
 - **Don't** rellenar de rojo una acción destructiva: trazo rojo de 2 px sobre superficie, nunca un botón rojo sólido.
 - **Don't** convertir la franja de estado en región viva ni repetir su anuncio en cada pantalla.
+- **Don't** hacer el resumen con tarjetas de métricas de números grandes, ni dejar la barra de estados sin su leyenda: el color nunca es la única señal.
+- **Don't** mostrar al ciudadano el motivo interno ni quién hizo un cambio: el seguimiento lleva solo qué pasó, cuándo y la nota pública.
+- **Don't** mostrar datos del autor fuera del detalle del panel, ni más que nombre y email; la lista y el resumen no llevan datos personales.
+- **Don't** entregar la foto de un reporte oculto fuera del panel: al autor se le muestra la miniatura de sustitución.
+- **Don't** pintar lo oculto de rojo o de ámbar: no es error ni selección.

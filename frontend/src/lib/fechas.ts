@@ -24,5 +24,6 @@ export function haceCuanto(iso: string, ahora = new Date()): string {
 }
 
 export function fechaCompleta(iso: string): string {
-  return fechaHora.format(new Date(iso))
+  // Intl escribe "a las 1:10 p.m."; en español es "a la 1:10".
+  return fechaHora.format(new Date(iso)).replace(/a las 1:/, 'a la 1:')
 }

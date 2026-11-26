@@ -3,7 +3,7 @@ import { useLocation, useParams } from 'react-router'
 import { ApiError, NetworkError } from '../api/client'
 import { fetchReporte, type Reporte } from '../api/reportes'
 import { FormAlert } from '../components/form/fields'
-import { RefreshIcon, Spinner } from '../components/Icons'
+import { EyeOffIcon, RefreshIcon, Spinner } from '../components/Icons'
 import { PageHeader } from '../components/PageHeader'
 import { MapView } from '../components/report/MapView'
 import { StatusPill } from '../components/report/StatusPill'
@@ -112,11 +112,28 @@ function Detalle({ reporte }: { reporte: Reporte }) {
         <StatusPill estado={reporte.estado} />
       </div>
 
-      <VoteButton key={reporte.id} reporte={reporte} />
+      {reporte.oculto ? (
+        <div className="form-alert form-alert--info detail__oculto" role="note">
+          <EyeOffIcon size={20} />
+          <div>
+            <p>
+              <strong>Oculto: no aparece en el mapa ni en las listas.</strong>
+            </p>
+            <p className="form-alert__help">
+              Lo revisó el equipo que atiende los reportes. Si te dejaron una nota, la ves abajo en el
+              seguimiento.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <VoteButton key={reporte.id} reporte={reporte} />
+      )}
 
-      <figure className="detail__photo">
-        <img src={reporte.foto_url} alt={`Foto del reporte: ${reporte.categoria.nombre}`} />
-      </figure>
+      {reporte.foto_url && (
+        <figure className="detail__photo">
+          <img src={reporte.foto_url} alt={`Foto del reporte: ${reporte.categoria.nombre}`} />
+        </figure>
+      )}
 
       <p className="detail__text">{reporte.descripcion}</p>
 
@@ -145,6 +162,43 @@ function Detalle({ reporte }: { reporte: Reporte }) {
         label={`Mapa con la ubicación del reporte: ${formatoCoordenadas(lat, lng)}`}
         className="map-view--detail"
       />
+
+      <Seguimiento reporte={reporte} />
     </article>
+  )
+}
+
+function textoEvento(tipo: string, estado: string) {
+  if (tipo === 'ocultar') return 'Se ocultó'
+  if (tipo === 'mostrar') return 'Se volvió a mostrar'
+  return `Pasó a «${estado}»`
+}
+
+/** Línea de tiempo: cada cambio con su fecha y su nota pública. Nunca quién ni el motivo. */
+function Seguimiento({ reporte }: { reporte: Reporte }) {
+  const eventos = [...(reporte.historial ?? [])].reverse()
+  return (
+    <section className="detail__seguimiento" aria-labelledby="seguimiento-titulo">
+      <h2 id="seguimiento-titulo" className="list-head__title">
+        Seguimiento
+      </h2>
+      <ol className="timeline">
+        {eventos.map((e, i) => (
+          <li key={`${e.fecha}-${i}`} className={`timeline__item timeline__item--${e.tipo}`}>
+            <p className="timeline__head">
+              <span className="timeline__que">{textoEvento(e.tipo, e.estado_nuevo_display)}</span>
+              <time dateTime={e.fecha}>{fechaCompleta(e.fecha)}</time>
+            </p>
+            {e.nota_publica && <p className="timeline__nota">{e.nota_publica}</p>}
+          </li>
+        ))}
+        <li className="timeline__item timeline__item--inicio">
+          <p className="timeline__head">
+            <span className="timeline__que">{reporte.es_mio ? 'Lo enviaste' : 'Se envió'}</span>
+            <time dateTime={reporte.creado}>{fechaCompleta(reporte.creado)}</time>
+          </p>
+        </li>
+      </ol>
+    </section>
   )
 }

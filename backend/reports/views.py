@@ -1,5 +1,5 @@
 from django.db import IntegrityError, transaction
-from django.db.models import Count, Exists, F, OuterRef, Value
+from django.db.models import Count, Exists, F, OuterRef, Prefetch, Q, Value
 from django.shortcuts import get_object_or_404
 from rest_framework import mixins, status, viewsets
 from rest_framework.decorators import action
@@ -10,15 +10,16 @@ from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from accounts.permissions import IsAdministrador, IsCiudadano
+from accounts.models import Rol
+from accounts.permissions import IsCiudadano
 
 from .idempotencia import LimiteDeReportes, leer_clave, reporte_existente
-from .models import Categoria, Estado, Reporte, Voto
+from .models import Categoria, Estado, EventoReporte, Reporte, Voto
 from .permissions import PuedeEditarReporte
 from .serializers import (
-    CambioEstadoSerializer,
     CategoriaSerializer,
     ReporteCrearSerializer,
+    ReporteDetalleSerializer,
     ReporteEditarSerializer,
     ReporteSerializer,
 )
@@ -72,8 +73,6 @@ class ReporteViewSet(
             return [IsCiudadano()]
         if self.action == "partial_update":
             return [IsAuthenticated(), PuedeEditarReporte()]
-        if self.action == "cambiar_estado":
-            return [IsAdministrador()]
         if self.action == "foto":
             return [AllowAny()]
         if self.action == "voto":
@@ -98,6 +97,8 @@ class ReporteViewSet(
             return ReporteCrearSerializer
         if self.action == "partial_update":
             return ReporteEditarSerializer
+        if self.action == "retrieve":
+            return ReporteDetalleSerializer
         return ReporteSerializer
 
     @staticmethod
@@ -133,12 +134,25 @@ class ReporteViewSet(
         )
         return queryset.annotate(num_votos=Count("votos"), votado_por_mi=votado)
 
+    def _visibles(self, queryset):
+        """Un reporte oculto solo lo ven su autor y los administradores."""
+        user = self.request.user
+        if getattr(user, "rol", None) == Rol.ADMINISTRADOR:
+            return queryset
+        return queryset.filter(Q(oculto=False) | Q(autor=user))
+
     def get_queryset(self):
         queryset = super().get_queryset()
         if self.action in ("list", "mios"):
             queryset = self._filtrar(queryset)
+        if self.action == "list":
+            queryset = queryset.filter(oculto=False)  # las listas nunca muestran ocultos
         if self.action == "mios":
-            queryset = queryset.filter(autor=self.request.user)
+            queryset = queryset.filter(autor=self.request.user)  # el propio, aunque esté oculto
+        if self.action == "retrieve":
+            queryset = self._visibles(queryset).prefetch_related(
+                Prefetch("eventos", queryset=EventoReporte.objects.order_by("creado", "id"))
+            )
         if self.action in ("list", "mios", "retrieve"):
             queryset = self._con_votos(queryset)
         if self.action in ("list", "mios"):
@@ -186,7 +200,7 @@ class ReporteViewSet(
     @action(detail=False, methods=["get"])
     def mapa(self, request):
         """Puntos del mapa: id, ubicación, categoría, estado y votos. Sin fotos ni textos."""
-        queryset = self._filtrar(Reporte.objects.all()).order_by("-creado", "-id")
+        queryset = self._filtrar(Reporte.objects.filter(oculto=False)).order_by("-creado", "-id")
         filas = list(
             queryset.annotate(num_votos=Count("votos"), cat=F("categoria__slug")).values(
                 "id", "latitud", "longitud", "cat", "estado", "num_votos"
@@ -209,6 +223,8 @@ class ReporteViewSet(
     def voto(self, request, pk=None):
         """POST vota y DELETE quita el voto. Ambos son idempotentes: repetirlos no falla."""
         reporte = get_object_or_404(Reporte, pk=pk)
+        if not reporte.visible_para(request.user):
+            raise NotFound("No encontramos lo que buscas.")
         motivo = reporte.motivo_sin_voto(request.user)
         if motivo:
             raise PermissionDenied(motivo)
@@ -231,20 +247,15 @@ class ReporteViewSet(
             status=status.HTTP_201_CREATED if creado else status.HTTP_200_OK,
         )
 
-    @action(detail=True, methods=["post"], url_path="estado")
-    def cambiar_estado(self, request, pk=None):
-        reporte = self.get_object()
-        serializer = CambioEstadoSerializer(data=request.data, context={"reporte": reporte})
-        serializer.is_valid(raise_exception=True)
-        reporte.estado = serializer.validated_data["estado"]
-        reporte.save(update_fields=["estado", "actualizado"])
-        return Response(ReporteSerializer(reporte, context=self.get_serializer_context()).data)
-
     @action(detail=True, methods=["get"])
     def foto(self, request, pk=None):
         reporte = get_object_or_404(Reporte, pk=pk)
-        tamano = validar_token(request.query_params.get("t", ""), reporte.pk)
-        if tamano is None:
+        autorizado = validar_token(request.query_params.get("t", ""), reporte.pk)
+        if autorizado is None:
+            raise NotFound("La foto no existe o el enlace caducó.")
+        tamano, alcance_admin = autorizado
+        # Oculto: solo con un enlace emitido para el panel. Uno anterior deja de servir ya.
+        if reporte.oculto and not alcance_admin:
             raise NotFound("La foto no existe o el enlace caducó.")
         campo = reporte.miniatura if tamano == "miniatura" else reporte.foto
         if not campo:

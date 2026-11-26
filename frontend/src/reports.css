@@ -1193,3 +1193,121 @@ a.btn--primary:hover {
     transform: translateY(12px);
   }
 }
+
+/* --- Seguimiento y moderación (Fase 6) ------------------------------------- */
+
+/* Oculto: borde discontinuo en tinta y ojo tachado (no es un estado del flujo ni un error). */
+.status-pill--oculto {
+  border-style: dashed;
+  border-color: var(--ink);
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.report-row__thumb--oculto {
+  display: grid;
+  place-items: center;
+  border: 2px dashed var(--line-strong);
+  background: var(--surface);
+  color: var(--ink-soft);
+}
+
+.detail__oculto {
+  align-items: flex-start;
+}
+
+.detail__seguimiento {
+  display: grid;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+/* Línea de tiempo: lo más reciente arriba; un punto por evento sobre una línea de 2 px. */
+.timeline {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.timeline__item {
+  position: relative;
+  display: grid;
+  gap: 4px;
+  padding: 0 0 18px 26px;
+}
+
+.timeline__item::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 4px;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--field);
+  border-radius: 50%;
+  background: var(--paper);
+}
+
+.timeline__item::after {
+  content: '';
+  position: absolute;
+  top: 22px;
+  bottom: 0;
+  left: 9px;
+  width: 2px;
+  background: var(--line);
+}
+
+.timeline__item:last-child {
+  padding-bottom: 0;
+}
+
+.timeline__item:last-child::after {
+  display: none;
+}
+
+.timeline__item:first-child::before {
+  background: var(--field);
+}
+
+.timeline__item--ocultar::before,
+.timeline__item--mostrar::before {
+  border-style: dashed;
+  border-color: var(--ink);
+}
+
+.timeline__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 12px;
+}
+
+.timeline__que {
+  font-weight: 650;
+}
+
+.timeline__head time,
+.timeline__quien {
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+}
+
+.timeline__nota {
+  max-width: 60ch;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--info-tint);
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.timeline__nota--interna {
+  border: 2px dashed var(--line-strong);
+  background: var(--surface);
+}
+
+.timeline__label {
+  font-weight: 650;
+}

@@ -15,6 +15,7 @@ function reporte(extra = {}) {
     votos: 4,
     votado: false,
     puede_votar: true,
+    oculto: false,
     es_mio: false,
     estado: 'recibido' as const,
     ...extra,

@@ -300,3 +300,13 @@ export const TrashIcon = (p: IconProps) => (
     <path d="M13.5 11v5" />
   </Icon>
 )
+
+/** Barras: el resumen del panel. */
+export const ChartIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M4.5 19.5h15" />
+    <path d="M7.5 16v-5" />
+    <path d="M12 16V7" />
+    <path d="M16.5 16v-3" />
+  </Icon>
+)

@@ -1,0 +1,793 @@
+/* --- Panel de administración (/admin-panel) ---------------------------------
+   Misma materia que el resto (papel, verde plano, pastillas de estado), con densidad de
+   escritorio: columna de 1120 px, filtros a la izquierda y tabla sobre papel sin tarjetas. */
+
+.admin .page-head,
+.admin__nav,
+.admin__main {
+  max-width: 1120px;
+  margin-inline: auto;
+  padding-inline: calc(env(safe-area-inset-left) + 20px) calc(env(safe-area-inset-right) + 20px);
+}
+
+.admin__nav {
+  margin-top: 16px;
+}
+
+.admin__tab {
+  text-decoration: none;
+}
+
+/* NavLink marca la sección actual con aria-current: mismo aspecto que el conmutador del mapa. */
+.admin__tab[aria-current='page'] {
+  background: var(--field);
+  color: var(--field-ink);
+}
+
+.admin__main {
+  display: grid;
+  gap: 28px;
+  padding-top: 24px;
+  padding-bottom: 48px;
+}
+
+/* --- Resumen --------------------------------------------------------------- */
+
+.admin-block {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+
+.admin-block__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+}
+
+.admin-block__aside,
+.admin-block__vacio {
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+}
+
+/* Barra proporcional de estados. Cada tramo lleva el mismo tratamiento que su pastilla; la
+   leyenda de debajo da icono, nombre y número (la barra es aria-hidden). */
+.estado-barra {
+  display: flex;
+  gap: 3px;
+  height: 20px;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.estado-barra__tramo {
+  min-width: 12px;
+  border: 2px solid var(--line-strong);
+  border-radius: 4px;
+  background: var(--line);
+}
+
+.estado-barra__tramo--en_proceso {
+  border-color: var(--field);
+  background: var(--field);
+}
+
+.estado-barra__tramo--resuelto {
+  border-color: var(--ok);
+  background: var(--ok-tint);
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent 0 5px,
+    rgb(29 107 69 / 0.28) 5px 7px
+  );
+}
+
+.estado-leyenda {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  border-top: 1px solid var(--line);
+}
+
+.estado-leyenda li {
+  border-bottom: 1px solid var(--line);
+}
+
+.estado-leyenda__link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 8px 10px;
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+}
+
+.estado-leyenda__link:hover {
+  color: var(--ink);
+  background: rgb(27 36 33 / 0.04);
+}
+
+.estado-leyenda__num {
+  margin-left: auto;
+  font-size: 1.5rem;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+}
+
+.estado-leyenda__chevron {
+  color: var(--ink-soft);
+}
+
+.admin-cols {
+  display: grid;
+  gap: 32px;
+}
+
+@media (min-width: 900px) {
+  .admin-cols {
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+  }
+}
+
+.cat-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  border-top: 1px solid var(--line);
+}
+
+.cat-tabla tr {
+  border-bottom: 1px solid var(--line);
+}
+
+.cat-tabla th {
+  width: 60%;
+  text-align: left;
+  font-weight: 600;
+}
+
+.cat-tabla td {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+}
+
+.cat-tabla__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.cat-tabla__link:hover {
+  color: var(--field-deep);
+  text-decoration: underline;
+  text-decoration-color: var(--pin);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.cat-tabla__link svg {
+  flex: none;
+  color: var(--field);
+}
+
+.cat-tabla__barra {
+  flex: 1;
+  min-width: 48px;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.cat-tabla__barra > span {
+  display: block;
+  height: 100%;
+  border-radius: 4px;
+  background: var(--field);
+}
+
+.cat-tabla__num {
+  min-width: 3ch;
+  text-align: right;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.votados {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none; /* el orden lo dan los votos; la lista sigue siendo ordenada */
+  border-top: 1px solid var(--line);
+}
+
+.votados li {
+  border-bottom: 1px solid var(--line);
+}
+
+.votados__link {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 10px;
+  color: var(--ink);
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+}
+
+.votados__link:hover {
+  color: var(--ink);
+  background: rgb(27 36 33 / 0.04);
+}
+
+.votados__votos {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 52px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 0.875rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.votados__body {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.votados__title {
+  font-weight: 650;
+}
+
+.votados__desc {
+  overflow: hidden;
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.admin-skeleton {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-skeleton__bar {
+  height: 20px;
+}
+
+/* --- Lista ----------------------------------------------------------------- */
+
+.admin-lista__bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.admin-buscar {
+  display: flex;
+  flex: 1 1 320px;
+  gap: 10px;
+}
+
+.admin-buscar .field__input {
+  flex: 1;
+  min-width: 0;
+}
+
+.admin-lista__cuerpo {
+  display: grid;
+  gap: 20px;
+}
+
+.admin-filtros {
+  display: none;
+  gap: 20px;
+  align-content: start;
+  padding: 16px;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+
+.admin-filtros.is-open {
+  display: grid;
+}
+
+/* Móvil: el panel no empuja la lista fuera de la pantalla; su pie siempre se ve. */
+@media (max-width: 899px) {
+  .admin-filtros {
+    max-height: 50dvh;
+    overflow: auto;
+    padding-bottom: 18px;
+  }
+
+  .admin-filtros__pie {
+    background: var(--surface);
+  }
+}
+
+@media (min-width: 900px) {
+  .admin-filtros__solo-movil {
+    display: none;
+  }
+
+  .admin-filtros__pie {
+    position: static;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+}
+
+.admin-filtros__campos {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-filtros .field__input {
+  min-height: 48px;
+}
+
+@media (min-width: 900px) {
+  .admin-lista__filtros-btn {
+    display: none;
+  }
+
+  .admin-lista__cuerpo {
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 32px;
+    align-items: start;
+  }
+
+  /* En escritorio los filtros siempre están a la vista, como columna fija. */
+  .admin-filtros {
+    display: grid;
+    position: sticky;
+    top: 16px;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+}
+
+.admin-resultados {
+  display: grid;
+  gap: 12px;
+  align-content: start;
+  min-width: 0;
+}
+
+.admin-resultados__cargando {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+}
+
+.admin-tabla {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-tabla thead th {
+  padding: 8px 10px;
+  border-bottom: 2px solid var(--line-strong);
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+  font-weight: 650;
+  text-align: left;
+}
+
+.admin-tabla tbody tr {
+  position: relative;
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-tabla tbody tr:hover {
+  background: rgb(27 36 33 / 0.04);
+}
+
+.admin-tabla td {
+  padding: 12px 10px;
+  vertical-align: middle;
+}
+
+.admin-tabla__num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+}
+
+.admin-tabla__reporte {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+}
+
+@media (max-width: 899px) {
+  .admin-tabla__reporte {
+    align-items: start;
+  }
+}
+
+.admin-tabla__thumb {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background: var(--line);
+}
+
+.admin-tabla__body {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+/* Toda la fila responde al enlace del título (la miniatura y la descripción también). */
+.admin-tabla__link {
+  color: var(--ink);
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.admin-tabla__link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.admin-tabla__link:hover {
+  text-decoration: underline;
+  text-decoration-color: var(--pin);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.admin-tabla__link:focus-visible {
+  outline: none;
+}
+
+.admin-tabla__link:focus-visible::after {
+  outline: 3px solid var(--ink);
+  outline-offset: -3px;
+  border-radius: var(--radius-sm);
+}
+
+.admin-tabla__desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.admin-tabla__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+}
+
+.admin-tabla__meta:empty {
+  display: none;
+}
+
+.admin-tabla__votos {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-tabla time {
+  white-space: nowrap;
+}
+
+/* Móvil: una sola columna; estado, votos y fecha viajan dentro de la fila. */
+@media (max-width: 899px) {
+  .admin-tabla thead,
+  .admin-tabla__solo-escritorio {
+    display: none;
+  }
+}
+
+@media (min-width: 900px) {
+  .admin-tabla__solo-movil {
+    display: none;
+  }
+}
+
+.admin-paginas {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 8px;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-vacio {
+  padding-top: 12px;
+}
+
+.admin-vacio h3 {
+  font-size: 1.25rem;
+  font-weight: 750;
+  overflow-wrap: anywhere;
+}
+
+.admin-vacio p {
+  max-width: 44ch;
+  color: var(--ink-soft);
+}
+
+/* --- Detalle --------------------------------------------------------------- */
+
+.admin-volver {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  justify-self: start;
+  color: var(--field);
+  font-weight: 650;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+.admin-detalle {
+  display: grid;
+  gap: 24px;
+}
+
+.admin-detalle__head {
+  display: grid;
+  gap: 10px;
+}
+
+.admin-detalle__title {
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+.admin-detalle__id {
+  color: var(--ink-soft);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-detalle__pills {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.admin-detalle__votos {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ink-soft);
+  font-weight: 650;
+}
+
+.admin-detalle__cols {
+  display: grid;
+  gap: 32px;
+}
+
+.admin-detalle__reporte {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+  min-width: 0;
+}
+
+@media (min-width: 900px) {
+  .admin-detalle__cols {
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: 48px;
+  }
+}
+
+.admin-acciones {
+  display: grid;
+  gap: 0;
+  align-content: start;
+}
+
+.admin-seccion {
+  display: grid;
+  gap: 12px;
+  padding: 20px 0;
+  border-top: 1px solid var(--line);
+}
+
+.admin-seccion:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.admin-seccion__title {
+  font-size: 1.125rem;
+  font-weight: 750;
+}
+
+.admin-seccion__hint {
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+}
+
+.admin-seccion .btn--danger {
+  justify-self: start;
+}
+
+.admin-form {
+  display: grid;
+  gap: 16px;
+}
+
+.admin-opciones {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* Radios nativos vestidos como las opciones del formulario (fila de 56 px, borde de 2 px). */
+.admin-opcion {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 6px 14px;
+  border: 2px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.admin-opcion:hover {
+  border-color: var(--ink-soft);
+}
+
+/* El radio nativo queda invisible dentro de la etiqueta (teclado y lector intactos). */
+.admin-opcion input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+/* Elegida: borde, fondo y check (la señal es triple, no solo color). */
+.admin-opcion:has(input:checked) {
+  border-color: var(--field);
+  background: var(--info-tint);
+  font-weight: 650;
+}
+
+.admin-opcion__check {
+  margin-left: auto;
+  color: var(--field);
+}
+
+.admin-opcion__hint + .admin-opcion__check {
+  margin-left: 0;
+}
+
+.admin-opcion:has(input:focus-visible) {
+  outline: 3px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.admin-opcion__hint {
+  margin-left: auto;
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+}
+
+.admin-autor {
+  display: grid;
+  gap: 2px;
+}
+
+.admin-autor__nombre {
+  font-weight: 650;
+}
+
+.admin-autor a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  overflow-wrap: anywhere;
+}
+
+.admin-oculto {
+  display: grid;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 2px dashed var(--ink);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  line-height: 1.45;
+}
+
+.admin-oculto__estado {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-weight: 650;
+}
+
+.admin-oculto__estado svg {
+  flex: none;
+  margin-top: 2px;
+}
+
+.admin-oculto__label {
+  font-weight: 650;
+}
+
+.admin-ocultar__aviso {
+  padding: 12px 14px;
+  border: 2px solid var(--error);
+  border-radius: var(--radius-sm);
+  background: var(--error-tint);
+  font-weight: 550;
+  line-height: 1.45;
+}
+
+.admin-ocultar__acciones {
+  margin: 0;
+}
+
+.admin-historial {
+  display: grid;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 2px solid var(--line-strong);
+}
+
+/* Más votados en móvil: la pastilla baja bajo el título para no cortar la descripción. */
+@media (max-width: 599px) {
+  .votados__link {
+    grid-template-columns: auto 1fr;
+  }
+
+  .votados__link > .status-pill {
+    grid-column: 2;
+    justify-self: start;
+  }
+}

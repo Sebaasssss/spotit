@@ -7,30 +7,48 @@ export const UTEZ = { latitude: 18.8502834, longitude: -99.2007355, accuracy: 15
 export const FIXTURES = path.join(import.meta.dirname, 'fixtures')
 export const CAPTURAS = process.env.CAPTURAS === '1'
 
+export const ADMIN_EMAIL = 'e2e.admin@ejemplo.mx'
+
 export function estadoPath(proyecto: string) {
   return path.join('e2e', '.auth', `${proyecto}.json`)
+}
+
+export function estadoAdminPath(proyecto: string) {
+  return path.join('e2e', '.auth', `admin-${proyecto}.json`)
 }
 
 /**
  * Cada prueba arranca con la sesión que dejó la anterior y, al terminar, guarda la sesión
  * rotada (el refresh token cambia en cada uso y el anterior deja de valer).
  */
-export const test = base.extend({
-  storageState: async ({}, use, testInfo) => {
-    await use(estadoPath(testInfo.project.name))
-  },
-  page: async ({ page, storageState }, use, testInfo) => {
-    await use(page)
-    // Solo si la prueba usó la sesión compartida (las de "sin sesión" la sobrescribirían vacía).
-    const compartida = estadoPath(testInfo.project.name)
-    if (storageState === compartida) {
-      // Espera a que termine el refresh que la app lanza al cargar: si se guarda antes, la
-      // cookie guardada es la anterior a la rotación y la siguiente prueba arranca sin sesión.
-      await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {})
-      await page.context().storageState({ path: compartida })
-    }
-  },
-})
+/** Prueba con una sesión guardada que rota en cada uso y se vuelve a guardar al terminar. */
+function conSesion(ruta: (proyecto: string) => string) {
+  return base.extend({
+    storageState: async ({}, use, testInfo) => {
+      await use(ruta(testInfo.project.name))
+    },
+    page: async ({ page, storageState }, use, testInfo) => {
+      await use(page)
+      // Solo si la prueba usó la sesión compartida (las de "sin sesión" la sobrescribirían vacía).
+      const compartida = ruta(testInfo.project.name)
+      if (storageState === compartida) {
+        // Espera a que termine el refresh que la app lanza al cargar: si se guarda antes, la
+        // cookie guardada es la anterior a la rotación y la siguiente prueba arranca sin sesión.
+        await page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => {})
+        await page.context().storageState({ path: compartida })
+      }
+    },
+  })
+}
+
+/**
+ * Cada prueba arranca con la sesión que dejó la anterior y, al terminar, guarda la sesión
+ * rotada (el refresh token cambia en cada uso y el anterior deja de valer).
+ */
+export const test = conSesion(estadoPath)
+
+/** Igual, con la sesión del administrador de pruebas. */
+export const testAdmin = conSesion(estadoAdminPath)
 
 export { expect }
 

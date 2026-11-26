@@ -10,8 +10,10 @@ from .models import (
     TRANSICIONES,
     Categoria,
     Estado,
+    EventoReporte,
     OrigenUbicacion,
     Reporte,
+    TipoEvento,
 )
 from .storage import foto_url
 
@@ -56,6 +58,7 @@ class ReporteSerializer(serializers.ModelSerializer):
             "votos",
             "votado",
             "puede_votar",
+            "oculto",
         )
         read_only_fields = fields
 
@@ -63,11 +66,12 @@ class ReporteSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         return getattr(request, "user", None)
 
+    # La foto de un reporte oculto no se entrega fuera del panel (ni a su autor).
     def get_foto_url(self, obj):
-        return foto_url(self.context.get("request"), obj, "completa")
+        return "" if obj.oculto else foto_url(self.context.get("request"), obj, "completa")
 
     def get_miniatura_url(self, obj):
-        return foto_url(self.context.get("request"), obj, "miniatura")
+        return "" if obj.oculto else foto_url(self.context.get("request"), obj, "miniatura")
 
     def get_es_mio(self, obj):
         return obj.es_de(self._user())
@@ -91,6 +95,41 @@ class ReporteSerializer(serializers.ModelSerializer):
 
     def get_puede_votar(self, obj):
         return obj.motivo_sin_voto(self._user()) is None
+
+
+class EventoPublicoSerializer(serializers.ModelSerializer):
+    """Entrada de la línea de tiempo que ve el ciudadano: sin quién lo hizo ni el motivo."""
+
+    fecha = serializers.DateTimeField(source="creado")
+    estado_nuevo_display = serializers.CharField(source="get_estado_nuevo_display")
+
+    class Meta:
+        model = EventoReporte
+        fields = (
+            "tipo",
+            "estado_anterior",
+            "estado_nuevo",
+            "estado_nuevo_display",
+            "nota_publica",
+            "fecha",
+        )
+        read_only_fields = fields
+
+
+class ReporteDetalleSerializer(ReporteSerializer):
+    """Detalle con la línea de tiempo. Ocultar y mostrar solo los ve el autor."""
+
+    historial = serializers.SerializerMethodField()
+
+    class Meta(ReporteSerializer.Meta):
+        fields = (*ReporteSerializer.Meta.fields, "historial")
+        read_only_fields = fields
+
+    def get_historial(self, obj):
+        eventos = obj.eventos.all()
+        if not obj.es_de(self._user()):
+            eventos = [e for e in eventos if e.tipo == TipoEvento.ESTADO]
+        return EventoPublicoSerializer(eventos, many=True).data
 
 
 class _ReporteEscrituraBase(serializers.ModelSerializer):

@@ -23,22 +23,30 @@ def _firmante():
     return signing.TimestampSigner(salt=_SALT)
 
 
-def foto_url(request, reporte, tamano: str = "completa") -> str:
-    token = _firmante().sign(f"{reporte.pk}:{tamano}")
+ALCANCE_ADMIN = "admin"
+
+
+def foto_url(request, reporte, tamano: str = "completa", *, admin: bool = False) -> str:
+    """URL firmada. Con `admin=True` lleva el alcance de administrador: es la única que sirve
+    la foto de un reporte oculto (solo se entrega en respuestas para administradores)."""
+    valor = f"{reporte.pk}:{tamano}" + (f":{ALCANCE_ADMIN}" if admin else "")
+    token = _firmante().sign(valor)
     path = reverse("reporte-foto", args=[reporte.pk])
     return f"{path}?t={token}"
 
 
-def validar_token(token: str, reporte_id: int) -> str | None:
-    """Devuelve el tamaño autorizado o None si la firma no vale, caducó o es de otro reporte."""
+def validar_token(token: str, reporte_id: int) -> tuple[str, bool] | None:
+    """Devuelve (tamaño, alcance_admin) o None si la firma no vale, caducó o es de otro reporte."""
     try:
         valor = _firmante().unsign(token, max_age=settings.REPORT_PHOTO["URL_MAX_AGE"])
     except signing.BadSignature:
         return None
-    rid, _, tamano = valor.partition(":")
-    if rid != str(reporte_id) or tamano not in TAMANOS:
+    partes = valor.split(":")
+    if len(partes) not in (2, 3) or partes[0] != str(reporte_id) or partes[1] not in TAMANOS:
         return None
-    return tamano
+    if len(partes) == 3 and partes[2] != ALCANCE_ADMIN:
+        return None
+    return partes[1], len(partes) == 3
 
 
 def respuesta_foto(fieldfile) -> HttpResponse:

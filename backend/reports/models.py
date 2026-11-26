@@ -124,6 +124,23 @@ class Reporte(models.Model):
         editable=False,
         help_text="La genera el teléfono al guardar el reporte; repetir el envío no lo duplica.",
     )
+    # Moderación suave y reversible: un reporte oculto no sale en listas ni en el mapa y su
+    # foto solo la ven administradores. No se borra ningún archivo.
+    oculto = models.BooleanField("oculto", default=False, db_index=True)
+    oculto_motivo = models.TextField(
+        "motivo para ocultarlo",
+        blank=True,
+        help_text="Interno: lo ven solo los administradores, nunca el autor.",
+    )
+    oculto_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name="ocultado por",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="+",
+    )
+    oculto_en = models.DateTimeField("ocultado el", null=True, blank=True)
 
     class Meta:
         verbose_name = "reporte"
@@ -145,6 +162,12 @@ class Reporte(models.Model):
     def __str__(self):
         return f"#{self.pk} {self.categoria} ({self.get_estado_display()})"
 
+    def visible_para(self, user) -> bool:
+        """Oculto: solo lo ven su autor (marcado como oculto) y los administradores."""
+        if not self.oculto:
+            return True
+        return self.es_de(user) or getattr(user, "rol", None) == Rol.ADMINISTRADOR
+
     def es_de(self, user) -> bool:
         return bool(user and user.is_authenticated and self.autor_id == user.pk)
 
@@ -164,6 +187,8 @@ class Reporte(models.Model):
             return "Solo un ciudadano puede votar."
         if self.es_de(user):
             return "No puedes votar tu propio reporte."
+        if self.oculto:
+            return "Este reporte no está disponible."
         if not self.votos_abiertos():
             return "Este reporte ya está resuelto: los votos están cerrados."
         return None
@@ -193,3 +218,55 @@ class Voto(models.Model):
 
     def __str__(self):
         return f"Voto en #{self.reporte_id}"
+
+
+class TipoEvento(models.TextChoices):
+    ESTADO = "estado", "Cambio de estado"
+    OCULTAR = "ocultar", "Ocultado"
+    MOSTRAR = "mostrar", "Vuelto a mostrar"
+
+
+NOTA_PUBLICA_MAX = 500
+MOTIVO_MIN = 5
+MOTIVO_MAX = 500
+
+
+class EventoReporte(models.Model):
+    """Historial de un reporte: cambios de estado y moderación, quién y cuándo.
+
+    - `nota_publica`: la ve el ciudadano en la línea de tiempo de su reporte.
+    - `motivo`: interno (al ocultar); solo lo ven los administradores.
+    - `admin`: nunca se muestra al ciudadano.
+    """
+
+    reporte = models.ForeignKey(
+        Reporte, verbose_name="reporte", on_delete=models.CASCADE, related_name="eventos"
+    )
+    tipo = models.CharField("tipo", max_length=10, choices=TipoEvento.choices)
+    estado_anterior = models.CharField(
+        "estado anterior", max_length=12, choices=Estado.choices, blank=True
+    )
+    estado_nuevo = models.CharField(
+        "estado nuevo", max_length=12, choices=Estado.choices, blank=True
+    )
+    nota_publica = models.TextField(
+        "nota pública", blank=True, validators=[MaxLengthValidator(NOTA_PUBLICA_MAX)]
+    )
+    motivo = models.TextField("motivo interno", blank=True)
+    # SET_NULL: el historial sobrevive aunque se borre la cuenta del administrador.
+    admin = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        verbose_name="administrador",
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name="+",
+    )
+    creado = models.DateTimeField("fecha", auto_now_add=True)
+
+    class Meta:
+        verbose_name = "evento del reporte"
+        verbose_name_plural = "historial de reportes"
+        ordering = ["creado", "id"]
+
+    def __str__(self):
+        return f"{self.get_tipo_display()} en #{self.reporte_id}"

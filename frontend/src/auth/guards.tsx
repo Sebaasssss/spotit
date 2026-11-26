@@ -28,6 +28,18 @@ export function RequireAuth() {
   return <Outlet />
 }
 
+/**
+ * Panel de administración: un ciudadano no lo ve ni entrando por la URL (vuelve a Inicio).
+ * La barrera real es la API, que responde 403 a quien no es administrador.
+ */
+export function RequireAdmin() {
+  const { status, user } = useAuth()
+  if (status === 'checking') return <Splash />
+  if (status === 'anonymous') return <Navigate to="/entrar" replace />
+  if (user?.rol !== 'administrador') return <Navigate to="/" replace />
+  return <Outlet />
+}
+
 /** /entrar y /registro: con sesión iniciada no tienen sentido; vuelve a donde ibas. */
 export function PublicOnly() {
   const { status } = useAuth()
