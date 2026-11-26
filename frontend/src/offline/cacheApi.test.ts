@@ -61,6 +61,10 @@ describe('qué se guarda', () => {
     ['/api/health/', false],
     ['/api/reportes/42/foto/', false],
     ['/api/reportes/42/voto/', false],
+    // El panel lleva emails de ciudadanos: nunca se guarda.
+    ['/api/admin/resumen/', false],
+    ['/api/admin/reportes/', false],
+    ['/api/admin/reportes/42/', false],
   ])('%s → %s', (ruta, esperado) => {
     expect(seGuardaEnCache(ruta)).toBe(esperado)
   })

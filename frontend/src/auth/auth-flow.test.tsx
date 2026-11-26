@@ -7,7 +7,7 @@ import { Login } from '../routes/Login'
 import { Register } from '../routes/Register'
 import { ana, calls, json, mockFetch } from '../test/helpers'
 import { AuthProvider } from './AuthContext'
-import { PublicOnly, RequireAuth } from './guards'
+import { PublicOnly, RequireAdmin, RequireAuth } from './guards'
 import { clearLocalSession, profileCache } from './session'
 
 function renderApp(path: string) {
@@ -25,6 +25,10 @@ function renderApp(path: string) {
         children: [
           { path: '/', element: <Home /> },
           { path: '/perfil', element: <p>Perfil privado</p> },
+          {
+            element: <RequireAdmin />,
+            children: [{ path: '/admin-panel', element: <p>Panel privado</p> }],
+          },
         ],
       },
     ],
@@ -193,5 +197,41 @@ describe('formulario de registro', () => {
 
     expect(screen.getByText(/Al menos 10 caracteres/).closest('li')).toHaveClass('is-ok')
     expect(screen.getByText(/No solo números/).closest('li')).not.toHaveClass('is-ok')
+  })
+})
+
+describe('panel de administración', () => {
+  afterEach(() => {
+    clearLocalSession()
+    localStorage.clear()
+  })
+
+  it('un ciudadano que entra por la URL vuelve a Inicio sin ver el panel', async () => {
+    profileCache.save(ana)
+    mockFetch({ '/api/auth/refresh/': () => json({ access: 'a', user: ana }) })
+
+    const router = renderApp('/admin-panel')
+
+    await waitFor(() => expect(router.state.location.pathname).toBe('/'))
+    expect(screen.queryByText('Panel privado')).not.toBeInTheDocument()
+  })
+
+  it('sin sesión manda a /entrar', async () => {
+    mockFetch({ '/api/auth/refresh/': () => json({ detail: 'x' }, 401) })
+
+    const router = renderApp('/admin-panel')
+
+    await waitFor(() => expect(router.state.location.pathname).toBe('/entrar'))
+    expect(screen.queryByText('Panel privado')).not.toBeInTheDocument()
+  })
+
+  it('un administrador lo ve', async () => {
+    const admin = { ...ana, rol: 'administrador' as const }
+    profileCache.save(admin)
+    mockFetch({ '/api/auth/refresh/': () => json({ access: 'a', user: admin }) })
+
+    renderApp('/admin-panel')
+
+    expect(await screen.findByText('Panel privado')).toBeInTheDocument()
   })
 })

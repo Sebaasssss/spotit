@@ -58,6 +58,7 @@ function reporte(extra: Partial<Reporte> = {}): Reporte {
     votos: 0,
     votado: false,
     puede_votar: false,
+    oculto: false,
     ...extra,
   }
 }
