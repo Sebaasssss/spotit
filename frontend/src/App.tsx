@@ -1,6 +1,6 @@
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router'
 import { AuthProvider } from './auth/AuthContext'
-import { PublicOnly, RequireAuth, Splash } from './auth/guards'
+import { PublicOnly, RequireAdmin, RequireAuth, Splash } from './auth/guards'
 import { ColaGlobal } from './components/offline/ColaGlobal'
 import { UpdatePrompt } from './components/UpdatePrompt'
 import { Home } from './routes/Home'
@@ -36,6 +36,37 @@ const router = createBrowserRouter([
         path: '/reportes/:id',
         lazy: async () => ({ Component: (await import('./routes/ReportDetail')).ReportDetail }),
         HydrateFallback: Splash,
+      },
+      // Panel de administración: solo administradores (un ciudadano vuelve a Inicio).
+      {
+        element: <RequireAdmin />,
+        children: [
+          {
+            path: '/admin-panel',
+            lazy: async () => ({ Component: (await import('./routes/admin/AdminPanel')).AdminPanel }),
+            HydrateFallback: Splash,
+            children: [
+              {
+                index: true,
+                lazy: async () => ({
+                  Component: (await import('./routes/admin/AdminPanel')).AdminResumen,
+                }),
+              },
+              {
+                path: 'reportes',
+                lazy: async () => ({
+                  Component: (await import('./routes/admin/AdminReportes')).AdminReportes,
+                }),
+              },
+              {
+                path: 'reportes/:id',
+                lazy: async () => ({
+                  Component: (await import('./routes/admin/AdminReporte')).AdminReporte,
+                }),
+              },
+            ],
+          },
+        ],
       },
     ],
   },

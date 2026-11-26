@@ -91,6 +91,18 @@ export function Home() {
               <ChevronRightIcon size={22} className="action__chevron" />
             </Link>
           )}
+          {user.rol === 'administrador' && (
+            <Link to="/admin-panel" className="action action--primary">
+              <span className="action__icon">
+                <ListIcon size={26} />
+              </span>
+              <span className="action__text">
+                <span className="action__title">Panel de reportes</span>
+                <span className="action__desc">Cambia estados, deja notas y modera.</span>
+              </span>
+              <ChevronRightIcon size={22} className="action__chevron" />
+            </Link>
+          )}
           <Link to="/mapa" className="action">
             <span className="action__icon">
               <MapIcon size={24} />
