@@ -12,8 +12,8 @@ export const CABECERA_GUARDADO = 'X-SpotIt-Guardado'
 /** Mensaje del service worker cuando la revalidación trae datos distintos a los guardados. */
 export const MENSAJE_API_ACTUALIZADA = 'spotit:api-actualizada'
 
-/** Rutas de la API que nunca se guardan (sesión, salud). */
-export const API_SIN_CACHE = [/^\/api\/auth\//, /^\/api\/health\//]
+/** Rutas de la API que nunca se guardan: sesión, salud y el panel (lleva emails). */
+export const API_SIN_CACHE = [/^\/api\/auth\//, /^\/api\/health\//, /^\/api\/admin\//]
 
 /** Rutas GET de la API que sí se guardan. */
 export const API_CON_CACHE = [/^\/api\/categorias\/$/, /^\/api\/reportes\/(mios\/|mapa\/|\d+\/)?$/]

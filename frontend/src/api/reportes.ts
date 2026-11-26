@@ -42,6 +42,19 @@ export type Reporte = {
   votado: boolean
   /** Puede votar o quitar su voto (no es suyo, no está resuelto y es ciudadano). */
   puede_votar: boolean
+  /** Oculto por moderación: solo lo ve su autor (sin foto ni motivo). */
+  oculto: boolean
+  /** Línea de tiempo (solo en el detalle): sin quién lo hizo ni el motivo interno. */
+  historial?: EventoPublico[]
+}
+
+export type EventoPublico = {
+  tipo: 'estado' | 'ocultar' | 'mostrar'
+  estado_anterior: EstadoReporte | ''
+  estado_nuevo: EstadoReporte | ''
+  estado_nuevo_display: string
+  nota_publica: string
+  fecha: string
 }
 
 /** Lo mínimo para dibujar un reporte en el mapa general (sin fotos ni descripción). */
