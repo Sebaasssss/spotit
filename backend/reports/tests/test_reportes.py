@@ -262,11 +262,13 @@ class CambioEstadoTests(ReportesTestCase):
     def setUp(self):
         super().setUp()
         self.reporte_ = self.reporte(self.ana)
-        self.url = f"/api/reportes/{self.reporte_.pk}/estado/"
+        self.url = f"/api/admin/reportes/{self.reporte_.pk}/estado/"
 
     def cambiar(self, estado, user=None):
         self.como(user or self.admin)
-        return self.client.post(self.url, {"estado": estado}, format="json")
+        self.reporte_.refresh_from_db()
+        datos = {"estado": estado, "desde": self.reporte_.estado}
+        return self.client.post(self.url, datos, format="json")
 
     def test_flujo_del_administrador(self):
         for estado in ("en_proceso", "resuelto", "en_proceso", "resuelto"):
@@ -292,7 +294,8 @@ class CambioEstadoTests(ReportesTestCase):
     def test_sin_sesion(self):
         self.client.force_authenticate(None)
 
-        response = self.client.post(self.url, {"estado": "en_proceso"}, format="json")
+        datos = {"estado": "en_proceso", "desde": "recibido"}
+        response = self.client.post(self.url, datos, format="json")
 
         self.assertEqual(response.status_code, 401)
 

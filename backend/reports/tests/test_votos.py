@@ -110,7 +110,9 @@ class VotoDenegadoTests(VotoTestCase):
         self.de_ana.save()
         self.como(self.admin)
         reabrir = self.client.post(
-            f"/api/reportes/{self.de_ana.pk}/estado/", {"estado": "en_proceso"}, format="json"
+            f"/api/admin/reportes/{self.de_ana.pk}/estado/",
+            {"estado": "en_proceso", "desde": "resuelto"},
+            format="json",
         )
         self.assertEqual(reabrir.status_code, 200)
 
