@@ -156,10 +156,31 @@ Desde el formulario, un rechazo por los datos no deja nada en la cola: el report
 
 Se aceptó a cambio de no cerrar la sesión de alguien que reporta con mala señal, que es el caso de uso principal. Cada rechazo deja su motivo en el registro (`gracia_ya_usada`, `gracia_sucesor_invalidado`, `reutilizacion_detectada`, `refresh_revocado`).
 
+## 2026-11-25 — Panel de administración
+
+**Dónde:** dentro de la PWA, en `/admin-panel` (resumen, lista y detalle), con su API en `/api/admin/`. Solo administradores: sin sesión la API responde 401 y a un ciudadano 403; en la app, un ciudadano que entra por la URL vuelve a Inicio. La barrera real es la API. El admin de Django queda para gestionar categorías y cuentas, y muestra los reportes **solo para consulta**: cambiar un estado ahí se saltaría el historial.
+
+**Cambio de estado con historial:** mismas transiciones de siempre. Cada cambio guarda un `EventoReporte` (tipo, estado anterior y nuevo, nota pública opcional de hasta 500 caracteres, administrador y fecha). El cliente envía el estado que estaba viendo (`desde`); si otra persona lo cambió mientras tanto, la API responde **409** y no pisa el cambio (la fila se bloquea con `select_for_update`). El endpoint anterior `POST /api/reportes/<id>/estado/` se eliminó: no dejaba historial.
+
+**Ocultar (moderación suave y reversible):** exige un motivo (5 a 500 caracteres, validado por la API) y admite una nota pública. Un reporte oculto:
+- no sale en la lista general, en el mapa ni en el detalle para otros ciudadanos (404), y no se puede votar;
+- su autor lo sigue viendo en Mis reportes, marcado "Oculto: no aparece en el mapa ni en las listas", sin foto y **sin el motivo** (si el administrador quiere explicarle algo, usa la nota pública);
+- su foto solo la sirve un enlace firmado con **alcance de administrador**, que solo se entrega en respuestas del panel; un enlace emitido antes de ocultarlo deja de servir al momento;
+- no pierde ningún archivo; "Volver a mostrar" lo deja como estaba y el historial conserva el motivo.
+
+Con esto se resuelven los pendientes "Ocultar o eliminar reportes desde el admin" y, en su versión manual, "Moderación de fotos" (la difuminación automática sigue pendiente).
+
+**Línea de tiempo del ciudadano:** en el detalle de un reporte se ven todos los cambios de estado con su fecha y su nota pública, nunca quién los hizo ni el motivo interno. Ocultar y volver a mostrar solo aparecen para el autor.
+
+**Datos del autor que ve el administrador (privacidad):** solo **nombre y email, y solo en el detalle** de un reporte, para poder contactarlo cuando falta información. La lista, el resumen y el historial no llevan datos del autor; nunca se exponen su id, rol ni fechas de cuenta. Del administrador, el historial muestra solo su nombre y únicamente a otros administradores. Ninguna respuesta del panel lleva rutas de archivo del servidor: las fotos son URL firmadas hacia `/api/reportes/<id>/foto/` (hay una prueba que lo comprueba).
+
+**Sin conexión:** `/api/admin/` queda fuera de la caché del service worker (lleva emails); está en la lista de rutas que nunca se guardan y hay una prueba de ello. El panel necesita conexión.
+
+**Limitación conocida (caché de lectura):** lo que el service worker ya guardó en un teléfono puede seguir mostrando sin conexión, **durante un máximo de 7 días**, un reporte que después se ocultó: su descripción en la lista general y en el detalle que se hubiera abierto, y su punto en el mapa. Se corrige solo en cuanto el teléfono vuelve a tener conexión y revalida, o al caducar la copia. Las fotos no se cachean, así que la foto de un reporte oculto nunca se ve desde esa copia.
+
 ## Pendientes
 
-- **Moderación de fotos:** detectar o difuminar caras y placas de vehículos antes de mostrar las fotos a otras personas (hoy cualquier usuario con sesión ve todas las fotos).
-- **Ocultar o eliminar reportes desde el admin:** hoy el admin solo cambia el estado; falta un estado o bandera de "oculto" para reportes inapropiados o duplicados, con registro de quién y por qué, en lugar de borrarlos.
+- **Difuminar caras y placas automáticamente:** la moderación ya es posible a mano (ocultar desde el panel); falta detectar o difuminar caras y placas antes de mostrar las fotos.
 - **Tipografía display propia (fase final de pulido de diseño):** sustituir la tipografía del sistema en los títulos por una fuente propia, **alojada localmente** (sin CDN de terceros) y **precacheada por el service worker** para que la PWA la tenga sin conexión. Aplicarla solo al rol display mediante una variable (`--font-display`); cuerpo y controles siguen con la pila del sistema.
 - **Background Sync:** ver "Modo sin conexión y cola de reportes".
 - **Renovaciones cruzadas en el mismo navegador:** si dos renovaciones salen a la vez con la misma cookie (dos pestañas sin Web Locks, p. ej. Safari anterior a 15.4, o una recarga justo mientras la app renueva), el servidor deja un solo sucesor válido y rechaza la otra con un 401 que borra la cookie. Si ese 401 llega después que la respuesta buena, borra también la cookie válida y la sesión se cierra. Ocurriría solo cuando ambas peticiones llevan la misma cookie y la rechazada responde última. En la app, Web Locks y la renovación única por pestaña lo hacen raro. Si apareciera, el registro lo mostrará como `gracia_sucesor_invalidado` seguido de `sin_cookie`, y se valorará no borrar la cookie en ese rechazo concreto.

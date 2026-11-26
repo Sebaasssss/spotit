@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-25T15:54:02Z",
+  "generatedAt": "2026-11-25T18:00:00Z",
   "title": "Design System: SpotIt",
   "extensions": {
     "colorMeta": {
@@ -253,6 +253,10 @@
       {
         "name": "desktop",
         "value": "900px"
+      },
+      {
+        "name": "admin-votados-stack",
+        "value": "600px"
       }
     ]
   },
@@ -472,6 +476,78 @@
       "description": "Nota \"quedó guardado\" (forma de la nota de éxito en tono info: aún no llega al servidor) y nota de copia guardada sin caja (\"Sin conexión: datos guardados el …\").",
       "html": "<p class=\"ds-saved\" role=\"status\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M7.5 18.5h-.5a4.5 4.5 0 0 1-.6-8.96A6 6 0 0 1 17.9 9.1 4 4 0 0 1 17.5 18.5h-1\"/><path d=\"M12 20.5v-8\"/><path d=\"M9 15.5l3-3 3 3\"/></svg><span>Tu reporte quedó guardado en este teléfono y se enviará solo; aquí ves cómo va.</span></p><p class=\"ds-savednote\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M8 7.3A5.5 5.5 0 0 1 17.6 10 4 4 0 0 1 20 16.9\"/><path d=\"M16 18.5H7a4.5 4.5 0 0 1-1.6-8.7\"/><path d=\"M3 3l18 18\"/></svg><span>Sin conexión: datos guardados el 25 nov, 10:40.</span></p>",
       "css": ".ds-saved { display: flex; align-items: flex-start; gap: 10px; max-width: 520px; margin: 0 0 16px; padding: 12px 14px; border: 2px solid #0e5a4f; border-radius: 10px; background: #e6efec; color: #1b2421; font: 600 17px/1.4 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; } .ds-saved svg, .ds-savednote svg { flex: none; margin-top: 1px; color: #0e5a4f; } .ds-savednote { display: flex; align-items: flex-start; gap: 8px; margin: 0; color: #4a5652; font: 600 0.9375rem/1.4 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }"
+    },
+    {
+      "name": "Pastilla Oculto",
+      "kind": "custom",
+      "refersTo": "status-pill-oculto",
+      "description": "Moderación: cápsula con borde discontinuo de 2 px en tinta y ojo tachado, siempre junto a la pastilla de estado, nunca en su lugar.",
+      "html": "<p style=\"display:flex;gap:8px;margin:0\"><span class=\"ds-pill ds-pill--proceso\">En proceso</span><span class=\"ds-pill ds-pill--oculto\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10.6 5.6A9.7 9.7 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a16 16 0 0 1-2.6 3.4\"/><path d=\"M6.6 6.7A15.6 15.6 0 0 0 2.5 12S6 18.5 12 18.5a9.6 9.6 0 0 0 4.9-1.3\"/><path d=\"M9.9 9.9a3 3 0 0 0 4.2 4.2\"/><path d=\"M3 3l18 18\"/></svg><span>Oculto</span></span></p>",
+      "css": ".ds-pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 8px; border: 2px solid #8a8576; border-radius: 999px; background: #fffdf8; color: #1b2421; font: 650 0.875rem/1.3 ui-sans-serif, system-ui, sans-serif; white-space: nowrap; } .ds-pill--proceso { border-color: #0e5a4f; background: #e6efec; color: #0a463d; } .ds-pill--oculto { border-style: dashed; border-color: #1b2421; }"
+    },
+    {
+      "name": "Conmutador del panel",
+      "kind": "navigation",
+      "refersTo": "admin-tab",
+      "description": "Resumen | Reportes: la caja del conmutador Mapa | Lista, con icono en ambos segmentos; enlaces con aria-current=\"page\" en la sección actual.",
+      "html": "<nav class=\"ds-tabs\" aria-label=\"Secciones del panel\"><a href=\"#\" class=\"ds-tab\" aria-current=\"page\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4.5 19.5h15\"/><path d=\"M7.5 16v-5\"/><path d=\"M12 16V7\"/><path d=\"M16.5 16v-3\"/></svg>Resumen</a><a href=\"#\" class=\"ds-tab\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" aria-hidden=\"true\"><path d=\"M9 6.5h11\"/><path d=\"M9 12h11\"/><path d=\"M9 17.5h11\"/><path d=\"M4.5 6.5h.01\"/><path d=\"M4.5 12h.01\"/><path d=\"M4.5 17.5h.01\"/></svg>Reportes</a></nav>",
+      "css": ".ds-tabs { display: inline-flex; padding: 2px; border-radius: 10px; background: #fffdf8; box-shadow: inset 0 0 0 2px #8a8576; font-family: ui-sans-serif, system-ui, sans-serif; } .ds-tab { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 12px; border-radius: 8px; color: #4a5652; font-weight: 650; text-decoration: none; } .ds-tab:hover { color: #1b2421; } .ds-tab[aria-current='page'] { background: #0e5a4f; color: #f6f3ec; } .ds-tab:focus-visible { outline: 3px solid #1b2421; outline-offset: 3px; }"
+    },
+    {
+      "name": "Resumen de estados",
+      "kind": "custom",
+      "refersTo": "state-legend-row",
+      "description": "Barra proporcional de estados (aria-hidden; resuelto con rayado) y leyenda enlazada con pastilla, cifra y chevron: nunca solo color, nunca tarjetas de métricas.",
+      "html": "<div class=\"ds-sum\"><div class=\"ds-bar\" aria-hidden=\"true\"><span class=\"ds-bar__t\" style=\"flex-grow:6\"></span><span class=\"ds-bar__t ds-bar__t--proceso\" style=\"flex-grow:3\"></span><span class=\"ds-bar__t ds-bar__t--resuelto\" style=\"flex-grow:2\"></span></div><ul class=\"ds-leg\"><li><a href=\"#\" class=\"ds-leg__a\"><span class=\"ds-pill\">Recibido</span><span class=\"ds-leg__n\">60</span></a></li><li><a href=\"#\" class=\"ds-leg__a\"><span class=\"ds-pill ds-pill--proceso\">En proceso</span><span class=\"ds-leg__n\">27</span></a></li><li><a href=\"#\" class=\"ds-leg__a\"><span class=\"ds-pill ds-pill--oculto\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10.6 5.6A9.7 9.7 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a16 16 0 0 1-2.6 3.4\"/><path d=\"M6.6 6.7A15.6 15.6 0 0 0 2.5 12S6 18.5 12 18.5a9.6 9.6 0 0 0 4.9-1.3\"/><path d=\"M9.9 9.9a3 3 0 0 0 4.2 4.2\"/><path d=\"M3 3l18 18\"/></svg>Ocultos</span><span class=\"ds-leg__n\">2</span></a></li></ul></div>",
+      "css": ".ds-pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 8px; border: 2px solid #8a8576; border-radius: 999px; background: #fffdf8; color: #1b2421; font: 650 0.875rem/1.3 ui-sans-serif, system-ui, sans-serif; white-space: nowrap; } .ds-pill--proceso { border-color: #0e5a4f; background: #e6efec; color: #0a463d; } .ds-pill--oculto { border-style: dashed; border-color: #1b2421; } .ds-sum { display: grid; gap: 14px; max-width: 720px; color: #1b2421; font-family: ui-sans-serif, system-ui, sans-serif; } .ds-bar { display: flex; gap: 3px; height: 20px; border-radius: 6px; overflow: hidden; } .ds-bar__t { min-width: 12px; border: 2px solid #8a8576; border-radius: 4px; background: #cfc7b6; } .ds-bar__t--proceso { border-color: #0e5a4f; background: #0e5a4f; } .ds-bar__t--resuelto { border-color: #1d6b45; background: #e3f1e8 repeating-linear-gradient(-45deg, transparent 0 5px, rgb(29 107 69 / 0.28) 5px 7px); } .ds-leg { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin: 0; padding: 0; list-style: none; border-top: 1px solid #cfc7b6; } .ds-leg li { border-bottom: 1px solid #cfc7b6; } .ds-leg__a { display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 8px 10px; border-radius: 10px; color: #1b2421; text-decoration: none; } .ds-leg__a:hover { background: rgb(27 36 33 / 0.04); } .ds-leg__n { margin-left: auto; font-size: 1.5rem; font-weight: 750; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Contador de votos (más votados)",
+      "kind": "custom",
+      "refersTo": "votes-badge",
+      "description": "Cápsula de tinta con número en papel e icono de voto, al inicio de cada fila de Más votados.",
+      "html": "<span class=\"ds-votes\">10<span style=\"position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)\"> votos</span></span>",
+      "css": ".ds-votes { display: inline-flex; align-items: center; gap: 4px; min-width: 52px; padding: 3px 9px; border-radius: 999px; background: #1b2421; color: #f6f3ec; font: 700 0.875rem/1.3 ui-sans-serif, system-ui, sans-serif; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Tabla del panel",
+      "kind": "list",
+      "refersTo": "admin-table-row",
+      "description": "Tabla sobre papel, sin tarjeta: cabecera con línea de 2 px, filas con línea de 1 px, miniatura de 56 px y fila enlazada completa (::after del título).",
+      "html": "<table class=\"ds-tbl\"><thead><tr><th>Reporte</th><th>Estado</th><th class=\"ds-tbl__n\">Votos</th></tr></thead><tbody><tr><td><div class=\"ds-tbl__r\"><span class=\"ds-tbl__th\"></span><div class=\"ds-tbl__b\"><a href=\"#\" class=\"ds-tbl__a\">Alumbrado</a><span class=\"ds-tbl__d\">Luminaria fundida junto al estacionamiento norte.</span></div></div></td><td><span class=\"ds-pill ds-pill--proceso\">En proceso</span></td><td class=\"ds-tbl__n\">8</td></tr></tbody></table>",
+      "css": ".ds-pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 8px; border: 2px solid #8a8576; border-radius: 999px; background: #fffdf8; color: #1b2421; font: 650 0.875rem/1.3 ui-sans-serif, system-ui, sans-serif; white-space: nowrap; } .ds-pill--proceso { border-color: #0e5a4f; background: #e6efec; color: #0a463d; } .ds-pill--oculto { border-style: dashed; border-color: #1b2421; } .ds-tbl { width: 100%; max-width: 760px; border-collapse: collapse; color: #1b2421; font: 400 17px/1.5 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; } .ds-tbl thead th { padding: 8px 10px; border-bottom: 2px solid #8a8576; color: #4a5652; font-size: 0.875rem; font-weight: 650; text-align: left; } .ds-tbl tbody tr { position: relative; border-bottom: 1px solid #cfc7b6; } .ds-tbl tbody tr:hover { background: rgb(27 36 33 / 0.04); } .ds-tbl td { padding: 12px 10px; vertical-align: middle; } .ds-tbl__n { text-align: right; font-weight: 650; font-variant-numeric: tabular-nums; } .ds-tbl__r { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 14px; align-items: center; } .ds-tbl__th { width: 56px; height: 56px; border-radius: 10px; background: #cfc7b6; } .ds-tbl__b { display: grid; gap: 3px; } .ds-tbl__a { color: #1b2421; font-weight: 650; text-decoration: none; } .ds-tbl__a::after { content: ''; position: absolute; inset: 0; } .ds-tbl__a:hover { text-decoration: underline; text-decoration-color: #e8a33d; text-decoration-thickness: 2px; text-underline-offset: 3px; } .ds-tbl__a:focus-visible { outline: none; } .ds-tbl__a:focus-visible::after { outline: 3px solid #1b2421; outline-offset: -3px; border-radius: 10px; } .ds-tbl__d { color: #4a5652; font-size: 0.9375rem; line-height: 1.4; }"
+    },
+    {
+      "name": "Opción de transición",
+      "kind": "input",
+      "refersTo": "admin-option",
+      "description": "Cambiar estado: solo transiciones válidas, radio nativo invisible en una fila de 56 px con la pastilla destino; elegida con borde verde, verde aviso, check y 650.",
+      "html": "<fieldset class=\"ds-opts\"><legend>Pasar de «Recibido» a</legend><label class=\"ds-opt\"><input type=\"radio\" name=\"ds-t\" checked><span class=\"ds-pill ds-pill--proceso\">En proceso</span><span class=\"ds-opt__ck\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M5 12.5l4.5 4.5L19 7.5\"/></svg></span></label></fieldset>",
+      "css": ".ds-pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px 3px 8px; border: 2px solid #8a8576; border-radius: 999px; background: #fffdf8; color: #1b2421; font: 650 0.875rem/1.3 ui-sans-serif, system-ui, sans-serif; white-space: nowrap; } .ds-pill--proceso { border-color: #0e5a4f; background: #e6efec; color: #0a463d; } .ds-pill--oculto { border-style: dashed; border-color: #1b2421; } .ds-opts { display: grid; gap: 8px; max-width: 380px; margin: 0; padding: 0; border: 0; color: #1b2421; font: 400 17px/1.5 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; } .ds-opts legend { margin-bottom: 8px; font-weight: 650; } .ds-opt { position: relative; display: flex; align-items: center; gap: 12px; min-height: 56px; padding: 6px 14px; border: 2px solid #8a8576; border-radius: 10px; background: #fffdf8; cursor: pointer; } .ds-opt:hover { border-color: #4a5652; } .ds-opt input { position: absolute; width: 1px; height: 1px; opacity: 0; } .ds-opt:has(input:checked) { border-color: #0e5a4f; background: #e6efec; font-weight: 650; } .ds-opt__ck { display: none; margin-left: auto; color: #0e5a4f; } .ds-opt:has(input:checked) .ds-opt__ck { display: inline-flex; } .ds-opt:has(input:focus-visible) { outline: 3px solid #1b2421; outline-offset: 2px; }"
+    },
+    {
+      "name": "Moderación: caja de oculto y confirmación",
+      "kind": "custom",
+      "refersTo": "hidden-box",
+      "description": "Caja de oculto (borde discontinuo en tinta, quién, cuándo y motivo interno) y confirmación en línea para ocultar (aviso con trazo rojo, motivo obligatorio, botón destructivo y Cancelar).",
+      "html": "<div class=\"ds-mod\"><div class=\"ds-hid\"><p class=\"ds-hid__st\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10.6 5.6A9.7 9.7 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a16 16 0 0 1-2.6 3.4\"/><path d=\"M6.6 6.7A15.6 15.6 0 0 0 2.5 12S6 18.5 12 18.5a9.6 9.6 0 0 0 4.9-1.3\"/><path d=\"M9.9 9.9a3 3 0 0 0 4.2 4.2\"/><path d=\"M3 3l18 18\"/></svg><span>Oculto por Ana López el 25 de noviembre de 2026 a la 1:21 p.m.</span></p><p><b>Motivo interno: </b>La foto muestra caras y placas de autos.</p></div><p class=\"ds-hw\">Dejará de verse en el mapa y en las listas. Su autor lo verá marcado como oculto, sin el motivo. No se borra nada y lo puedes volver a mostrar.</p><div class=\"ds-acts\"><button type=\"button\" class=\"ds-danger\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10.6 5.6A9.7 9.7 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a16 16 0 0 1-2.6 3.4\"/><path d=\"M6.6 6.7A15.6 15.6 0 0 0 2.5 12S6 18.5 12 18.5a9.6 9.6 0 0 0 4.9-1.3\"/><path d=\"M9.9 9.9a3 3 0 0 0 4.2 4.2\"/><path d=\"M3 3l18 18\"/></svg>Ocultar reporte</button><button type=\"button\" class=\"ds-lnk\">Cancelar</button></div></div>",
+      "css": ".ds-mod { display: grid; gap: 16px; max-width: 380px; color: #1b2421; font: 400 17px/1.5 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; } .ds-mod p { margin: 0; } .ds-hid { display: grid; gap: 8px; padding: 12px 14px; border: 2px dashed #1b2421; border-radius: 10px; background: #fffdf8; line-height: 1.45; } .ds-hid__st { display: flex; align-items: flex-start; gap: 8px; font-weight: 650; } .ds-hid__st svg { flex: none; margin-top: 2px; } .ds-hid b { font-weight: 650; } .ds-hw { padding: 12px 14px; border: 2px solid #b3261e; border-radius: 10px; background: #fbe9e6; font-weight: 550; line-height: 1.45; } .ds-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 20px; } .ds-danger { display: inline-flex; align-items: center; gap: 8px; min-height: 52px; padding: 0 16px; border: 0; border-radius: 10px; background: #fffdf8; color: #b3261e; box-shadow: inset 0 0 0 2px #b3261e; font: 700 17px/1.2 ui-sans-serif, system-ui, sans-serif; cursor: pointer; } .ds-danger:hover { background: #fbe9e6; } .ds-lnk { min-height: 44px; padding: 0; border: 0; background: none; color: #0e5a4f; font: 650 17px/1.2 ui-sans-serif, system-ui, sans-serif; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; cursor: pointer; }"
+    },
+    {
+      "name": "Línea de tiempo",
+      "kind": "list",
+      "refersTo": "timeline-note",
+      "description": "Historial del panel (con «Por <nombre>» y motivo interno en caja discontinua) y Seguimiento del ciudadano (solo qué, cuándo y nota pública). Lo más reciente arriba.",
+      "html": "<ol class=\"ds-tl\"><li class=\"ds-tl__i ds-tl__i--ocultar\"><p class=\"ds-tl__h\"><b>Se ocultó</b><time>25 nov 2026, 1:40 p.m.</time></p><p class=\"ds-tl__q\">Por Ana López</p><p class=\"ds-tl__n ds-tl__n--int\"><b>Motivo interno: </b>La foto muestra placas.</p></li><li class=\"ds-tl__i\"><p class=\"ds-tl__h\"><b>Pasó a «En proceso»</b><time>25 nov 2026, 1:30 p.m.</time></p><p class=\"ds-tl__q\">Por Ana López</p><p class=\"ds-tl__n\"><b>Nota pública: </b>Ya mandamos a una cuadrilla.</p></li><li class=\"ds-tl__i\"><p class=\"ds-tl__h\"><b>Lo envió el ciudadano</b><time>25 nov 2026, 1:21 p.m.</time></p></li></ol>",
+      "css": ".ds-tl { display: grid; max-width: 560px; margin: 0; padding: 0; list-style: none; color: #1b2421; font: 400 17px/1.5 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; } .ds-tl p { margin: 0; } .ds-tl__i { position: relative; display: grid; gap: 4px; padding: 0 0 18px 26px; } .ds-tl__i::before { content: ''; position: absolute; top: 6px; left: 4px; width: 12px; height: 12px; border: 2px solid #0e5a4f; border-radius: 50%; background: #f6f3ec; } .ds-tl__i::after { content: ''; position: absolute; top: 22px; bottom: 0; left: 9px; width: 2px; background: #cfc7b6; } .ds-tl__i:last-child { padding-bottom: 0; } .ds-tl__i:last-child::after { display: none; } .ds-tl__i:first-child::before { background: #0e5a4f; } .ds-tl__i--ocultar::before { border-style: dashed; border-color: #1b2421; } .ds-tl__h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 12px; } .ds-tl__h b, .ds-tl__n b { font-weight: 650; } .ds-tl__h time, .ds-tl__q { color: #4a5652; font-size: 0.875rem; } .ds-tl__n { max-width: 60ch; padding: 8px 12px; border-radius: 10px; background: #e6efec; line-height: 1.45; } .ds-tl__n--int { border: 2px dashed #8a8576; background: #fffdf8; }"
+    },
+    {
+      "name": "Aviso de oculto para el autor",
+      "kind": "custom",
+      "refersTo": "report-row-thumb-oculto",
+      "description": "En el detalle del ciudadano, en lugar del voto: aviso info con ojo tachado, sin motivo interno ni nombres; remite al seguimiento. En Mis reportes, la miniatura de sustitución con borde discontinuo.",
+      "html": "<div class=\"ds-hn\" role=\"note\"><svg width=\"20\" height=\"20\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10.6 5.6A9.7 9.7 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a16 16 0 0 1-2.6 3.4\"/><path d=\"M6.6 6.7A15.6 15.6 0 0 0 2.5 12S6 18.5 12 18.5a9.6 9.6 0 0 0 4.9-1.3\"/><path d=\"M9.9 9.9a3 3 0 0 0 4.2 4.2\"/><path d=\"M3 3l18 18\"/></svg><div><p><strong>Oculto: no aparece en el mapa ni en las listas.</strong></p><p class=\"ds-hn__h\">Lo revisó el equipo que atiende los reportes. Si te dejaron una nota, la ves abajo en el seguimiento.</p></div></div><span class=\"ds-thumb-hid\" aria-hidden=\"true\"><svg width=\"28\" height=\"28\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M10.6 5.6A9.7 9.7 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a16 16 0 0 1-2.6 3.4\"/><path d=\"M6.6 6.7A15.6 15.6 0 0 0 2.5 12S6 18.5 12 18.5a9.6 9.6 0 0 0 4.9-1.3\"/><path d=\"M9.9 9.9a3 3 0 0 0 4.2 4.2\"/><path d=\"M3 3l18 18\"/></svg></span>",
+      "css": ".ds-hn { display: flex; gap: 12px; align-items: flex-start; max-width: 560px; padding: 14px 16px; border: 2px solid #0e5a4f; border-radius: 10px; background: #e6efec; color: #0e5a4f; font: 550 17px/1.4 ui-sans-serif, system-ui, sans-serif; } .ds-hn svg { flex: none; margin-top: 1px; } .ds-hn > div { display: grid; gap: 4px; color: #1b2421; } .ds-hn p { margin: 0; } .ds-hn__h { font-weight: 450; } .ds-thumb-hid { display: grid; place-items: center; width: 72px; height: 72px; margin-top: 12px; border: 2px dashed #8a8576; border-radius: 10px; background: #fffdf8; color: #4a5652; box-sizing: border-box; }"
     }
   ],
   "narrative": {
@@ -528,7 +604,12 @@
       "Do decir el estado de la conexión y de la cola en una sola franja bajo el verde, con una sola frase según la prioridad (enviando, sin conexión, con error, por enviar), y anunciar los cambios en una única región viva.",
       "Do tratar \"sin conexión\" como un estado esperado: tono info, decir de cuándo es lo que se ve y volver a pedir los datos solos al volver la señal.",
       "Do confirmar en línea lo que se borra del teléfono, con el foco en \"Cancelar\", y dejar la opción segura como principal en el diálogo de salida.",
-      "Do mostrar cada reporte por enviar con la misma rejilla de la lista, sin enlace, con su pastilla y el motivo en palabras."
+      "Do mostrar cada reporte por enviar con la misma rejilla de la lista, sin enlace, con su pastilla y el motivo en palabras.",
+      "Do leer los conteos del panel como barra proporcional con leyenda enlazada (pastilla, número y chevron) y tablas con barras sobre el papel.",
+      "Do marcar lo oculto con borde discontinuo en tinta y ojo tachado, siempre junto a la pastilla de estado y nunca en su lugar.",
+      "Do ofrecer solo las transiciones de estado válidas y, ante un conflicto (409), decirlo, recargar el reporte y conservar la nota escrita.",
+      "Do pedir motivo obligatorio y confirmar en línea antes de ocultar, con la opción de volver a mostrar.",
+      "Do hacer enlace toda la fila de la tabla del panel y marcar la sección actual del conmutador con aria-current."
     ],
     "donts": [
       "Don't poner el formulario en una tarjeta blanca centrada sobre fondo gris con el logo encima.",
@@ -546,7 +627,12 @@
       "Don't pintar \"sin conexión\" como error ni ofrecer \"Reintentar\" en algo que solo espera la señal o su turno: \"Reintentar\" es solo para lo que falló.",
       "Don't ofrecer forzar el envío (\"Enviar ahora\") mientras un reporte espera el límite por hora: solo traería otro rechazo.",
       "Don't rellenar de rojo una acción destructiva: trazo rojo de 2 px sobre superficie, nunca un botón rojo sólido.",
-      "Don't convertir la franja de estado en región viva ni repetir su anuncio en cada pantalla."
+      "Don't convertir la franja de estado en región viva ni repetir su anuncio en cada pantalla.",
+      "Don't hacer el resumen con tarjetas de métricas de números grandes, ni dejar la barra de estados sin su leyenda: el color nunca es la única señal.",
+      "Don't mostrar al ciudadano el motivo interno ni quién hizo un cambio: el seguimiento lleva solo qué pasó, cuándo y la nota pública.",
+      "Don't mostrar datos del autor fuera del detalle del panel, ni más que nombre y email; la lista y el resumen no llevan datos personales.",
+      "Don't entregar la foto de un reporte oculto fuera del panel: al autor se le muestra la miniatura de sustitución.",
+      "Don't pintar lo oculto de rojo o de ámbar: no es error ni selección."
     ]
   }
 }
