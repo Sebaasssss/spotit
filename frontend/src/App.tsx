@@ -70,6 +70,12 @@ const router = createBrowserRouter([
       },
     ],
   },
+  // Guía de instalación: con o sin sesión (en iPhone es requisito para los avisos).
+  {
+    path: '/instalar',
+    lazy: async () => ({ Component: (await import('./routes/Instalar')).Instalar }),
+    HydrateFallback: Splash,
+  },
   { path: '*', element: <Navigate to="/" replace /> },
 ])
 

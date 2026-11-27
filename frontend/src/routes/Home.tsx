@@ -16,6 +16,7 @@ import { DialogoSalir } from '../components/offline/DialogoSalir'
 import { EstadoConexion } from '../components/offline/EstadoConexion'
 import { sincronizador } from '../offline/sincronizador'
 import { useCola } from '../offline/useCola'
+import { AjusteAvisos } from '../components/avisos/AjusteAvisos'
 
 const ROLE_LABEL = { ciudadano: 'Ciudadano', administrador: 'Administrador' } as const
 
@@ -135,6 +136,8 @@ export function Home() {
             <dd>{user.nombre}</dd>
           </div>
         </dl>
+
+        {user.rol === 'ciudadano' && <AjusteAvisos />}
 
         {/* Sin red el aviso de arriba ya lo explica; no repetirlo en rojo. */}
         {/* Diagnóstico técnico: solo en desarrollo o para administradores. */}
