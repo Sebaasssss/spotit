@@ -224,6 +224,7 @@ class TipoEvento(models.TextChoices):
     ESTADO = "estado", "Cambio de estado"
     OCULTAR = "ocultar", "Ocultado"
     MOSTRAR = "mostrar", "Vuelto a mostrar"
+    NOTA = "nota", "Nota pública"
 
 
 NOTA_PUBLICA_MAX = 500

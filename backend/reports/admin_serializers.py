@@ -164,5 +164,17 @@ class OcultarSerializer(serializers.Serializer):
     nota_publica = _texto(NOTA_PUBLICA_MAX, mensajes=_NOTA)
 
 
+class NotaSerializer(serializers.Serializer):
+    nota_publica = _texto(
+        NOTA_PUBLICA_MAX,
+        requerido=True,
+        mensajes={
+            "required": "Escribe la nota.",
+            "blank": "Escribe la nota.",
+            "max_length": f"La nota no puede pasar de {NOTA_PUBLICA_MAX} caracteres.",
+        },
+    )
+
+
 class MostrarSerializer(serializers.Serializer):
     nota_publica = _texto(NOTA_PUBLICA_MAX, mensajes=_NOTA)
