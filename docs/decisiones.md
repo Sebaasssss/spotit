@@ -178,11 +178,39 @@ Con esto se resuelven los pendientes "Ocultar o eliminar reportes desde el admin
 
 **Limitación conocida (caché de lectura):** lo que el service worker ya guardó en un teléfono puede seguir mostrando sin conexión, **durante un máximo de 7 días**, un reporte que después se ocultó: su descripción en la lista general y en el detalle que se hubiera abierto, y su punto en el mapa. Se corrige solo en cuanto el teléfono vuelve a tener conexión y revalida, o al caducar la copia. Las fotos no se cachean, así que la foto de un reporte oculto nunca se ve desde esa copia.
 
+## 2026-11-26 — Notificaciones push
+
+**Qué se avisa:** al ciudadano, cuando un administrador cambia el estado de su reporte, le deja una nota pública (acción nueva del panel «Dejar una nota», evento `nota`) o lo oculta o vuelve a mostrar. Solo los ciudadanos tienen avisos. No se avisa a quien hizo el cambio si es el autor del reporte (hoy no ocurre: los administradores no crean reportes, pero está cubierto).
+
+**Claves VAPID:** `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY` y `VAPID_SUBJECT` solo en el `.env` del servidor; `.env.example` lleva los nombres y la forma de generarlas (`python manage.py generar_vapid`, que imprime y no guarda nada). La imagen no las contiene: el contexto de build del backend no incluye el `.env` y llegan por `env_file` al arrancar. La pública llega al frontend en tiempo de ejecución (`GET /api/push/clave/`), no como `VITE_*`, así que cambiarlas no exige reconstruir. Sin las tres, el push queda apagado: la app no ofrece avisos y no se encola nada. Cambiarlas invalida todas las suscripciones.
+
+**Suscripción por dispositivo:** la preferencia es por dispositivo (el interruptor suscribe o desuscribe este navegador; no hay preferencia global). Se guarda solo el `endpoint` y sus claves, sin user-agent ni datos del dispositivo. Si un endpoint ya registrado lo envía otra cuenta (teléfono compartido), pasa a la nueva y queda en el registro `push.suscripcion_reasignada` con el id de la suscripción, sin datos personales.
+
+**Envío sin bloquear el panel (bandeja de salida):**
+- Cada evento del historial crea sus `AvisoPush` (uno por dispositivo del autor) **en la misma transacción**: si el cambio no se guarda, no sale ningún aviso. El panel responde sin esperar al servicio de push.
+- El servicio `push-worker` del compose (misma imagen, `manage.py enviar_push --loop`, no migra: espera al backend) toma los pendientes con `SKIP LOCKED`, así que varios workers nunca envían el mismo aviso dos veces.
+- **Errores:** sin red, 429 o 5xx se reintenta (30 s, 2 min, 10 min, 30 min; respeta `Retry-After`) hasta 5 intentos; **404 y 410 borran la suscripción** (caducó o se quitó en el navegador); otro 4xx descarta ese aviso. Cada aviso caduca a las 24 h de crearse y los reintentos envían como TTL **lo que queda** de esas 24 h, nunca 24 h nuevas.
+- **Purga:** los avisos enviados o descartados con más de 7 días se borran (una vez por hora en el worker y en cada pasada manual).
+
+**Texto (pantalla de bloqueo):** sobrio y sin datos del reporte. «Tu reporte cambió a «En proceso».»; si hay nota, «… Tiene una nota nueva.»; una nota sola, «Tienes una nota nueva en tu reporte.». **La nota nunca va en el aviso**, ni la categoría ni la descripción. Un reporte oculto (y ocultar o mostrar) genera solo «Hay novedades en tu reporte.». La etiqueta por reporte junta sus avisos y `renotify` hace que el segundo vuelva a sonar en lugar de reemplazar al primero en silencio. Al tocarlo abre `/reportes/<id>` (solo rutas propias).
+
+**Permiso en contexto:** nunca al abrir la app. Se ofrece una sola vez tras enviar un reporte («¿Te avisamos cuando cambie de estado?», «Ahora no» no vuelve a preguntar) y siempre está el ajuste «Avisos en este teléfono» en la portada. Si el permiso está bloqueado no se vuelve a pedir: se explica cómo cambiarlo en el navegador.
+
+**iOS:** Web Push solo existe con la app instalada en la pantalla de inicio (iOS 16.4+). En Safari sin instalar, el ajuste lo explica y enlaza a la guía `/instalar` (también cubre el requisito de pantalla guiada de instalación del CLAUDE.md); con iOS anterior a 16.4 lo dice. No se asume `beforeinstallprompt`.
+
+**Service worker:** ahora también muestra los avisos (`push`) y abre el reporte al tocarlos (`notificationclick`). Sigue sin renovar la sesión ni enviar nada por su cuenta. Si el navegador renueva la suscripción, la app la vuelve a registrar al abrirse.
+
+**Cerrar sesión y teléfono compartido:** al salir se quita la suscripción del servidor y del navegador (con límite de 4 s; sin red se quita al menos del navegador y el servidor la borra con el primer 410). Si la sesión caduca y entra otra cuenta, la suscripción de la anterior se quita al abrir la app.
+
+**Pruebas:** el backend simula el servicio de push. En e2e, el Chromium sin cabeza de Playwright no llega a un servicio de push real y deja el permiso de notificaciones siempre en `denied`, así que se simulan el permiso y `PushManager` en la página (servidor e interfaz reales). Lo que muestra el service worker se prueba como lógica pura (`src/push/avisoSW.ts`) y en un celular real con el túnel.
+
 ## Pendientes
 
 - **Difuminar caras y placas automáticamente:** la moderación ya es posible a mano (ocultar desde el panel); falta detectar o difuminar caras y placas antes de mostrar las fotos.
 - **Tipografía display propia (fase final de pulido de diseño):** sustituir la tipografía del sistema en los títulos por una fuente propia, **alojada localmente** (sin CDN de terceros) y **precacheada por el service worker** para que la PWA la tenga sin conexión. Aplicarla solo al rol display mediante una variable (`--font-display`); cuerpo y controles siguen con la pila del sistema.
 - **Background Sync:** ver "Modo sin conexión y cola de reportes".
+- **Un `refresh_revocado` intermitente en e2e (2026-11-26):** en una corrida completa (1 de 99 pruebas, escritorio, «un rechazo del servidor…» de la cola sin conexión) la sesión se cerró al recargar justo después de volver la conexión, y el registro lo mostró como `refresh_revocado`. No se reprodujo en 6 repeticiones de esa prueba. Si vuelve a aparecer, revisar la secuencia de renovaciones de ese `jti` en el registro.
+- **Aviso push mostrado por el navegador en e2e:** no se puede automatizar con el Chromium sin cabeza de Playwright (sin servicio de push y con el permiso bloqueado); se cubre con la prueba manual en celular.
 - **Renovaciones cruzadas en el mismo navegador:** si dos renovaciones salen a la vez con la misma cookie (dos pestañas sin Web Locks, p. ej. Safari anterior a 15.4, o una recarga justo mientras la app renueva), el servidor deja un solo sucesor válido y rechaza la otra con un 401 que borra la cookie. Si ese 401 llega después que la respuesta buena, borra también la cookie válida y la sesión se cierra. Ocurriría solo cuando ambas peticiones llevan la misma cookie y la rechazada responde última. En la app, Web Locks y la renovación única por pestaña lo hacen raro. Si apareciera, el registro lo mostrará como `gracia_sucesor_invalidado` seguido de `sin_cookie`, y se valorará no borrar la cookie en ese rechazo concreto.
 - **Editar un reporte pendiente:** hoy solo se puede reintentar o descartar.
 - **HEIC en un iPhone real:** el rechazo de HEIC está probado con un archivo de muestra, no con la cámara y la galería de un iPhone. Falta probarlo en un dispositivo con el túnel.

@@ -427,6 +427,39 @@ components:
     textColor: "{colors.ink}"
     rounded: "{rounded.sm}"
     padding: "8px 12px"
+  setting-row:
+    textColor: "{colors.ink}"
+    padding: "16px 0"
+  setting-icon:
+    backgroundColor: "{colors.info-tint}"
+    textColor: "{colors.field}"
+    rounded: "{rounded.full}"
+    size: "44px"
+  switch-track:
+    backgroundColor: "{colors.surface}"
+    rounded: "{rounded.full}"
+    width: "52px"
+    height: "32px"
+  switch-track-on:
+    backgroundColor: "{colors.field}"
+  switch-knob:
+    backgroundColor: "{colors.ink-soft}"
+    textColor: "{colors.paper}"
+    rounded: "{rounded.full}"
+    size: "24px"
+  switch-knob-on:
+    backgroundColor: "{colors.field-ink}"
+    textColor: "{colors.field}"
+  push-offer:
+    backgroundColor: "{colors.info-tint}"
+    textColor: "{colors.ink}"
+    rounded: "{rounded.sm}"
+    padding: "14px 16px"
+  install-step-number:
+    backgroundColor: "{colors.field}"
+    textColor: "{colors.field-ink}"
+    rounded: "{rounded.full}"
+    size: "32px"
 ---
 
 # Design System: SpotIt
@@ -453,7 +486,7 @@ Está hecho para la calle: modo claro siempre (se usa con sol), texto base de 17
 Dos materias, verde de plano y papel cálido, con un único acento ámbar y un rojo reservado para errores.
 
 ### Primary
-- **Verde Plano** (field): el campo de la banda y la columna, el botón principal, los enlaces, el borde del campo con foco y el borde de los avisos informativos. También es `caret-color` y `accent-color` del documento.
+- **Verde Plano** (field): el campo de la banda y la columna, el botón principal, los enlaces, el borde del campo con foco y el borde de los avisos informativos, la pista del interruptor encendido y los círculos numerados de la guía de instalación. También es `caret-color` y `accent-color` del documento.
 - **Verde Plano Hondo** (field-deep): manzanas del plano, hover y estado pendiente del botón principal, hover de enlaces.
 - **Tinta de Plano** (field-ink): todo texto y trazo sobre el verde (marca, frase, calles al 16 % de opacidad, punto del pin).
 - **Tinta de Plano Suave** (field-ink-soft): texto secundario sobre el verde (el rol bajo el saludo).
@@ -474,7 +507,7 @@ Dos materias, verde de plano y papel cálido, con un único acento ámbar y un r
 - **Verde Hecho** (ok): requisitos cumplidos, backend sano, borde y texto del estado "resuelto" y borde de la nota de éxito.
 - **Verde Hecho Claro** (ok-tint): fondo de la pastilla "resuelto" y de la nota de éxito.
 - **Rojo Error** (error) sobre **Rosa Error** (error-tint): borde y relleno del campo inválido, texto e icono del error, borde y fondo del aviso de error, de la franja de estado con envíos fallidos, de la pastilla "No se envió" y de la confirmación de descartar. El rojo solo como trazo y texto marca además la acción destructiva (botón destructivo), nunca como relleno.
-- **Verde Aviso** (info-tint): fondo de avisos informativos (sin conexión, aviso de oculto para el autor), de la franja de estado, de la pastilla "Enviando", de la nota "Tu reporte quedó guardado", de la opción elegida (también la transición elegida del panel), de la nota pública en la línea de tiempo, de la pastilla "en proceso", de la fila recién creada, del hover del botón secundario, del círculo de icono de las acciones de la portada y fondo del mapa mientras cargan las teselas.
+- **Verde Aviso** (info-tint): fondo de avisos informativos (sin conexión, aviso de oculto para el autor), de la franja de estado, de la pastilla "Enviando", de la nota "Tu reporte quedó guardado", de la opción elegida (también la transición elegida del panel), de la nota pública en la línea de tiempo, de la pastilla "en proceso", de la fila recién creada, del hover del botón secundario, del círculo de icono de las acciones de la portada y del ajuste de avisos, de la oferta de avisos y fondo del mapa mientras cargan las teselas.
 
 El círculo de precisión del GPS sobre el mapa usa verde plano: trazo de 2 px y relleno al 12 %.
 
@@ -538,9 +571,9 @@ Plano por defecto. La profundidad viene de las dos materias (verde contra papel)
 
 ## Shapes
 
-Esquinas suaves en dos pasos: **10 px** para campos, avisos, botones secundarios, opciones, mapa, fotos y miniaturas, y **14 px** para el botón principal y las acciones grandes de la portada. La cápsula (999 px) es de la pastilla de estado y del contador de votos de "Más votados" (tinta con número en papel); los círculos se reservan para el fondo de los iconos de opción (36 px), de acción y de fila del mapa (44 px), y para las chapas y manchas del mapa general. Las piezas anidadas restan el borde: segmento del conmutador a 8 px, contadores (filtros activos, votos de la chapa) a 6 px. La hoja del mapa en móvil lleva 14 px solo en las esquinas de arriba. El icono de la app usa la misma familia (112/512 de radio). El diálogo de salida usa los 14 px del botón principal. Bordes de **2 px** en todo lo que se toca o avisa (campos, avisos, la línea inferior de la franja de estado); **1 px** solo para divisores. El borde discontinuo dice "no está a la vista de todos": la pastilla "Por enviar" (verde plano: todavía no está en el servidor) y, en tinta, todo lo oculto por moderación (pastilla "Oculto", caja de oculto del detalle, punto de la línea de tiempo al ocultar o mostrar); en línea fuerte, la miniatura de sustitución de un reporte oculto y la caja del motivo interno, que solo ven administradores. La barra de estados del resumen mide 20 px de alto con 6 px de esquina y tramos de 4 px separados 3 px; las barras de categoría, 8 px con 4 px de esquina. Los botones sobre el plano usan un trazo interior de 1.5 px en lugar de borde.
+Esquinas suaves en dos pasos: **10 px** para campos, avisos, botones secundarios, opciones, mapa, fotos y miniaturas, y **14 px** para el botón principal y las acciones grandes de la portada. La cápsula (999 px) es de la pastilla de estado y del contador de votos de "Más votados" (tinta con número en papel); los círculos se reservan para el fondo de los iconos de opción (36 px), de acción, de fila del mapa y del ajuste de avisos (44 px), para los números de los pasos de instalación (32 px), para la perilla del interruptor (24 px) y para las chapas y manchas del mapa general; la pista del interruptor (52 × 32) es una cápsula. Las piezas anidadas restan el borde: segmento del conmutador a 8 px, contadores (filtros activos, votos de la chapa) a 6 px. La hoja del mapa en móvil lleva 14 px solo en las esquinas de arriba. El icono de la app usa la misma familia (112/512 de radio). El diálogo de salida usa los 14 px del botón principal. Bordes de **2 px** en todo lo que se toca o avisa (campos, avisos, la línea inferior de la franja de estado); **1 px** solo para divisores. El borde discontinuo dice "no está a la vista de todos": la pastilla "Por enviar" (verde plano: todavía no está en el servidor) y, en tinta, todo lo oculto por moderación (pastilla "Oculto", caja de oculto del detalle, punto de la línea de tiempo al ocultar o mostrar); en línea fuerte, la miniatura de sustitución de un reporte oculto y la caja del motivo interno, que solo ven administradores. La barra de estados del resumen mide 20 px de alto con 6 px de esquina y tramos de 4 px separados 3 px; las barras de categoría, 8 px con 4 px de esquina. Los botones sobre el plano usan un trazo interior de 1.5 px en lugar de borde.
 
-Iconos: una sola familia dibujada a mano, caja de 24, trazo de 2 px, puntas y uniones redondeadas, `currentColor`, siempre `aria-hidden`. El pin del plano es la misma silueta que el logo. La familia incluye un icono por categoría de reporte (bache, alumbrado, agua, basura, áreas verdes, banqueta, señal, edificio, otro) y uno por estado (bandeja para recibido, llave para en proceso, check para resuelto); una categoría desconocida usa el de "otro". Para el mapa general y el voto suma voto (flecha hacia arriba sobre una base), filtros (tres líneas decrecientes), mapa (plano plegado), información (círculo con "i") y cerrar (equis). Para el panel y la moderación: gráfica (`ChartIcon`, tres barras sobre una base) para "Resumen", lista para "Reportes", ojo (visible) y ojo tachado (oculto). Las chapas de Leaflet repiten en HTML los mismos trazos de estado.
+Iconos: una sola familia dibujada a mano, caja de 24, trazo de 2 px, puntas y uniones redondeadas, `currentColor`, siempre `aria-hidden`. El pin del plano es la misma silueta que el logo. La familia incluye un icono por categoría de reporte (bache, alumbrado, agua, basura, áreas verdes, banqueta, señal, edificio, otro) y uno por estado (bandeja para recibido, llave para en proceso, check para resuelto); una categoría desconocida usa el de "otro". Para el mapa general y el voto suma voto (flecha hacia arriba sobre una base), filtros (tres líneas decrecientes), mapa (plano plegado), información (círculo con "i") y cerrar (equis). Para el panel y la moderación: gráfica (`ChartIcon`, tres barras sobre una base) para "Resumen", lista para "Reportes", ojo (visible) y ojo tachado (oculto). Para los avisos: campana (`BellIcon`, avisos activos y la oferta), campana tachada (`BellOffIcon`, avisos apagados o no disponibles), compartir de iOS (`ShareIcon`, caja con flecha hacia arriba, solo en la guía de instalación) y globo de diálogo (`ChatIcon`, "Dejar nota"). Las chapas de Leaflet repiten en HTML los mismos trazos de estado.
 
 ## Components
 
@@ -711,7 +744,7 @@ Un toque para priorizar; el conteo cambia al instante.
 ### Línea de tiempo
 Cada cambio del reporte, lo más reciente arriba, como lista ordenada sobre el papel (sin caja).
 - **Forma:** cada evento con 26 px de sangría y 18 px hasta el siguiente; un punto de 12 px (borde de 2 px verde plano, relleno de papel; el más reciente relleno de verde plano) unido al siguiente por una línea de 2 px en color línea. Al ocultar o volver a mostrar, el punto es discontinuo en tinta.
-- **Cabecera:** qué pasó en 650 ("Pasó a «En proceso»", "Se ocultó", "Se volvió a mostrar") y la fecha completa en 0.875rem tinta suave. El primer evento es el envío ("Lo enviaste" / "Se envió" para el ciudadano; "Lo envió el ciudadano" en el panel).
+- **Cabecera:** qué pasó en 650 ("Pasó a «En proceso»", "Se ocultó", "Se volvió a mostrar"; una nota sin cambio de estado es "Nota del equipo" para el ciudadano y "Nota al autor" en el panel, con el punto normal y la nota pública debajo) y la fecha completa en 0.875rem tinta suave. El primer evento es el envío ("Lo enviaste" / "Se envió" para el ciudadano; "Lo envió el ciudadano" en el panel).
 - **Nota pública:** caja sin borde en verde aviso, esquinas de 10 px, 8 × 12 px, hasta 60ch, `overflow-wrap: anywhere`.
 - **Historial (panel):** título "Historial" tras una línea de 2 px línea fuerte, a lo ancho bajo las dos columnas. Añade "Por <nombre>" (o "Por una cuenta eliminada") en 0.875rem tinta suave, la nota con la etiqueta "Nota pública:" en 650, y el **motivo interno** en una caja con borde discontinuo de 2 px línea fuerte sobre superficie con la etiqueta "Motivo interno:".
 - **Seguimiento (ciudadano):** misma línea, al final del detalle, con título "Seguimiento". Nunca dice quién hizo el cambio ni el motivo interno; la nota pública va sin etiqueta.
@@ -739,11 +772,61 @@ Conteos que se leen como barra y tabla, nunca como tarjetas de métricas.
 - **Reporte (izquierda):** foto, descripción, lista de datos y mapa de solo lectura, igual que el detalle del ciudadano.
 - **Acciones (columna de 380 px):** secciones separadas por línea de 1 px y 20 px de padding, con título de sección de acciones.
   - **Cambiar estado:** `fieldset` con la leyenda "Pasar de «Recibido» a" y solo las transiciones válidas como opciones: radio nativo invisible dentro de una fila de 56 px (borde de 2 px línea fuerte, superficie, 10 px de esquina) con la pastilla del estado destino ("reabrir" en small tinta suave si viene de resuelto). Elegida: borde verde plano, verde aviso, peso 650 y check de 18 px; foco con anillo de 3 px en tinta. Debajo, la **nota pública** (área de texto con la ayuda "La verá el ciudadano en su reporte." y un contador que pasa a "Te quedan N caracteres." bajo 100) y el botón principal "Cambiar estado" ("Guardando…").
+  - **Dejar una nota:** entre "Cambiar estado" y "Quién lo envió" (ver "Dejar una nota").
   - **Aviso 409:** si otra persona lo cambió mientras tanto, aviso de error arriba de la sección con el mensaje del servidor y "Ya ves el estado actual."; el reporte se recarga y la nota escrita se conserva.
   - **Quién lo envió:** solo nombre (650) y email como enlace `mailto:` de 44 px con asunto "Tu reporte #N en SpotIt". Si la cuenta ya no existe, una línea en tinta suave.
   - **Moderación:** en reposo, una línea de ayuda y el botón destructivo "Ocultar reporte…" (ojo tachado). Al abrir, **confirmación en línea**: caja con borde de 2 px rojo error sobre rosa error que explica qué pasa (deja de verse, la foto solo para administradores, el autor lo ve oculto sin el motivo, no se borra nada), el campo **"Motivo (interno)"** obligatorio con la ayuda "Obligatorio. Solo lo ven los administradores." (recibe el foco; error de campo si falta), la nota pública opcional para el autor, y el botón destructivo "Ocultar reporte" ("Ocultando…") con el botón-enlace "Cancelar" (devuelve el foco). Oculto, la sección muestra la **caja de oculto**: borde discontinuo de 2 px en tinta, superficie, 12 × 14 px, ojo tachado de 20 px con "Oculto por <nombre> el <fecha>." en 650 y "Motivo interno:" con el texto; debajo, la nota pública opcional y el botón secundario a lo ancho "Volver a mostrar" (ojo).
 - **Historial:** a lo ancho debajo (ver "Línea de tiempo").
 - **Estados:** carga con spinner y "Cargando el reporte…"; error con aviso y "Reintentar" ("Este reporte no existe." sin reintento).
+
+### Ajuste de avisos ("Avisos en este teléfono")
+Un ajuste por dispositivo, siempre a la vista en la portada del ciudadano, justo bajo la lista de la Cuenta. No es tarjeta: es una fila más del papel.
+- **Forma:** 16 px de padding vertical entre líneas de 1 px (bajo la Cuenta pierde la línea de arriba y sube 1 px para no doblarla). Rejilla de tres columnas a 12 px, centradas en vertical: icono en círculo de 44 px verde aviso con la campana de 22 px en verde plano (campana tachada si no están activos), la columna de texto y, a la derecha, el interruptor.
+- **Texto:** título "Avisos en este teléfono" (`h2`, 650 a 1rem) y debajo una ayuda en small tinta suave que cambia con el estado y dice qué pasa o qué hacer. Los enlaces y mensajes van dentro de esta columna, alineados con el título.
+- **Mensaje de resultado:** bajo la ayuda, a 4 px, small 600 con icono de 18 px. Hecho: texto en tinta con check en verde hecho ("Avisos activados en este teléfono." / "Avisos desactivados…"). Error: el lenguaje del error de campo (rojo error 600, icono de alerta) con `role="alert"`. El cambio se anuncia además en la región viva global.
+- **Estados:**
+  - **Apagado** (listo, sin suscripción): campana tachada, interruptor en "No", "Actívalos para saber cuándo cambia el estado de tus reportes."
+  - **Activo:** campana, interruptor en "Sí", "Te avisamos aquí cuando cambie el estado de tus reportes o te dejen una nota."
+  - **Bloqueado:** sin interruptor; la ayuda explica que están bloqueados y cómo permitirlos en la configuración del navegador. El ajuste se vuelve a revisar al volver a la pestaña, al volver la señal y al cambiar el permiso, sin recargar.
+  - **iPhone sin instalar:** sin interruptor; "En iPhone los avisos solo funcionan con SpotIt en la pantalla de inicio." y el botón-enlace "Cómo instalarla" hacia la guía.
+  - **iOS anterior a 16.4**, **sin soporte** y **sin conexión** ("podrás cambiar los avisos cuando vuelva la señal"): sin interruptor, solo la ayuda.
+  - Mientras se revisa, o si el servidor no tiene los avisos encendidos, el ajuste no se dibuja.
+
+### Interruptor
+`button` con `role="switch"` y `aria-checked`, nombrado por el título del ajuste y descrito por su ayuda.
+- **Forma:** 44 px táctiles como mínimo; pista en cápsula de 52 × 32 y perilla circular de 24 px a 4 px del borde, más el texto "Sí" / "No" (650, tinta, `aria-hidden`) a 8 px.
+- **Apagado:** pista de superficie con trazo interior de 2 px línea fuerte, perilla en tinta suave a la izquierda. **Encendido:** pista verde plano sin trazo, perilla en tinta de plano desplazada 20 px. La señal es triple: posición, relleno y texto.
+- **Trabajando:** `aria-disabled` y `aria-busy` (no `disabled`: el foco se queda en el control), cursor `progress` y spinner de 14 px dentro de la perilla.
+- **Foco:** el anillo global (3 px en tinta, 3 px de separación) alrededor de la pista, no del botón entero.
+- **Movimiento:** pista y perilla en 160 ms ease-out; sin transición con movimiento reducido.
+
+### Oferta de avisos
+Tras enviar un reporte, en Mis reportes, bajo la nota de éxito: el único momento en que se pide el permiso.
+- **Forma:** el aviso informativo (borde de 2 px verde plano, verde aviso, esquinas de 10 px, 14 × 16 px) con la campana de 22 px en verde plano, título "¿Te avisamos cuando cambie de estado?" (`h2`, 700 a 1.0625rem) y una línea que dice qué llega y que se apagan en Inicio. 16 px bajo ella.
+- **Acciones** a 20 px: botón secundario "Activar avisos" (campana; spinner y "Activando…" mientras pide el permiso, con `aria-disabled`) y el botón-enlace quieto "Ahora no".
+- **Al activar:** la oferta se cambia por la nota de éxito "Avisos activados en este teléfono.", que recibe el foco. **Al cerrar con "Ahora no":** desaparece y el foco va al título de la pantalla. **Si el permiso queda bloqueado:** se quedan el texto y el mensaje de error, sin acciones.
+- **Una sola vez por dispositivo:** solo si los avisos se pueden activar, no están activos y el permiso nunca se ha pedido; la respuesta se recuerda y no se vuelve a ofrecer. El ajuste de la portada sigue disponible.
+
+### Guía de instalación
+Pantalla interna "Instalar SpotIt" (vuelve a Inicio, o a Entrar sin sesión) con un apoyo que dice por qué instalarla. Bloques a 28 px, cada uno con la cabecera de sección de lista.
+- **Pasos:** lista numerada (`ol` con `role="list"`) a 14 px; cada paso en rejilla de 32 px más texto a 12 px: número en círculo plano verde plano de 32 px con tinta de plano 700 y cifras tabulares (`aria-hidden`), y la instrucción en cuerpo con el nombre del botón en negrita y su icono de 20 px en verde plano en línea (compartir, más).
+- **Orden:** en iOS primero "En iPhone o iPad (Safari)"; en lo demás primero "En Android o en la computadora".
+- **Android / escritorio:** si el navegador ofrece instalar, botón principal a lo ancho "Instalar SpotIt" con el icono de más; si no, una línea que dice dónde está la opción en el menú. Nunca se asume que Safari lo ofrece.
+- **Ya instalada:** solo la nota de éxito "Ya estás usando SpotIt instalada."
+
+### Dejar una nota
+Sección de las acciones del panel para escribir al autor sin cambiar el estado.
+- **Forma:** título de sección "Dejar una nota", área de texto de tres líneas con la etiqueta "Nota pública, sin cambiar el estado", un ejemplo como placeholder y la ayuda "La verá el ciudadano en su reporte; su aviso solo dice «Tienes una nota nueva»." (más "Te quedan N caracteres." bajo 100).
+- **Botón:** secundario a lo ancho "Dejar nota" con el globo de 20 px; spinner y "Enviando…" mientras envía.
+- **Error:** vacía, "Escribe la nota." como error de campo y el foco vuelve al área; sin red, "Sin conexión: la nota no se envió. Inténtalo de nuevo." **Éxito:** la nota de éxito del detalle ("Nota enviada. El autor la verá en su reporte y recibirá un aviso si los tiene activos.") y el evento en el historial.
+
+### Aviso del sistema
+El aviso push que se ve en la pantalla de bloqueo. Sobrio: dice que algo cambió, no qué dice el reporte.
+- **Título:** siempre "SpotIt". Icono de la app de 192 px y distintivo de 64 px; idioma es-MX.
+- **Texto:** cambio de estado, "Tu reporte cambió a «En proceso»." (más " Tiene una nota nueva." si la lleva); nota sola, "Tienes una nota nueva en tu reporte."; reporte oculto, al ocultar o al volver a mostrar, el genérico "Hay novedades en tu reporte.", que también se usa si el contenido llega ilegible. Nunca la nota, la categoría ni la descripción.
+- **Agrupación:** una etiqueta por reporte (`reporte-<id>`) con `renotify`: los avisos del mismo reporte se juntan y el nuevo vuelve a sonar.
+- **Al tocarlo:** abre el reporte en SpotIt; solo rutas propias (si no, Mis reportes).
+- Solo para el autor y nunca por un cambio que hizo él mismo.
 
 ## Do's and Don'ts
 
@@ -773,6 +856,10 @@ Conteos que se leen como barra y tabla, nunca como tarjetas de métricas.
 - **Do** ofrecer solo las transiciones de estado válidas y, ante un conflicto (409), decirlo, recargar el reporte y conservar la nota escrita.
 - **Do** pedir motivo obligatorio y confirmar en línea antes de ocultar, con la opción de volver a mostrar.
 - **Do** hacer enlace toda la fila de la tabla del panel y marcar la sección actual del conmutador con `aria-current`.
+- **Do** pedir el permiso de avisos solo tras una acción del usuario con sentido (enviar un reporte, o el interruptor de la portada), una sola vez, y recordar la respuesta.
+- **Do** dar al interruptor `role="switch"` con triple señal (posición, relleno y "Sí"/"No") y mantener el foco en él mientras trabaja (`aria-disabled`, no `disabled`).
+- **Do** decir en la ayuda del ajuste por qué no hay interruptor (bloqueado, iPhone sin instalar, iOS viejo, sin soporte, sin conexión) y qué hacer.
+- **Do** llevar al iPhone sin instalar a la guía con pasos numerados, primero los de iOS en iOS.
 
 ### Don't:
 - **Don't** poner el formulario en una tarjeta blanca centrada sobre fondo gris con el logo encima.
@@ -796,3 +883,7 @@ Conteos que se leen como barra y tabla, nunca como tarjetas de métricas.
 - **Don't** mostrar datos del autor fuera del detalle del panel, ni más que nombre y email; la lista y el resumen no llevan datos personales.
 - **Don't** entregar la foto de un reporte oculto fuera del panel: al autor se le muestra la miniatura de sustitución.
 - **Don't** pintar lo oculto de rojo o de ámbar: no es error ni selección.
+- **Don't** pedir el permiso de avisos al abrir la app ni al cargar una pantalla.
+- **Don't** volver a pedir el permiso si está bloqueado ni mostrar un interruptor que no puede funcionar: se explica cómo permitirlo en el navegador.
+- **Don't** poner en el aviso de la pantalla de bloqueo la nota, la categoría, la descripción ni nada de un reporte oculto.
+- **Don't** asumir que el navegador ofrece instalar: el botón "Instalar SpotIt" solo aparece si existe el evento.
