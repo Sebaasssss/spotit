@@ -20,6 +20,9 @@ env = environ.Env(
     AUTH_REFRESH_GRACE_SECONDS=(int, 60),
     REPORT_THROTTLE_RATE=(str, "20/hour"),
     MEDIA_X_ACCEL=(bool, False),
+    VAPID_PUBLIC_KEY=(str, ""),
+    VAPID_PRIVATE_KEY=(str, ""),
+    VAPID_SUBJECT=(str, ""),
 )
 
 # Fuera de Docker se puede usar un .env junto a manage.py o en la raíz del repo.
@@ -49,6 +52,7 @@ INSTALLED_APPS = [
     "core",
     "accounts",
     "reports",
+    "avisos",
 ]
 
 MIDDLEWARE = [
@@ -200,6 +204,20 @@ AUTH_COOKIE = {
     "PATH": "/api/auth/",
     "SAMESITE": "Strict",
     "SECURE": env("AUTH_COOKIE_SECURE"),
+}
+
+# --- Notificaciones push (Web Push con VAPID) ---
+# Las tres llegan solo por el .env del servidor; la privada nunca va al repo ni a la imagen.
+# Generarlas: `docker compose exec backend python manage.py generar_vapid`.
+# Sin las tres, el push queda desactivado (la app no ofrece avisos y no se encola nada).
+VAPID_PUBLIC_KEY = env("VAPID_PUBLIC_KEY")
+VAPID_PRIVATE_KEY = env("VAPID_PRIVATE_KEY")
+VAPID_SUBJECT = env("VAPID_SUBJECT")
+PUSH = {
+    "TTL_SEGUNDOS": 24 * 60 * 60,  # un aviso que no llega en 24 h ya no sirve
+    "MAX_INTENTOS": 5,
+    "ESPERAS_SEGUNDOS": [30, 120, 600, 1800],
+    "PURGA_DIAS": 7,  # avisos enviados o descartados se borran después de esto
 }
 
 LOGGING = {
