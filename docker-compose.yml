@@ -44,6 +44,19 @@ services:
       retries: 5
       start_period: 20s
 
+  # Envía los avisos push encolados (bandeja AvisoPush). Misma imagen que el backend, sin
+  # migrar: espera a que el backend esté sano (él aplica las migraciones al arrancar).
+  push-worker:
+    build: ./backend
+    restart: unless-stopped
+    env_file: .env
+    entrypoint: ["python", "manage.py"]
+    command: ["enviar_push", "--loop"]
+    depends_on:
+      backend:
+        condition: service_healthy
+    stop_grace_period: 15s
+
   frontend:
     build:
       context: ./frontend
