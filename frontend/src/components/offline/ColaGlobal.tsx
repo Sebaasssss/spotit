@@ -14,6 +14,14 @@ export function ColaGlobal() {
   const { user } = useAuth()
   const ciudadano = user?.rol === 'ciudadano'
 
+  // Avisos: si la suscripción de este navegador era de otra cuenta se quita; si es de esta,
+  // se vuelve a registrar (el navegador pudo renovarla).
+  const usuario = ciudadano ? user!.id : null
+  useEffect(() => {
+    if (usuario === null || !navigator.onLine) return
+    void import('../../push/push').then((m) => m.sincronizar(usuario)).catch(() => undefined)
+  }, [usuario])
+
   useEffect(() => {
     if (!ciudadano || !navigator.onLine) return
     const controller = new AbortController()

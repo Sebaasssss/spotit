@@ -15,5 +15,5 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true
   },
-  "include": ["src/sw.ts", "src/offline/cachesNombres.ts"]
+  "include": ["src/sw.ts", "src/offline/cachesNombres.ts", "src/push/avisoSW.ts"]
 }
