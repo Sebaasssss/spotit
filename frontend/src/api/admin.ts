@@ -19,7 +19,7 @@ export type ReporteAdmin = {
   miniatura_url: string
 }
 
-export type TipoEvento = 'estado' | 'ocultar' | 'mostrar'
+export type TipoEvento = 'estado' | 'ocultar' | 'mostrar' | 'nota'
 
 export type EventoAdmin = {
   tipo: TipoEvento
@@ -108,6 +108,11 @@ export function cambiarEstado(
 
 export function ocultarReporte(id: number, datos: { motivo: string; nota_publica: string }) {
   return apiFetch<ReporteAdminDetalle>(`/api/admin/reportes/${id}/ocultar/`, postJson(datos))
+}
+
+/** Nota pública sin cambiar el estado: queda en el historial y avisa al autor. */
+export function dejarNota(id: number, nota_publica: string) {
+  return apiFetch<ReporteAdminDetalle>(`/api/admin/reportes/${id}/nota/`, postJson({ nota_publica }))
 }
 
 export function mostrarReporte(id: number, datos: { nota_publica: string }) {

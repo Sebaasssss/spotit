@@ -49,7 +49,7 @@ export type Reporte = {
 }
 
 export type EventoPublico = {
-  tipo: 'estado' | 'ocultar' | 'mostrar'
+  tipo: 'estado' | 'ocultar' | 'mostrar' | 'nota'
   estado_anterior: EstadoReporte | ''
   estado_nuevo: EstadoReporte | ''
   estado_nuevo_display: string
