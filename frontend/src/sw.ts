@@ -2,9 +2,9 @@
 /**
  * Service worker de SpotIt (vite-plugin-pwa, estrategia injectManifest).
  *
- * Solo se encarga de la caché: precache del shell, caché de lectura de la API y teselas.
- * No renueva la sesión ni envía reportes: la cola la envía la app (ver docs/decisiones.md,
- * "Background Sync queda fuera").
+ * Se encarga de la caché (precache del shell, caché de lectura de la API y teselas) y de
+ * mostrar los avisos push (Fase 7). No renueva la sesión ni envía reportes: la cola la envía
+ * la app (ver docs/decisiones.md, "Background Sync queda fuera").
  */
 
 import { CacheableResponsePlugin } from 'workbox-cacheable-response'
@@ -20,6 +20,7 @@ import {
   MENSAJE_API_ACTUALIZADA,
   seGuardaEnCache,
 } from './offline/cachesNombres'
+import { aviso, leerDatos, rutaSegura } from './push/avisoSW'
 
 declare let self: ServiceWorkerGlobalScope
 
@@ -122,3 +123,43 @@ registerRoute(
     ],
   }),
 )
+
+// --- Avisos push ---
+// El servidor manda {title, body, url, tag}; el texto ya es sobrio (sin notas ni datos del
+// reporte). La etiqueta por reporte junta avisos del mismo reporte y `renotify` hace que el
+// segundo vuelva a sonar en lugar de reemplazar al primero en silencio.
+
+self.addEventListener('push', (event) => {
+  let texto: string | null = null
+  try {
+    texto = event.data?.text() ?? null
+  } catch {
+    texto = null
+  }
+  const { titulo, opciones } = aviso(leerDatos(texto))
+  event.waitUntil(self.registration.showNotification(titulo, opciones))
+})
+
+// Al tocar el aviso: la app abierta va al detalle del reporte; si no hay, se abre.
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close()
+  const url = new URL(
+    rutaSegura((event.notification.data as { url?: string } | null)?.url),
+    self.location.origin,
+  ).href
+  event.waitUntil(
+    (async () => {
+      const ventanas = await self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+      const propia = ventanas.find((c) => new URL(c.url).origin === self.location.origin)
+      if (propia) {
+        await propia.focus()
+        await propia.navigate(url).catch(() => self.clients.openWindow(url))
+        return
+      }
+      await self.clients.openWindow(url)
+    })(),
+  )
+})
+
+// Si el navegador renueva la suscripción, el service worker no puede avisar al servidor (no
+// tiene sesión): la app la vuelve a registrar al abrirse (push.sincronizar).

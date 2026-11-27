@@ -7,6 +7,13 @@ services:
     ports:
       - "127.0.0.1:${DB_HOST_PORT:-5433}:5432"
 
+  push-worker:
+    # El código montado; tras editarlo: `docker compose restart push-worker`.
+    environment:
+      DEBUG: "True"
+    volumes:
+      - ./backend:/app
+
   backend:
     # Recarga automática al editar el código montado.
     command: ["python", "manage.py", "runserver", "0.0.0.0:8000"]

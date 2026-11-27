@@ -169,6 +169,7 @@ function Detalle({ reporte }: { reporte: Reporte }) {
 }
 
 function textoEvento(tipo: string, estado: string) {
+  if (tipo === 'nota') return 'Nota del equipo'
   if (tipo === 'ocultar') return 'Se ocultó'
   if (tipo === 'mostrar') return 'Se volvió a mostrar'
   return `Pasó a «${estado}»`

@@ -118,7 +118,7 @@ testAdmin.describe('Panel', () => {
     await captura(page, 'panel-detalle', true, FASE)
 
     await page.getByRole('radio', { name: /En proceso/ }).check()
-    await page.getByLabel('Nota pública').fill('Ya mandamos a una cuadrilla; esta semana queda.')
+    await page.getByLabel('Nota pública', { exact: true }).fill('Ya mandamos a una cuadrilla; esta semana queda.')
     await page.getByRole('button', { name: 'Cambiar estado' }).click()
 
     await expect(page.getByRole('status').filter({ hasText: 'Estado cambiado a «En proceso»' })).toBeFocused()

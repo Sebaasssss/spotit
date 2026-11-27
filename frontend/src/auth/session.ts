@@ -163,7 +163,19 @@ export function refreshSession(): Promise<SessionPayload | null> {
   return inflight
 }
 
+/** Quita los avisos de este dispositivo antes de cerrar (teléfono compartido). */
+async function quitarAvisos() {
+  try {
+    const { desactivar } = await import('../push/push')
+    // Con límite: sin red no debe colgar el cierre de sesión.
+    await Promise.race([desactivar(), new Promise((r) => setTimeout(r, 4_000))])
+  } catch {
+    // sin soporte o sin red: el servidor la borrará con el primer 410
+  }
+}
+
 export async function logout(): Promise<void> {
+  await quitarAvisos()
   // Una renovación en curso respondería después del cierre con una cookie nueva y volvería a
   // abrir la sesión: se espera a que termine y el cierre toma el mismo candado.
   await inflight?.catch(() => undefined)

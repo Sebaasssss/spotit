@@ -23,6 +23,7 @@ from .admin_serializers import (
     AdminReporteListaSerializer,
     CambioEstadoAdminSerializer,
     MostrarSerializer,
+    NotaSerializer,
     OcultarSerializer,
 )
 from .models import TRANSICIONES, Categoria, Estado, EventoReporte, Reporte, TipoEvento
@@ -193,6 +194,22 @@ class AdminReporteViewSet(
             reporte.save(
                 update_fields=["oculto", "oculto_motivo", "oculto_por", "oculto_en", "actualizado"]
             )
+        return self._detalle(pk)
+
+    @action(detail=True, methods=["post"])
+    def nota(self, request, pk=None):
+        """Nota pública sin cambiar el estado: queda en el historial y avisa al autor."""
+        datos = NotaSerializer(data=request.data)
+        datos.is_valid(raise_exception=True)
+        with transaction.atomic():
+            reporte = self._bloquear(pk)
+            EventoReporte.objects.create(
+                reporte=reporte,
+                tipo=TipoEvento.NOTA,
+                nota_publica=datos.validated_data["nota_publica"],
+                admin=request.user,
+            )
+            reporte.save(update_fields=["actualizado"])
         return self._detalle(pk)
 
     @action(detail=True, methods=["post"])

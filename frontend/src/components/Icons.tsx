@@ -310,3 +310,37 @@ export const ChartIcon = (p: IconProps) => (
     <path d="M16.5 16v-3" />
   </Icon>
 )
+
+export const BellIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M6 16.5V11a6 6 0 0 1 12 0v5.5l1.5 2h-15z" />
+    <path d="M10 20.5a2 2 0 0 0 4 0" />
+  </Icon>
+)
+
+export const BellOffIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M8.6 5.9A6 6 0 0 1 18 11v4" />
+    <path d="M6 11v5.5l-1.5 2h13" />
+    <path d="M10 20.5a2 2 0 0 0 4 0" />
+    <path d="M3 3l18 18" />
+  </Icon>
+)
+
+/** Compartir de iOS: caja con flecha hacia arriba. */
+export const ShareIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M12 3.5v11" />
+    <path d="M8 7.5l4-4 4 4" />
+    <path d="M7.5 10.5H6a1.5 1.5 0 0 0-1.5 1.5v7A1.5 1.5 0 0 0 6 20.5h12a1.5 1.5 0 0 0 1.5-1.5v-7a1.5 1.5 0 0 0-1.5-1.5h-1.5" />
+  </Icon>
+)
+
+/** Globo de diálogo: dejar una nota. */
+export const ChatIcon = (p: IconProps) => (
+  <Icon {...p}>
+    <path d="M5 5.5h14a1.5 1.5 0 0 1 1.5 1.5v8a1.5 1.5 0 0 1-1.5 1.5h-7l-4.5 3.5v-3.5H5A1.5 1.5 0 0 1 3.5 15V7A1.5 1.5 0 0 1 5 5.5z" />
+    <path d="M8 10h8" />
+    <path d="M8 13h5" />
+  </Icon>
+)

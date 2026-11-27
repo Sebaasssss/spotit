@@ -3,6 +3,7 @@ import { Link, useLocation, useParams } from 'react-router'
 import { ApiError } from '../../api/client'
 import {
   cambiarEstado,
+  dejarNota,
   fetchReporteAdmin,
   mostrarReporte,
   ocultarReporte,
@@ -14,6 +15,7 @@ import { FormAlert } from '../../components/form/fields'
 import {
   AlertIcon,
   ArrowLeftIcon,
+  ChatIcon,
   CheckIcon,
   EyeIcon,
   EyeOffIcon,
@@ -194,6 +196,8 @@ function Detalle({
         <aside className="admin-acciones" aria-label="Acciones del administrador">
           <CambioEstado reporte={reporte} onCambio={onCambio} onRecargar={onRecargar} />
 
+          <DejarNota reporte={reporte} onCambio={onCambio} />
+
           <section className="admin-seccion" aria-labelledby="autor-titulo">
             <h3 id="autor-titulo" className="admin-seccion__title">
               Quién lo envió
@@ -332,6 +336,86 @@ function CambioEstado({
           ) : (
             'Cambiar estado'
           )}
+        </button>
+      </form>
+    </section>
+  )
+}
+
+/** Nota pública sin cambiar el estado. Queda en el historial y el autor recibe un aviso. */
+function DejarNota({
+  reporte,
+  onCambio,
+}: {
+  reporte: ReporteAdminDetalle
+  onCambio: (r: ReporteAdminDetalle, texto: string) => void
+}) {
+  const [nota, setNota] = useState('')
+  const [enviando, setEnviando] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const id = useId()
+  const notaRef = useRef<HTMLTextAreaElement>(null)
+
+  const enviar = async (event: FormEvent) => {
+    event.preventDefault()
+    if (!nota.trim()) {
+      setError('Escribe la nota.')
+      notaRef.current?.focus()
+      return
+    }
+    setEnviando(true)
+    setError(null)
+    try {
+      const nuevo = await dejarNota(reporte.id, nota.trim())
+      setNota('')
+      onCambio(nuevo, 'Nota enviada. El autor la verá en su reporte y recibirá un aviso si los tiene activos.')
+    } catch (e) {
+      setError(
+        e instanceof ApiError
+          ? (Object.values(e.fieldErrors)[0]?.[0] ?? e.message)
+          : 'Sin conexión: la nota no se envió. Inténtalo de nuevo.',
+      )
+    } finally {
+      setEnviando(false)
+    }
+  }
+
+  return (
+    <section className="admin-seccion" aria-labelledby={`${id}-titulo`}>
+      <h3 id={`${id}-titulo`} className="admin-seccion__title">
+        Dejar una nota
+      </h3>
+      <form className="admin-form" onSubmit={(e) => void enviar(e)} noValidate>
+        <div className={`field ${error ? 'field--invalid' : ''}`}>
+          <label className="field__label" htmlFor={`${id}-nota`}>
+            Nota pública, sin cambiar el estado
+          </label>
+          <textarea
+            ref={notaRef}
+            id={`${id}-nota`}
+            className="field__input field__textarea"
+            rows={3}
+            maxLength={NOTA_MAX}
+            value={nota}
+            placeholder="Ej.: Ya lo revisamos; necesitamos material y volvemos la próxima semana."
+            aria-invalid={error ? true : undefined}
+            aria-describedby={`${id}-ayuda${error ? ` ${id}-error` : ''}`}
+            onChange={(e) => setNota(e.target.value)}
+          />
+          {error && (
+            <p className="field__error" id={`${id}-error`}>
+              <AlertIcon size={18} />
+              <span>{error}</span>
+            </p>
+          )}
+          <p className="field__hint" id={`${id}-ayuda`}>
+            La verá el ciudadano en su reporte; su aviso solo dice «Tienes una nota nueva».{' '}
+            {NOTA_MAX - nota.length < 100 ? `Te quedan ${NOTA_MAX - nota.length} caracteres.` : ''}
+          </p>
+        </div>
+        <button type="submit" className="btn btn--secondary btn--block-secondary" disabled={enviando}>
+          {enviando ? <Spinner size={20} /> : <ChatIcon size={20} />}
+          {enviando ? 'Enviando…' : 'Dejar nota'}
         </button>
       </form>
     </section>
@@ -532,6 +616,7 @@ function NotaOpcional({ id, nota, setNota }: { id: string; nota: string; setNota
 }
 
 function textoEvento(e: EventoAdmin) {
+  if (e.tipo === 'nota') return 'Nota al autor'
   if (e.tipo === 'ocultar') return 'Se ocultó'
   if (e.tipo === 'mostrar') return 'Se volvió a mostrar'
   return `Pasó a «${e.estado_nuevo_display}»`

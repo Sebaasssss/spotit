@@ -1311,3 +1311,250 @@ a.btn--primary:hover {
 .timeline__label {
   font-weight: 650;
 }
+
+/* --- Avisos push (Fase 7) --------------------------------------------------- */
+
+/* Ajuste "Avisos en este teléfono": fila sobre papel, separada como la cuenta. */
+.ajuste {
+  display: grid;
+  gap: 8px;
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.ajuste__fila {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.ajuste__icono {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--info-tint);
+  color: var(--field);
+}
+
+.ajuste__texto {
+  display: grid;
+  gap: 2px;
+}
+
+.ajuste__titulo {
+  font-size: 1rem;
+  font-weight: 650;
+}
+
+.ajuste__ayuda,
+.ajuste__mensaje {
+  font-size: 0.9375rem;
+  line-height: 1.4;
+}
+
+/* Solo la ayuda en tinta suave: el mensaje de error conserva el rojo de .field__error. */
+.ajuste__ayuda {
+  color: var(--ink-soft);
+}
+
+.ajuste__mensaje {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+.ajuste__mensaje svg {
+  flex: none;
+  margin-top: 1px;
+}
+
+.ajuste__mensaje--ok {
+  color: var(--ink);
+}
+
+.ajuste__mensaje--ok svg {
+  color: var(--ok);
+}
+
+.ajuste__texto .link-button {
+  justify-self: start;
+}
+
+/* Interruptor: pista de 52 × 32 dentro de 44 px táctiles; el estado se dice también en texto. */
+.interruptor {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.interruptor[aria-disabled='true'] {
+  cursor: progress;
+}
+
+.interruptor__pista {
+  position: relative;
+  width: 52px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 2px var(--line-strong);
+  transition: background-color 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
+}
+
+.interruptor__perilla {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--ink-soft);
+  color: var(--paper);
+  transition: transform 160ms var(--ease-out), background-color 160ms var(--ease-out);
+}
+
+.interruptor[aria-checked='true'] .interruptor__pista {
+  background: var(--field);
+  box-shadow: none;
+}
+
+.interruptor[aria-checked='true'] .interruptor__perilla {
+  transform: translateX(20px);
+  background: var(--field-ink);
+  color: var(--field);
+}
+
+.interruptor__estado {
+  min-width: 2ch;
+}
+
+.interruptor:focus-visible {
+  outline: none;
+}
+
+.interruptor:focus-visible .interruptor__pista {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .interruptor__pista,
+  .interruptor__perilla {
+    transition: none;
+  }
+}
+
+/* Oferta tras enviar un reporte: lenguaje del aviso informativo, con dos acciones. */
+.oferta-avisos {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border: 2px solid var(--field);
+  border-radius: var(--radius-sm);
+  background: var(--info-tint);
+  line-height: 1.45;
+}
+
+.oferta-avisos__icono {
+  flex: none;
+  margin-top: 2px;
+  color: var(--field);
+}
+
+.oferta-avisos__cuerpo {
+  display: grid;
+  gap: 6px;
+}
+
+.oferta-avisos__titulo {
+  font-size: 1.0625rem;
+  font-weight: 700;
+}
+
+.oferta-avisos__hecho {
+  margin-bottom: 16px;
+}
+
+.oferta-avisos__acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 20px;
+  margin-top: 6px;
+}
+
+/* Guía de instalación. */
+.instalar {
+  display: grid;
+  gap: 28px;
+  padding-bottom: 40px;
+}
+
+.instalar__bloque {
+  display: grid;
+  gap: 12px;
+}
+
+.instalar__pasos {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.instalar__pasos li {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 12px;
+  align-items: start;
+  line-height: 1.5;
+}
+
+.instalar__num {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--field);
+  color: var(--field-ink);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.instalar__icono {
+  display: inline;
+  vertical-align: -4px;
+  color: var(--field);
+}
+
+.instalar__texto {
+  line-height: 1.5;
+}
+
+/* En la portada va justo bajo la cuenta, que ya cierra con su línea. */
+.account + .ajuste {
+  margin-top: -1px;
+  border-top: 0;
+}

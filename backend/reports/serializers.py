@@ -128,7 +128,7 @@ class ReporteDetalleSerializer(ReporteSerializer):
     def get_historial(self, obj):
         eventos = obj.eventos.all()
         if not obj.es_de(self._user()):
-            eventos = [e for e in eventos if e.tipo == TipoEvento.ESTADO]
+            eventos = [e for e in eventos if e.tipo in (TipoEvento.ESTADO, TipoEvento.NOTA)]
         return EventoPublicoSerializer(eventos, many=True).data
 
 

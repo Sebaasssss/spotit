@@ -4,6 +4,7 @@ import { ApiError, NetworkError } from '../api/client'
 import { fetchMisReportes, fetchMisReportesConOrigen, type Reporte } from '../api/reportes'
 import { NotaGuardado } from '../components/offline/NotaGuardado'
 import { PendientesDeEnvio } from '../components/offline/Pendientes'
+import { OfertaAvisos } from '../components/avisos/OfertaAvisos'
 import { useOnline } from '../lib/useOnline'
 import { useApiActualizada } from '../offline/useApiActualizada'
 import { sincronizador } from '../offline/sincronizador'
@@ -121,6 +122,9 @@ export function MyReports() {
             Recibimos tu reporte. Aquí puedes seguir su estado.
           </p>
         )}
+        {/* Recién enviado: el momento con sentido para ofrecer los avisos (una sola vez). */}
+        {nuevo && estado.kind === 'ok' && <OfertaAvisos />}
+
         {guardado && pendientes.some((p) => p.estado !== 'error') && (
           <p className="saved-success" role="status">
             <CloudUpIcon size={20} />
